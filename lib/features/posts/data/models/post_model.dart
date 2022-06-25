@@ -15,11 +15,11 @@ class PostModel extends Equatable {
   PostModel.fromJson(Map<String, dynamic> json)
       : this(
           Post(
-            id: json['pk'].toString(),
+            id: json['id'].toString(),
             author: ProfileModel.fromJson(json['author']).toEntity(),
-            createdAt: DateTime.parse(json['created_at']),
+            createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']*1000, isUtc: true),
             images: (json['images'] as List)
-                .map<String>((shortUrl) => URLMapper().shortToLong(shortUrl))
+                .map<PostImage>((imageJson) => PostImage(imageJson['index'], imageJson['url']))
                 .toList(),
             text: json['text'],
             likes: json['likes'],
@@ -28,11 +28,11 @@ class PostModel extends Equatable {
           ),
         );
   Map<String, dynamic> toJson() => {
-        'pk': int.parse(_entity.id),
+        'id': _entity.id,
         'author': ProfileModel(_entity.author).toJson(),
-        'created_at': _entity.createdAt.toIso8601String(),
+        'created_at':  (_entity.createdAt.toUtc().millisecondsSinceEpoch/1000).floor(),
         'images': _entity.images
-            .map((longUrl) => URLMapper().longToShort(longUrl))
+            .map((image) => {"index": image.index, "url": image.url})
             .toList(),
         'text': _entity.text,
         'likes': _entity.likes,

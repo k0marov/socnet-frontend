@@ -1,5 +1,5 @@
 {
-    "pk": 123,
+    "id": "123",
     "author": {
         "id": "42",
         "username": "some-username",
@@ -10,12 +10,21 @@
         "is_mine": false,
         "is_followed": true
     }, 
-    "created_at": "1994-11-05T13:15:30.000Z",
+    "created_at": 1656140579,
     "images": [
-        "/1.png",
-        "/2.png",
-        "/3.png"
-    ], 
+        {
+            "index": 1,
+            "url": ".../1.png"
+        },
+        {
+            "index": 2,
+            "url": ".../2.png"
+        },
+        {
+            "index": 3,
+            "url": ".../3.png"
+        }
+    ],
     "text": "Some example text", 
     "likes": 42, 
     "is_liked": false, 

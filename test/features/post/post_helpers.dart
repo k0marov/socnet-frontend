@@ -6,13 +6,16 @@ import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import '../../core/helpers/helpers.dart';
 import '../profile/shared.dart';
 
+
+PostImage createTestPostImage() => PostImage(randomInt(), randomString());
+
 Post createTestPost() => Post(
       id: randomInt().toString(),
       author: createTestProfile(),
-      createdAt: DateTime.now(),
+      createdAt: DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch/1000000).floor() * 1000000).toUtc(), // accuracy to seconds
       images: [
-        URLMapper().shortToLong(randomString()),
-        URLMapper().shortToLong(randomString())
+        createTestPostImage(),
+        createTestPostImage(),
       ],
       text: randomString(),
       likes: randomInt(),

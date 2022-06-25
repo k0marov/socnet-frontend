@@ -13,11 +13,14 @@ import '../../post_helpers.dart';
 void main() {
   Post tPost = Post(
     id: "123",
-    createdAt: DateTime.parse("1994-11-05T08:15:30-05:00"),
-    images: const [apiHost + "/1.png", apiHost + "/2.png", apiHost + "/3.png"],
+    createdAt: DateTime.utc(2022, 6, 25, 7, 2, 59),
+    images: const [
+      PostImage(1, ".../1.png"),
+      PostImage(2, ".../2.png"),
+      PostImage(3, ".../3.png"),
+    ],
     text: "Some example text",
     likes: 42,
-    isLiked: false,
     author: const Profile(
       id: "42",
       username: "some-username",
@@ -29,6 +32,7 @@ void main() {
       isFollowed: true,
     ),
     isMine: false,
+    isLiked: false,
   );
   PostModel tPostModel = PostModel(tPost);
 

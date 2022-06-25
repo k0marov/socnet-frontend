@@ -1,12 +1,20 @@
 import 'package:equatable/equatable.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 
+class PostImage extends Equatable {
+  final int index;
+  final String url;
+  @override
+  List get props => [index, url];
+  const PostImage(this.index, this.url);
+}
+
 class Post extends Equatable {
   final String id;
   final Profile author;
   final bool isMine;
   final DateTime createdAt;
-  final List<String> images;
+  final List<PostImage> images;
   final String text;
   final int likes;
   final bool isLiked;

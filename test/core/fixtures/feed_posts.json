@@ -1,7 +1,7 @@
 {
     "posts": [
         {
-            "pk": 123,
+            "id": "123",
             "author": {
                 "id": "42",
                 "username": "some-username",
@@ -12,19 +12,28 @@
                 "is_mine": true,
                 "is_followed": false
             }, 
-            "created_at": "1994-11-05T13:15:30.000Z",
+            "created_at": 1656140579,
             "images": [
-                "/1.png",
-                "/2.png",
-                "/3.png"
-            ], 
-            "text": "Some example text", 
+                {
+                    "index": 1,
+                    "url": ".../1.png"
+                },
+                {
+                    "index": 2,
+                    "url": ".../2.png"
+                },
+                {
+                    "index": 3,
+                    "url": ".../3.png"
+                }
+            ],
+            "text": "Some example text",
             "likes": 42, 
             "is_liked": false, 
             "is_mine": false
         }, 
         {
-            "pk": 4321,
+            "id": "4321",
             "author": {
                 "id": "33",
                 "username": "some-other-username",
@@ -35,18 +44,24 @@
                 "is_mine": false,
                 "is_followed": true
             }, 
-            "created_at": "1998-11-05T13:15:30.000Z",
+            "created_at": 1656146497,
             "images": [
-                "/2.png",
-                "/3.png"
-            ], 
-            "text": "Some 2-nd example text", 
-            "likes": 42, 
+                {
+                    "index": 1,
+                    "url": ".../2.png"
+                },
+                {
+                    "index": 2,
+                    "url": ".../3.png"
+                }
+            ],
+            "text": "Some 2-nd example text",
+            "likes": 42,
             "is_liked": true, 
             "is_mine": false
         }, 
         {
-            "pk": 11,
+            "id": "11",
             "author": {
                 "id": "555",
                 "username": "some-third-username",
@@ -57,7 +72,7 @@
                 "is_mine": false,
                 "is_followed": false
             }, 
-            "created_at": "2006-08-02T02:30:00.000Z",
+            "created_at": 1656146497,
             "images": [], 
             "text": "Some 3-rd example text", 
             "likes": 42, 
