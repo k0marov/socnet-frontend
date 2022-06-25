@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socnet/auth_gate/bloc/auth_gate_bloc.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
@@ -13,13 +15,12 @@ import 'package:socnet/features/profile/data/repositories/profile_repository_imp
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 import 'package:socnet/features/profile/domain/usecases/get_follows.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
+import 'package:socnet/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/facades/authenticated_api_facade.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 
@@ -51,6 +52,7 @@ Future initialize() async {
   sl.registerLazySingleton(() => GetFollows(sl()));
   sl.registerLazySingleton(() => GetMyProfile(sl()));
   sl.registerLazySingleton(() => UpdateProfile(sl()));
+  sl.registerLazySingleton(() => UpdateAvatar(sl()));
   // datasources
   sl.registerLazySingleton<ProfileNetworkDataSource>(
       () => ProfileNetworkDataSourceImpl(sl()));
@@ -58,7 +60,7 @@ Future initialize() async {
   sl.registerLazySingleton<ProfileRepository>(
       () => ProfileRepositoryImpl(sl()));
   // blocs
-  sl.registerFactory(() => MyProfileBloc(sl(), sl()));
+  sl.registerFactory(() => MyProfileBloc(sl(), sl(), sl()));
 
   //! External
   final sharedPrefs = await SharedPreferences.getInstance();
