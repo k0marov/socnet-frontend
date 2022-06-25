@@ -90,8 +90,13 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   }
 
   @override
-  Future<AvatarURL> updateAvatar(AvatarFile newAvatar) {
-    // TODO: implement updateAvatar
-    throw UnimplementedError();
+  Future<AvatarURL> updateAvatar(AvatarFile newAvatar) async {
+    return exceptionConverterCall(() async {
+      final files = {"avatar": newAvatar};
+      final response =
+          await _apiFacade.sendFiles("PUT", updateAvatarEndpoint(), files, {});
+      checkStatusCode(response);
+      return response.body;
+    });
   }
 }

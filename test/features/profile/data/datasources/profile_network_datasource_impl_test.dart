@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
-import 'package:http/http.dart' as http;
 import 'package:socnet/features/profile/data/models/profile_model.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../../core/helpers/base_tests.dart';
 import '../../../../core/helpers/helpers.dart';
@@ -31,7 +31,8 @@ void main() {
       () async {
         // arrange
         final tFollows = [createTestProfile(), createTestProfile()];
-        final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
+        final tFollowsModels =
+            tFollows.map((profile) => ProfileModel(profile)).toList();
         final tResponseBody = {
           'profiles': tFollowsModels.map((model) => model.toJson()).toList()
         };
@@ -42,8 +43,8 @@ void main() {
         final result = await sut.getFollows(tProfile);
         // assert
         expect(result, tFollowsModels);
-        verify(() => mockApiFacade
-            .get(getFollowsEndpoint(tProfile.toEntity().id), {}));
+        verify(() =>
+            mockApiFacade.get(getFollowsEndpoint(tProfile.toEntity().id), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
@@ -84,13 +85,14 @@ void main() {
       () async {
         // arrange
         when(() => mockApiFacade.put(any(), any()))
-          .thenAnswer((_) async => http.Response(tProfileJson, 200));
+            .thenAnswer((_) async => http.Response(tProfileJson, 200));
         // act
         final result = await sut.updateProfile(tProfileUpdate);
         // assert
         expect(result, tProfile);
         final expectedRequestData = {'about': tProfileUpdate.newAbout!};
-        verify(() => mockApiFacade.put(getMyProfileEndpoint(), expectedRequestData));
+        verify(() =>
+            mockApiFacade.put(getMyProfileEndpoint(), expectedRequestData));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
@@ -98,6 +100,27 @@ void main() {
       () => when(() => mockApiFacade.put(any(), any())),
       () => sut.updateProfile(tProfileUpdate),
     );
+  });
+
+  group("updateAvatar", () {
+    final newAvatar = createTestFile();
+    final newUrl = randomString();
+    test("should call api and return the result if it was successful",
+        () async {
+      // arrange
+      when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
+          .thenAnswer((_) async => http.Response(newUrl, 200));
+      // act
+      final result = await sut.updateAvatar(newAvatar);
+      // assert
+      expect(result, newUrl);
+      verify(() => mockApiFacade
+          .sendFiles("PUT", updateAvatarEndpoint(), {"avatar": newAvatar}, {}));
+      verifyNoMoreInteractions(mockApiFacade);
+    });
+    baseNetworkDataSourceExceptionTests(
+        () => when(() => mockApiFacade.sendFiles(any(), any(), any(), any())),
+        () => sut.updateAvatar(newAvatar));
   });
 
   group('toggleFollow', () {
