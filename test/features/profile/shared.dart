@@ -14,7 +14,9 @@ Profile createTestProfile() => Profile(
       id: randomInt().toString(),
       username: randomString(),
       about: randomString(),
-      avatarUrl: apiHost + randomString(),
+      avatarUrl: randomString(),
       followers: randomInt(),
       follows: randomInt(),
+      isMine: randomBool(),
+      isFollowed: randomBool(),
     );

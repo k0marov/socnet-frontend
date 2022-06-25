@@ -7,9 +7,11 @@ class Profile extends Equatable {
   final String? avatarUrl;
   final int followers;
   final int follows;
+  final bool isMine;
+  final bool isFollowed;
 
   @override
-  List get props => [id, username, about, avatarUrl, followers, follows];
+  List get props => [id, username, about, avatarUrl, followers, follows, isMine, isFollowed];
 
   const Profile({
     required this.id,
@@ -18,5 +20,7 @@ class Profile extends Equatable {
     required this.avatarUrl,
     required this.followers,
     required this.follows,
+    required this.isMine,
+    required this.isFollowed,
   });
 }

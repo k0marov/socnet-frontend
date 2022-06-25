@@ -15,10 +15,12 @@ void main() {
     author: const Profile(
       id: "42",
       username: "some-username",
-      avatarUrl: apiHost + "/media/user_1/avatar1234blablabla.png",
+      avatarUrl: "static.example.com/media/user_1/avatar1234blablabla.png",
       followers: 42,
       follows: 21,
       about: "A Test Profile",
+      isMine: false,
+      isFollowed: false,
     ),
     text: "Some comment",
     likes: 42,

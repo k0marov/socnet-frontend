@@ -1,8 +1,10 @@
 {
-    "pk": 42, 
+    "id": "42",
     "username": "some-username", 
-    "avatar": "/media/user_1/avatar1234blablabla.png", 
+    "avatar_url": "static.example.com/42/avatar.jpeg",
     "followers": 42, 
     "follows": 21, 
-    "about": "A Test Profile"
+    "about": "A Test Profile",
+    "is_mine": true,
+    "is_followed": false
 }

@@ -16,9 +16,11 @@ void main() {
       id: "42",
       username: "some-username",
       about: "A Test Profile",
-      avatarUrl: apiHost + "/media/user_1/avatar1234blablabla.png",
+      avatarUrl: "static.example.com/42/avatar.jpeg",
       followers: 42,
       follows: 21,
+      isMine: true,
+      isFollowed: false,
     );
     profileModel = ProfileModel(profile);
   });

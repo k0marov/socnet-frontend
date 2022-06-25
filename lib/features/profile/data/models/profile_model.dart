@@ -14,24 +14,26 @@ class ProfileModel extends Equatable {
   ProfileModel.fromJson(Map<String, dynamic> json)
       : this(
           Profile(
-            id: json['pk'].toString(),
+            id: json['id'],
             username: json['username'],
-            avatarUrl: json['avatar'] != null
-                ? URLMapper().shortToLong(json['avatar'])
-                : null,
+            avatarUrl: json['avatar_url'],
             about: json['about'],
             followers: json['followers'],
             follows: json['follows'],
+            isMine: json['is_mine'],
+            isFollowed: json['is_followed'],
           ),
         );
   Map<String, dynamic> toJson() => {
-        'pk': int.parse(_entity.id),
+        'id': _entity.id,
         'username': _entity.username,
         'about': _entity.about,
-        'avatar': _entity.avatarUrl != null
+        'avatar_url': _entity.avatarUrl != null
             ? URLMapper().longToShort(_entity.avatarUrl!)
             : null,
         'followers': _entity.followers,
         'follows': _entity.follows,
+        'is_mine': _entity.isMine,
+        'is_followed': _entity.isFollowed,
       };
 }

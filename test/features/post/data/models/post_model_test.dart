@@ -18,14 +18,15 @@ void main() {
     text: "Some example text",
     likes: 42,
     isLiked: false,
-    author: Profile(
+    author: const Profile(
       id: "42",
       username: "some-username",
-      avatarUrl:
-          URLMapper().shortToLong("/media/user_1/avatar1234blablabla.png"),
+      avatarUrl:"static.example.com/media/user_1/avatar1234blablabla.png",
       followers: 42,
       follows: 21,
       about: "A Test Profile",
+      isMine: false,
+      isFollowed: true,
     ),
     isMine: false,
   );
