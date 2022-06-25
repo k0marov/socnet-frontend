@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/api.dart';
+import 'package:socnet/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:http/http.dart' as http;
@@ -42,9 +42,9 @@ void main() {
         // assert
         expect(result, tToken);
         final endpoint = isLogin
-            ? NetworkAuthDataSourceImpl.loginEndpoint
-            : NetworkAuthDataSourceImpl.registerEndpoint;
-        verify(() => mockHttpClient.post(Uri.https(apiHost, endpoint), body: {
+            ? endpoints.loginEndpoint()
+            : endpoints.registerEndpoint();
+        verify(() => mockHttpClient.post(Uri.https(endpoints.apiHost, endpoint), body: {
               'username': tUsername,
               'password': tPassword,
             }, headers: {

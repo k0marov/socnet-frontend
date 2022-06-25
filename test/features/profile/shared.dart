@@ -1,4 +1,4 @@
-import 'package:socnet/core/const/api.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 

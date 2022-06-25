@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/feed/data/datasources/feed_network_datasource.dart';
 import 'package:socnet/features/feed/data/mappers/feed_posts_mapper.dart';
@@ -27,7 +28,7 @@ void main() {
     final tAmount = randomInt();
     Future<FeedPostsMapper> act() => sut.getNextPosts(tAmount);
     Future<http.Response> apiCall() =>
-        mockAPIFacade.get("feed/", {'amount': tAmount});
+        mockAPIFacade.get(feedEndpoint(tAmount), {});
     test(
       "should call api and return parsed result if response status code = 200",
       () async {

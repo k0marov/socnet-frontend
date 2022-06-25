@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
@@ -10,6 +11,7 @@ import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../core/helpers/base_tests.dart';
 import '../../../../core/helpers/helpers.dart';
 import '../../shared.dart';
 
@@ -30,38 +32,6 @@ void main() {
     'detail': tExceptionDetail,
   });
 
-  void _baseExceptionTests(When Function() whenApiCall, Function sutCall) {
-    test(
-      "should rethrow NoTokenException",
-      () async {
-        // arrange
-        whenApiCall().thenThrow(NoTokenException());
-        // assert
-        expect(sutCall, throwsA(isA<NoTokenException>()));
-      },
-    );
-    test(
-      "should throw NetworkException if the response status code is not 200",
-      () async {
-        // arrange
-        whenApiCall()
-            .thenAnswer((_) async => http.Response(tExceptionBody, 4242));
-        // assert
-        final expectedException = NetworkException(4242, tExceptionDetail);
-        expect(sutCall, throwsA(equals(expectedException)));
-      },
-    );
-    test(
-      "should throw NetworkException.unknown() if something throws",
-      () async {
-        // arrange
-        whenApiCall().thenThrow(Exception());
-        // assert
-        expect(sutCall, throwsA(equals(const NetworkException.unknown())));
-      },
-    );
-  }
-
   final tProfile = ProfileModel(createTestProfile());
   final tMyProfile = MyProfileModel(MyProfile(
     profile: tProfile.toEntity(),
@@ -73,8 +43,7 @@ void main() {
       () async {
         // arrange
         final tFollows = [createTestProfile(), createTestProfile()];
-        final tFollowsModels =
-            tFollows.map((profile) => ProfileModel(profile)).toList();
+        final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
         final tResponseBody = {
           'profiles': tFollowsModels.map((model) => model.toJson()).toList()
         };
@@ -86,11 +55,11 @@ void main() {
         // assert
         expect(result, tFollowsModels);
         verify(() => mockApiFacade
-            .get('profiles/' + tProfile.toEntity().id + '/follows/', {}));
+            .get(getFollowsEndpoint(tProfile.toEntity().id), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
-    _baseExceptionTests(
+    baseNetworkDataSourceExceptionTests(
       () => when(() => mockApiFacade.get(any(), any())),
       () => sut.getFollows(tProfile),
     );
@@ -108,11 +77,11 @@ void main() {
         final result = await sut.getMyProfile();
         // assert
         expect(result, tMyProfile);
-        verify(() => mockApiFacade.get('profiles/me/', {}));
+        verify(() => mockApiFacade.get(getMyProfileEndpoint(), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
-    _baseExceptionTests(
+    baseNetworkDataSourceExceptionTests(
       () => when(() => mockApiFacade.get(any(), any())),
       () => sut.getMyProfile(),
     );
@@ -135,11 +104,11 @@ void main() {
         final expectedRequestData = {'about': tProfileUpdate.newAbout!};
         final files = {'avatar': tProfileUpdate.newAvatar!};
         verify(() => mockApiFacade.sendFiles(
-            "PUT", "profiles/me/", files, expectedRequestData));
+            "PUT", getMyProfileEndpoint(), files, expectedRequestData));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
-    _baseExceptionTests(
+    baseNetworkDataSourceExceptionTests(
       () => when(() => mockApiFacade.sendFiles(any(), any(), any(), any())),
       () => sut.updateProfile(tProfileUpdate),
     );
@@ -156,11 +125,11 @@ void main() {
         await sut.toggleFollow(tProfile);
         // assert
         verify(() => mockApiFacade
-            .post("profiles/${tProfile.toEntity().id}/toggle-follow/", {}));
+            .post(toggleFollowEndpoint(tProfile.toEntity().id), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
-    _baseExceptionTests(
+    baseNetworkDataSourceExceptionTests(
       () => when(() => mockApiFacade.post(any(), any())),
       () => sut.toggleFollow(tProfile),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
@@ -38,8 +39,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<List<ProfileModel>> getFollows(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final fullEndpoint = "profiles/${profile.toEntity().id}/follows/";
-      final response = await _apiFacade.get(fullEndpoint, {});
+      final response = await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
 
       final profiles = json.decode(response.body)['profiles'];
@@ -53,9 +53,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<MyProfileModel> getMyProfile() async {
     return exceptionConverterCall(() async {
-      const endpoint = "profiles/me/";
-
-      final response = await _apiFacade.get(endpoint, {});
+      final response = await _apiFacade.get(getMyProfileEndpoint(), {});
       checkStatusCode(response);
       final profileJson = json.decode(response.body);
       return MyProfileModel.fromJson(profileJson);
@@ -65,12 +63,10 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<MyProfileModel> updateProfile(ProfileUpdate update) async {
     return exceptionConverterCall(() async {
-      const endpoint = "profiles/me/";
-
       final files = update.newAvatar != null ? {'avatar': update.newAvatar!} : <String, SimpleFile>{};
       final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
 
-      final response = await _apiFacade.sendFiles("PUT", endpoint, files, data);
+      final response = await _apiFacade.sendFiles("PUT", updateProfileEndpoint(), files, data);
       checkStatusCode(response);
 
       final profileJson = json.decode(response.body);
@@ -81,8 +77,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<void> toggleFollow(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final endpoint = "profiles/${profile.toEntity().id}/toggle-follow/";
-      final response = await _apiFacade.post(endpoint, {});
+      final response = await _apiFacade.post(toggleFollowEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
     });
   }

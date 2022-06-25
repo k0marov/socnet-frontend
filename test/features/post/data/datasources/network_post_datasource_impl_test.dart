@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
@@ -54,7 +55,7 @@ void main() {
         verify(
           () => mockApiFacade.sendFiles(
             "POST",
-            NetworkPostDataSourceImpl.createEndpoint,
+            createPostEndpoint(),
             expectedFiles,
             expectedData,
           ),
@@ -76,7 +77,7 @@ void main() {
       // act
       await sut.deletePost(tPostModel);
       // assert
-      verify(() => mockApiFacade.delete("posts/${tPostModel.toEntity().id}"));
+      verify(() => mockApiFacade.delete(deletePostEndpoint(tPostModel.toEntity().id)));
       verifyNoMoreInteractions(mockApiFacade);
     });
     baseNetworkDataSourceExceptionTests(
@@ -104,6 +105,8 @@ void main() {
         final result = await sut.getProfilePosts(tProfile);
         // assert
         expect(listEquals(result, tPosts), true);
+        verify(() => mockApiFacade.get(getProfilePostsEndpoint(tProfile.toEntity().id), {}));
+        verifyNoMoreInteractions(mockApiFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
@@ -123,12 +126,7 @@ void main() {
         // act
         await sut.toggleLike(tPost);
         // assert
-        verify(
-          () => mockApiFacade.post(
-            "posts/${tPost.toEntity().id}/like",
-            {},
-          ),
-        );
+        verify(() => mockApiFacade.post(toggleLikeOnPostEndpoint(tPost.toEntity().id), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );

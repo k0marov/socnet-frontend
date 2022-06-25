@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/features/comments/data/models/comment_model.dart';
@@ -35,7 +36,7 @@ void main() {
         // act
         await sut.deleteComment(CommentModel(tComment));
         // assert
-        verify(() => mockAPIFacade.delete("comments/${tComment.id}/"));
+        verify(() => mockAPIFacade.delete(deleteCommentEndpoint(tComment.id)));
         verifyNoMoreInteractions(mockAPIFacade);
       },
     );
@@ -61,7 +62,7 @@ void main() {
         // assert
         expect(result, tCreatedComment);
         verify(() => mockAPIFacade.post(
-              "comments/?post_id=${tPost.id}/",
+              addPostCommentEndpoint(tPost.id),
               {'text': tNewComment.text},
             ));
         verifyNoMoreInteractions(mockAPIFacade);
@@ -93,7 +94,7 @@ void main() {
         final result = await sut.getPostComments(PostModel(tPost));
         // assert
         expect(result, tCommentModels);
-        verify(() => mockAPIFacade.get("comments/", {'post_id': tPost.id}));
+        verify(() => mockAPIFacade.get(getPostCommentsEndpoint(tPost.id), {}));
         verifyNoMoreInteractions(mockAPIFacade);
       },
     );
@@ -116,7 +117,7 @@ void main() {
         await sut.toggleLikeOnComment(tCommentModel);
         // assert
         verify(() =>
-            mockAPIFacade.post("comments/${tComment.id}/toggle-like/", {}));
+            mockAPIFacade.post(toggleLikeOnCommentEndpoint(tComment.id), {}));
         verifyNoMoreInteractions(mockAPIFacade);
       },
     );

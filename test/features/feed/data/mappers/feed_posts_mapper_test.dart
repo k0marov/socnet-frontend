@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/api.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/features/feed/data/mappers/feed_posts_mapper.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';

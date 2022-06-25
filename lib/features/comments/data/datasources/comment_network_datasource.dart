@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/helpers.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/comments/data/models/comment_model.dart';
@@ -34,7 +35,7 @@ class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
         'text': newComment.text,
       };
       final response =
-          await _apiFacade.post("comments/?post_id=$postId/", data);
+          await _apiFacade.post(addPostCommentEndpoint(postId), data);
       checkStatusCode(response);
       return CommentModel.fromJson(json.decode(response.body));
     });
@@ -44,7 +45,7 @@ class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
   Future<void> deleteComment(CommentModel comment) async {
     return exceptionConverterCall(() async {
       final commentId = comment.toEntity().id;
-      final response = await _apiFacade.delete("comments/$commentId/");
+      final response = await _apiFacade.delete(deleteCommentEndpoint(commentId));
       checkStatusCode(response);
     });
   }
@@ -53,8 +54,8 @@ class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
   Future<List<CommentModel>> getPostComments(PostModel post) async {
     return exceptionConverterCall(() async {
       final response = await _apiFacade.get(
-        "comments/",
-        {'post_id': post.toEntity().id},
+        getPostCommentsEndpoint(post.toEntity().id),
+        {}
       );
       checkStatusCode(response);
       final commentsJson = json.decode(response.body)['comments'] as List;
@@ -67,7 +68,7 @@ class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
     return exceptionConverterCall(() async {
       final commentId = comment.toEntity().id;
       final response = await _apiFacade.post(
-        "comments/$commentId/toggle-like/",
+        toggleLikeOnCommentEndpoint(commentId),
         {},
       );
       checkStatusCode(response);

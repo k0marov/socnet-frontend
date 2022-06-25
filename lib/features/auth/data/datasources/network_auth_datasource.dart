@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:socnet/core/const/api.dart';
+import 'package:socnet/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
 import 'package:http/http.dart' as http;
@@ -21,22 +21,20 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   final http.Client _httpClient;
   NetworkAuthDataSourceImpl(this._httpClient);
 
-  static const loginEndpoint = "api-token-login/";
   @override
   Future<TokenModel> login(String username, String password) async {
-    return _loginOrRegister(username, password, loginEndpoint);
+    return _loginOrRegister(username, password, endpoints.loginEndpoint());
   }
 
-  static const registerEndpoint = "api-token-register/";
   @override
   Future<TokenModel> register(String username, String password) async {
-    return _loginOrRegister(username, password, registerEndpoint);
+    return _loginOrRegister(username, password, endpoints.registerEndpoint());
   }
 
   Future<TokenModel> _loginOrRegister(
       String username, String password, String endpoint) async {
     try {
-      final uri = Uri.https(apiHost, endpoint);
+      final uri = Uri.https(endpoints.apiHost, endpoint);
       final requestBody = {
         'username': username,
         'password': password,

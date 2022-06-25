@@ -1,4 +1,4 @@
-import 'package:socnet/core/const/api.dart';
+import 'package:socnet/core/const/endpoints.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/core/mappers/url_mapper.dart';
