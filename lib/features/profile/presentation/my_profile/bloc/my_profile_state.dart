@@ -24,7 +24,7 @@ class MyProfileFailure extends MyProfileState {
 }
 
 class MyProfileLoaded extends MyProfileState {
-  final MyProfile profile;
+  final Profile profile;
   final Failure? nonFatalFailure;
   @override
   List get props => [profile, nonFatalFailure];

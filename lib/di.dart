@@ -58,7 +58,7 @@ Future initialize() async {
   sl.registerLazySingleton<ProfileRepository>(
       () => ProfileRepositoryImpl(sl()));
   // blocs
-  sl.registerFactory(() => MyProfileBloc(sl(), sl(), sl()));
+  sl.registerFactory(() => MyProfileBloc(sl(), sl()));
 
   //! External
   final sharedPrefs = await SharedPreferences.getInstance();

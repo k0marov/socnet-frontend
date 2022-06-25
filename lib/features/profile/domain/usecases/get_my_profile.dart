@@ -3,14 +3,14 @@ import 'package:dartz/dartz.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 
 import '../../../../core/usecases/usecase.dart';
-import '../entities/my_profile.dart';
+import '../entities/profile.dart';
 
-class GetMyProfile extends UseCase<MyProfile, NoParams> {
+class GetMyProfile extends UseCase<Profile, NoParams> {
   final ProfileRepository _repository;
   const GetMyProfile(this._repository);
 
   @override
-  Future<Either<Failure, MyProfile>> call(NoParams params) async {
+  Future<Either<Failure, Profile>> call(NoParams params) async {
     return _repository.getMyProfile();
   }
 }

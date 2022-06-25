@@ -16,10 +16,3 @@ class ProfileUpdateRequested extends MyProfileEvent {
 
   const ProfileUpdateRequested({required this.profileUpdate});
 }
-
-class ProfileToggleFollowRequested extends MyProfileEvent {
-  final Profile profile;
-  @override
-  List<Object> get props => [profile];
-  const ProfileToggleFollowRequested({required this.profile});
-}

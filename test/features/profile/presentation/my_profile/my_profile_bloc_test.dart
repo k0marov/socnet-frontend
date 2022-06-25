@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/core/usecases/usecase.dart';
-import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
@@ -18,34 +17,26 @@ class MockGetMyProfile extends Mock implements GetMyProfile {}
 
 class MockUpdateInfo extends Mock implements UpdateProfile {}
 
-class MockToggleFollow extends Mock implements ToggleFollow {}
-
 void main() {
   late MyProfileBloc sut;
   late MockGetMyProfile mockGetMyProfile;
   late MockUpdateInfo mockUpdateInfo;
-  late MockToggleFollow mockToggleFollow;
 
   setUp(() {
     mockGetMyProfile = MockGetMyProfile();
     mockUpdateInfo = MockUpdateInfo();
-    mockToggleFollow = MockToggleFollow();
     sut = MyProfileBloc(
       mockGetMyProfile,
       mockUpdateInfo,
-      mockToggleFollow,
     );
   });
-  final tProfile = MyProfile(
-    profile: createTestProfile(),
-    follows: [createTestProfile(), createTestProfile()],
-  );
+  final tProfile = createTestProfile();
   const tFailure = NetworkFailure(4242, "Some detail");
 
   setUpAll(() {
     registerFallbackValue(
         ProfileUpdateParams(newInfo: createTestProfileUpdate()));
-    registerFallbackValue(ProfileParams(profile: tProfile.profile));
+    registerFallbackValue(ProfileParams(profile: tProfile));
   });
 
   test(
@@ -57,7 +48,7 @@ void main() {
   );
 
   group('ProfileLoadRequested', () {
-    void setupUseCaseAndAct(Either<Failure, MyProfile> useCaseReturn) {
+    void setupUseCaseAndAct(Either<Failure, Profile> useCaseReturn) {
       when(() => mockGetMyProfile(NoParams()))
           .thenAnswer((_) async => useCaseReturn);
       sut.add(ProfileLoadRequested());
@@ -72,7 +63,6 @@ void main() {
         verify(() => mockGetMyProfile(NoParams()));
         verifyNoMoreInteractions(mockGetMyProfile);
         verifyZeroInteractions(mockUpdateInfo);
-        verifyZeroInteractions(mockToggleFollow);
       },
     );
     test(
@@ -105,7 +95,7 @@ void main() {
 
   group('ProfileUpdateRequested', () {
     final tInfo = createTestProfileUpdate();
-    void setUpUseCaseAndAct(Either<Failure, MyProfile> result) {
+    void setUpUseCaseAndAct(Either<Failure, Profile> result) {
       when(() => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo)))
           .thenAnswer((_) async => result);
       sut.add(ProfileUpdateRequested(profileUpdate: tInfo));
@@ -120,7 +110,6 @@ void main() {
           expect(sut.state, const MyProfileInitial());
           verifyZeroInteractions(mockUpdateInfo);
           verifyZeroInteractions(mockGetMyProfile);
-          verifyZeroInteractions(mockToggleFollow);
         });
       },
     );
@@ -140,8 +129,7 @@ void main() {
     test(
       "should emit Loaded when usecase call completes successfully",
       () async {
-        sut.emit(MyProfileLoaded(
-            MyProfile(profile: createTestProfile(), follows: const [])));
+        sut.emit(MyProfileLoaded(createTestProfile()));
         // assert later
         expect(sut.stream, emitsInOrder([MyProfileLoaded(tProfile)]));
         setUpUseCaseAndAct(Right(tProfile));
@@ -154,95 +142,6 @@ void main() {
         // assert later
         expect(sut.stream, emitsInOrder([MyProfileLoaded(tProfile, tFailure)]));
         setUpUseCaseAndAct(const Left(tFailure));
-      },
-    );
-  });
-
-  group('ProfileToggleFollowRequested', () {
-    final tUnfollowedProfile = createTestProfile();
-    final tMyProfile = MyProfile(
-      profile: createTestProfile(),
-      follows: [createTestProfile(), tUnfollowedProfile],
-    );
-    void setUpUseCaseAndAct(
-        Either<Failure, void> result, Profile targetProfile) {
-      when(() => mockToggleFollow(ProfileParams(profile: targetProfile)))
-          .thenAnswer((_) async => result);
-      sut.add(ProfileToggleFollowRequested(profile: targetProfile));
-    }
-
-    test(
-      "should do nothing if state is not loaded",
-      () async {
-        fakeAsync((async) {
-          setUpUseCaseAndAct(const Right(null), tUnfollowedProfile);
-          async.elapse(const Duration(seconds: 5));
-          expect(sut.state, const MyProfileInitial());
-          verifyZeroInteractions(mockGetMyProfile);
-          verifyZeroInteractions(mockToggleFollow);
-          verifyZeroInteractions(mockUpdateInfo);
-        });
-      },
-    );
-
-    test(
-      "should call toggle follows usecase if state is Loaded",
-      () async {
-        sut.emit(MyProfileLoaded(tMyProfile));
-        setUpUseCaseAndAct(const Right(null), tUnfollowedProfile);
-        await untilCalled(
-            () => mockToggleFollow(ProfileParams(profile: tUnfollowedProfile)));
-        verify(
-            () => mockToggleFollow(ProfileParams(profile: tUnfollowedProfile)));
-        verifyNoMoreInteractions(mockToggleFollow);
-        verifyZeroInteractions(mockGetMyProfile);
-        verifyZeroInteractions(mockUpdateInfo);
-      },
-    );
-    test(
-      "should set state to Loaded with failure if the usecase call is unsuccessful",
-      () async {
-        sut.emit(MyProfileLoaded(tMyProfile));
-        const tFailure = NetworkFailure(4242, "some detail");
-        expect(
-            sut.stream, emitsInOrder([MyProfileLoaded(tMyProfile, tFailure)]));
-        setUpUseCaseAndAct(const Left(tFailure), tUnfollowedProfile);
-      },
-    );
-    group(
-      "should set state to Loaded with changed follows if the usecase call is successful",
-      () {
-        test(
-          "(when you unfollow)",
-          () async {
-            // assert later
-            final expectedProfile = MyProfile(
-              profile: tMyProfile.profile,
-              follows: tMyProfile.follows
-                  .where((profile) => profile != tUnfollowedProfile)
-                  .toList(),
-            );
-            sut.emit(MyProfileLoaded(tMyProfile));
-            expect(
-                sut.stream, emitsInOrder([MyProfileLoaded(expectedProfile)]));
-            setUpUseCaseAndAct(const Right(null), tUnfollowedProfile);
-          },
-        );
-        test(
-          "(when you follow)",
-          () async {
-            // assert later
-            final tAnotherProfile = createTestProfile();
-            final expectedProfile = MyProfile(
-              profile: tMyProfile.profile,
-              follows: tMyProfile.follows + [tAnotherProfile],
-            );
-            sut.emit(MyProfileLoaded(tMyProfile));
-            expect(
-                sut.stream, emitsInOrder([MyProfileLoaded(expectedProfile)]));
-            setUpUseCaseAndAct(const Right(null), tAnotherProfile);
-          },
-        );
       },
     );
   });

@@ -8,7 +8,6 @@ import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
 import '../../../../core/error/helpers.dart';
 import '../../../../core/simple_file/simple_file.dart';
-import '../models/my_profile_model.dart';
 
 abstract class ProfileNetworkDataSource {
   /// throws:
@@ -24,12 +23,12 @@ abstract class ProfileNetworkDataSource {
   /// throws:
   /// [NoTokenException]
   /// [NetworkException]
-  Future<MyProfileModel> getMyProfile();
+  Future<ProfileModel> getMyProfile();
 
   /// throws:
   /// [NoTokenException]
   /// [NetworkException]
-  Future<MyProfileModel> updateProfile(ProfileUpdate update);
+  Future<ProfileModel> updateProfile(ProfileUpdate update);
 }
 
 class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
@@ -51,17 +50,17 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   }
 
   @override
-  Future<MyProfileModel> getMyProfile() async {
+  Future<ProfileModel> getMyProfile() async {
     return exceptionConverterCall(() async {
       final response = await _apiFacade.get(getMyProfileEndpoint(), {});
       checkStatusCode(response);
       final profileJson = json.decode(response.body);
-      return MyProfileModel.fromJson(profileJson);
+      return ProfileModel.fromJson(profileJson);
     });
   }
 
   @override
-  Future<MyProfileModel> updateProfile(ProfileUpdate update) async {
+  Future<ProfileModel> updateProfile(ProfileUpdate update) async {
     return exceptionConverterCall(() async {
       final files = update.newAvatar != null ? {'avatar': update.newAvatar!} : <String, SimpleFile>{};
       final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
@@ -70,7 +69,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
       checkStatusCode(response);
 
       final profileJson = json.decode(response.body);
-      return MyProfileModel.fromJson(profileJson);
+      return ProfileModel.fromJson(profileJson);
     });
   }
 

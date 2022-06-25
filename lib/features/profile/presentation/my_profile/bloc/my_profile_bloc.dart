@@ -9,16 +9,17 @@ import 'package:socnet/features/profile/domain/usecases/toggle_follow.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
-import '../../../domain/entities/my_profile.dart';
-
 part 'my_profile_event.dart';
 part 'my_profile_state.dart';
+
+
+
+// TODO: create a bloc that will store current user's follows and handle the ToggleFollow
 
 class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
   final GetMyProfile _getMyProfile;
   final UpdateProfile _updateInfo;
-  final ToggleFollow _toggleFollow;
-  MyProfileBloc(this._getMyProfile, this._updateInfo, this._toggleFollow)
+  MyProfileBloc(this._getMyProfile, this._updateInfo)
       : super(const MyProfileInitial()) {
     on<MyProfileEvent>((event, emit) async {
       final currentState = state;
@@ -39,23 +40,6 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
           (failure) => emit(MyProfileLoaded(currentProfileData, failure)),
           (profile) => emit(MyProfileLoaded(profile)),
         );
-      } else if (event is ProfileToggleFollowRequested) {
-        if (currentProfileData == null) return;
-        final resultEither =
-            await _toggleFollow(ProfileParams(profile: event.profile));
-        resultEither.fold(
-            (failure) => emit(MyProfileLoaded(currentProfileData, failure)),
-            (success) {
-          final updatedProfile = MyProfile(
-            profile: currentProfileData.profile,
-            follows: currentProfileData.follows.contains(event.profile)
-                ? currentProfileData.follows
-                    .where((profile) => profile != event.profile)
-                    .toList()
-                : currentProfileData.follows + [event.profile],
-          );
-          emit(MyProfileLoaded(updatedProfile));
-        });
       }
     });
   }

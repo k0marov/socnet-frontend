@@ -12,7 +12,8 @@ String addPostCommentEndpoint(String postId) {
   return "/api/comments/?post_id=$postId";
 }
 String deleteCommentEndpoint(String commentId) {
-  throw UnimplementedError();
+  // throw UnimplementedError();
+  return "";
 }
 String getPostCommentsEndpoint(String postId) {
   return "/api/comments/?post_id=$postId";
@@ -22,7 +23,8 @@ String toggleLikeOnCommentEndpoint(String commentId) {
 }
 
 String feedEndpoint(int postAmount) {
-  throw UnimplementedError();
+  // throw UnimplementedError();
+  return "";
 }
 
 String createPostEndpoint() {

@@ -2,13 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:http/http.dart' as http;
-import 'package:socnet/features/profile/data/models/my_profile_model.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
-import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../core/helpers/base_tests.dart';
@@ -33,10 +30,6 @@ void main() {
   });
 
   final tProfile = ProfileModel(createTestProfile());
-  final tMyProfile = MyProfileModel(MyProfile(
-    profile: tProfile.toEntity(),
-    follows: [createTestProfile(), createTestProfile()],
-  ));
   group('getFollows', () {
     test(
       "should call api with proper args and return the result if the call is successful",
@@ -70,13 +63,13 @@ void main() {
       "should call api and return parsed result if the call is successful",
       () async {
         // arrange
-        final responseBody = json.encode(tMyProfile.toJson());
+        final responseBody = json.encode(tProfile.toJson());
         when(() => mockApiFacade.get(any(), any()))
             .thenAnswer((_) async => http.Response(responseBody, 200));
         // act
         final result = await sut.getMyProfile();
         // assert
-        expect(result, tMyProfile);
+        expect(result, tProfile);
         verify(() => mockApiFacade.get(getMyProfileEndpoint(), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
@@ -89,7 +82,7 @@ void main() {
 
   group('updateProfile', () {
     final tProfileUpdate = createTestProfileUpdate();
-    final tProfileJson = json.encode(tMyProfile.toJson());
+    final tProfileJson = json.encode(tProfile.toJson());
 
     test(
       "should call api and return the result if it was successful",
@@ -100,7 +93,7 @@ void main() {
         // act
         final result = await sut.updateProfile(tProfileUpdate);
         // assert
-        expect(result, tMyProfile);
+        expect(result, tProfile);
         final expectedRequestData = {'about': tProfileUpdate.newAbout!};
         final files = {'avatar': tProfileUpdate.newAvatar!};
         verify(() => mockApiFacade.sendFiles(

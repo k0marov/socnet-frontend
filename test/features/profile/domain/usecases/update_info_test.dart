@@ -1,10 +1,9 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
-import '../../shared.dart';
+import '../../../../core/helpers/base_tests.dart';
+import '../../../../core/helpers/helpers.dart';
 import 'shared_for_usecases.dart';
 
 void main() {
@@ -16,22 +15,14 @@ void main() {
     sut = UpdateProfile(mockProfileRepository);
   });
 
+  final newInfo = ProfileUpdate(newAbout: randomString(), newAvatar: createTestFile());
   test(
     "should forward the call to the repository",
-    () async {
-      // arrange
-      final tNewInfo = createTestProfileUpdate();
-      final tProfile =
-          MyProfile(profile: createTestProfile(), follows: const []);
-      when(() => mockProfileRepository.updateProfile(tNewInfo))
-          .thenAnswer((_) async => Right(tProfile));
-      // act
-      final result = await sut(ProfileUpdateParams(newInfo: tNewInfo));
-      // assert
-      result.fold(
-        (failure) => throw AssertionError(),
-        (profile) => expect(identical(profile, tProfile), true),
-      );
-    },
+    () async =>
+      baseUseCaseTest(
+            () => sut(ProfileUpdateParams(newInfo: newInfo)),
+            () => mockProfileRepository.updateProfile(newInfo),
+        mockProfileRepository,
+      )
   );
 }

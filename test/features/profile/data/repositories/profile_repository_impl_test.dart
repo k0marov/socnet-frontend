@@ -3,10 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
-import 'package:socnet/features/profile/data/models/my_profile_model.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/data/repositories/profile_repository_impl.dart';
-import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../shared.dart';
@@ -85,10 +83,9 @@ void main() {
       "should call datasource and return the result if it was successful",
       () async {
         // arrange
-        final tProfile =
-            MyProfile(profile: createTestProfile(), follows: const []);
+        final tProfile = createTestProfile();
         when(() => mockDataSource.getMyProfile())
-            .thenAnswer((_) async => MyProfileModel(tProfile));
+            .thenAnswer((_) async => ProfileModel(tProfile));
         // act
         final result = await sut.getMyProfile();
         // assert
@@ -105,13 +102,13 @@ void main() {
 
   group('updateProfile', () {
     final tProfileUpdate = createTestProfileUpdate();
-    final tProfile = MyProfile(profile: createTestProfile(), follows: const []);
+    final tProfile = createTestProfile();
     test(
       "should call the datasource and return the result if it was successful",
       () async {
         // arrange
         when(() => mockDataSource.updateProfile(tProfileUpdate))
-            .thenAnswer((_) async => MyProfileModel(tProfile));
+            .thenAnswer((_) async => ProfileModel(tProfile));
         // act
         final result = await sut.updateProfile(tProfileUpdate);
         // assert

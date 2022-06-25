@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/core/usecases/usecase.dart';
-import 'package:socnet/features/profile/domain/entities/my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,8 +20,7 @@ void main() {
     "should forward the call to the repository",
     () async {
       // arrange
-      final tProfile =
-          MyProfile(profile: createTestProfile(), follows: const []);
+      final tProfile = createTestProfile();
       when(() => mockProfileRepository.getMyProfile())
           .thenAnswer((_) async => Right(tProfile));
       // act

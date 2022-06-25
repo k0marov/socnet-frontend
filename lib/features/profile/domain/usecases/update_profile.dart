@@ -5,14 +5,14 @@ import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
-import '../entities/my_profile.dart';
+import '../entities/profile.dart';
 
-class UpdateProfile extends UseCase<MyProfile, ProfileUpdateParams> {
+class UpdateProfile extends UseCase<Profile, ProfileUpdateParams> {
   final ProfileRepository _repository;
   const UpdateProfile(this._repository);
 
   @override
-  Future<Either<Failure, MyProfile>> call(ProfileUpdateParams params) async {
+  Future<Either<Failure, Profile>> call(ProfileUpdateParams params) async {
     return _repository.updateProfile(params.newInfo);
   }
 }
