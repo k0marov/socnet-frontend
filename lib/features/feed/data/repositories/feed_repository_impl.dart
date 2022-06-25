@@ -13,7 +13,7 @@ class FeedRepositoryImpl implements FeedRepository {
   Future<Either<Failure, List<Post>>> getNextPosts(int amount) async {
     return exceptionToFailureCall(() async {
       final postsMapper = await _dataSource.getNextPosts(amount);
-      return postsMapper.toPosts();
+      return postsMapper.map((postModel) => postModel.toEntity()).toList();
     });
   }
 }
