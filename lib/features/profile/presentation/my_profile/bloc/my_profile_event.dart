@@ -16,3 +16,10 @@ class ProfileUpdateRequested extends MyProfileEvent {
 
   const ProfileUpdateRequested({required this.profileUpdate});
 }
+
+class AvatarUpdateRequested extends MyProfileEvent {
+  final AvatarFile newAvatar;
+  @override
+  List<Object> get props => [newAvatar];
+  const AvatarUpdateRequested({required this.newAvatar});
+}
