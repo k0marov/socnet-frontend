@@ -2,53 +2,53 @@ const apiHost = "instagram.skomarov.com";
 
 
 String registerEndpoint() {
-  return "";
+  return "/auth/register";
 }
 String loginEndpoint() {
-  return "";
+  return "/auth/login";
 }
 
 String addPostCommentEndpoint(String postId) {
-  return "";
+  return "/api/comments/?post_id=$postId";
 }
 String deleteCommentEndpoint(String commentId) {
-  return "";
+  throw UnimplementedError();
 }
 String getPostCommentsEndpoint(String postId) {
-  return "";
+  return "/api/comments/?post_id=$postId";
 }
 String toggleLikeOnCommentEndpoint(String commentId) {
-  return "";
+  return "/api/comments/$commentId/toggle-like";
 }
 
 String feedEndpoint(int postAmount) {
-  return "";
+  throw UnimplementedError();
 }
 
 String createPostEndpoint() {
-  return "";
+  return "/api/posts";
 }
 String deletePostEndpoint(String postId) {
-  return "";
+  return "/api/posts/$postId";
 }
 
 String getProfilePostsEndpoint(String profileId) {
-  return "";
+  return "/api/posts/?profile_id=$profileId";
 }
 String toggleLikeOnPostEndpoint(String postId) {
-  return "";
+  return "/api/posts/$postId/toggle-like";
 }
 
 String getFollowsEndpoint(String profileId) {
-  return "";
+  return "/api/profiles/$profileId/follows";
 }
 String getMyProfileEndpoint() {
-  return "";
+  return "/api/profiles/me";
 }
 String updateProfileEndpoint() {
-  return "";
+  return "/api/profiles/me";
 }
 String toggleFollowEndpoint(String targetProfileId) {
-  return "";
+  return "/api/profiles/$targetProfileId/toggle-follow";
 }
 
