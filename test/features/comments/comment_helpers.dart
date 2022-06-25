@@ -11,7 +11,7 @@ Comment createTestComment() => Comment(
       likes: randomInt(),
       isMine: randomBool(),
       isLiked: randomBool(),
-      createdAt: DateTime.now(),
+      createdAt: randomTime(),
     );
 
 NewCommentValue createTestNewComment() => NewCommentValue(

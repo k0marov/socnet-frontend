@@ -26,7 +26,7 @@ void main() {
     likes: 42,
     isMine: false,
     isLiked: true,
-    createdAt: DateTime.utc(1994, 11, 05, 13, 15, 30),
+    createdAt: DateTime.utc(2022, 6, 25, 7, 2, 59),
   );
 
   setUp(() {

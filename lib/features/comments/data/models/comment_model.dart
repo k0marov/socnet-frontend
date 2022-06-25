@@ -14,18 +14,18 @@ class CommentModel extends Equatable {
 
   CommentModel.fromJson(Map<String, dynamic> json)
       : this(Comment(
-          id: json['pk'].toString(),
+          id: json['id'],
           author: ProfileModel.fromJson(json['author']).toEntity(),
-          createdAt: DateTime.parse(json['created_at']),
+          createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000).toUtc(),
           text: json['text'],
           likes: json['likes'],
           isMine: json['is_mine'],
           isLiked: json['is_liked'],
         ));
   Map<String, dynamic> toJson() => {
-        'pk': int.parse(_entity.id),
+        'id': _entity.id,
         'author': ProfileModel(_entity.author).toJson(),
-        'created_at': _entity.createdAt.toIso8601String(),
+        'created_at': (_entity.createdAt.millisecondsSinceEpoch/1000).floor(),
         'text': _entity.text,
         'likes': _entity.likes,
         'is_liked': _entity.isLiked,

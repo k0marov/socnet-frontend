@@ -12,7 +12,7 @@ PostImage createTestPostImage() => PostImage(randomInt(), randomString());
 Post createTestPost() => Post(
       id: randomInt().toString(),
       author: createTestProfile(),
-      createdAt: DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch/1000000).floor() * 1000000).toUtc(), // accuracy to seconds
+      createdAt: randomTime(),
       images: [
         createTestPostImage(),
         createTestPostImage(),

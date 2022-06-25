@@ -1,5 +1,5 @@
 {
-    "pk": 123,
+    "id": "123",
     "author": {
         "id": "42",
         "username": "some-username",
@@ -10,7 +10,7 @@
         "is_mine": false,
         "is_followed": false
     },
-    "created_at": "1994-11-05T13:15:30.000Z",
+    "created_at": 1656140579,
     "text": "Some comment", 
     "likes": 42, 
     "is_liked": true, 
