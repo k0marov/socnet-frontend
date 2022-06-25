@@ -24,11 +24,6 @@ void main() {
     sut = ProfileNetworkDataSourceImpl(mockApiFacade);
   });
 
-  final tExceptionDetail = randomString();
-  final tExceptionBody = json.encode({
-    'detail': tExceptionDetail,
-  });
-
   final tProfile = ProfileModel(createTestProfile());
   group('getFollows', () {
     test(
@@ -88,21 +83,19 @@ void main() {
       "should call api and return the result if it was successful",
       () async {
         // arrange
-        when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
-            .thenAnswer((_) async => http.Response(tProfileJson, 200));
+        when(() => mockApiFacade.put(any(), any()))
+          .thenAnswer((_) async => http.Response(tProfileJson, 200));
         // act
         final result = await sut.updateProfile(tProfileUpdate);
         // assert
         expect(result, tProfile);
         final expectedRequestData = {'about': tProfileUpdate.newAbout!};
-        final files = {'avatar': tProfileUpdate.newAvatar!};
-        verify(() => mockApiFacade.sendFiles(
-            "PUT", getMyProfileEndpoint(), files, expectedRequestData));
+        verify(() => mockApiFacade.put(getMyProfileEndpoint(), expectedRequestData));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockApiFacade.sendFiles(any(), any(), any(), any())),
+      () => when(() => mockApiFacade.put(any(), any())),
       () => sut.updateProfile(tProfileUpdate),
     );
   });

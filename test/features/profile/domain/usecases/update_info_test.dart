@@ -4,6 +4,7 @@ import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
 import '../../../../core/helpers/base_tests.dart';
 import '../../../../core/helpers/helpers.dart';
+import '../../shared.dart';
 import 'shared_for_usecases.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
     sut = UpdateProfile(mockProfileRepository);
   });
 
-  final newInfo = ProfileUpdate(newAbout: randomString(), newAvatar: createTestFile());
+  final newInfo = createTestProfileUpdate();
   test(
     "should forward the call to the repository",
     () async =>

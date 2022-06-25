@@ -7,7 +7,6 @@ import '../../core/helpers/helpers.dart';
 
 ProfileUpdate createTestProfileUpdate() => ProfileUpdate(
       newAbout: randomString(),
-      newAvatar: fileFixture('avatar.png'),
     );
 
 Profile createTestProfile() => Profile(

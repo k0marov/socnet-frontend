@@ -62,10 +62,9 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<ProfileModel> updateProfile(ProfileUpdate update) async {
     return exceptionConverterCall(() async {
-      final files = update.newAvatar != null ? {'avatar': update.newAvatar!} : <String, SimpleFile>{};
       final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
 
-      final response = await _apiFacade.sendFiles("PUT", updateProfileEndpoint(), files, data);
+      final response = await _apiFacade.put(updateProfileEndpoint(), data);
       checkStatusCode(response);
 
       final profileJson = json.decode(response.body);
