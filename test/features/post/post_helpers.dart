@@ -1,0 +1,26 @@
+import 'package:socnet/core/mappers/url_mapper.dart';
+import 'package:socnet/core/simple_file/simple_file.dart';
+import 'package:socnet/features/posts/domain/entities/post.dart';
+import 'package:socnet/features/posts/domain/values/new_post_value.dart';
+
+import '../../core/helpers/helpers.dart';
+import '../profile/shared.dart';
+
+Post createTestPost() => Post(
+      id: randomInt().toString(),
+      author: createTestProfile(),
+      createdAt: DateTime.now(),
+      images: [
+        URLMapper().shortToLong(randomString()),
+        URLMapper().shortToLong(randomString())
+      ],
+      text: randomString(),
+      likes: randomInt(),
+      isLiked: randomBool(),
+      isMine: randomBool(),
+    );
+
+NewPostValue createTestNewPost() => NewPostValue(
+      images: [SimpleFile(path: randomString(), filename: randomString())],
+      text: randomString(),
+    );
