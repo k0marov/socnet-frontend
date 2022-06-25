@@ -105,11 +105,12 @@ void main() {
   group("updateAvatar", () {
     final newAvatar = createTestFile();
     final newUrl = randomString();
+    final response = json.encode({'avatar_url': newUrl});
     test("should call api and return the result if it was successful",
         () async {
       // arrange
       when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
-          .thenAnswer((_) async => http.Response(newUrl, 200));
+          .thenAnswer((_) async => http.Response(response, 200));
       // act
       final result = await sut.updateAvatar(newAvatar);
       // assert

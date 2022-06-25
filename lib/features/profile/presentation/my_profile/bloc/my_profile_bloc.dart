@@ -13,8 +13,6 @@ import '../../../domain/values/avatar.dart';
 part 'my_profile_event.dart';
 part 'my_profile_state.dart';
 
-// TODO: create a bloc that will store current user's follows and handle the ToggleFollow
-
 class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
   final GetMyProfile _getMyProfile;
   final UpdateProfile _updateInfo;

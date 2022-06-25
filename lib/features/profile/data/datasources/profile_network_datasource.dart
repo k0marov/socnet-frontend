@@ -96,7 +96,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
       final response =
           await _apiFacade.sendFiles("PUT", updateAvatarEndpoint(), files, {});
       checkStatusCode(response);
-      return response.body;
+      return json.decode(response.body)['avatar_url'];
     });
   }
 }

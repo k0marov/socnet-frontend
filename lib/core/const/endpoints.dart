@@ -1,4 +1,4 @@
-const apiHost = "instagram.skomarov.com";
+const apiHost = "socio.skomarov.com";
 
 String registerEndpoint() {
   return "/auth/register";
