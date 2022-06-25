@@ -1,12 +1,12 @@
+import 'package:dartz/dartz.dart';
 import 'package:socnet/core/error/exception_to_failure.dart';
+import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
-import 'package:socnet/core/error/failures.dart';
-import 'package:dartz/dartz.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
+import 'package:socnet/features/profile/domain/values/avatar.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
-
 
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileNetworkDataSource _dataSource;
@@ -14,11 +14,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<Failure, List<Profile>>> getFollows(Profile profile) async {
-    return exceptionToFailureCall(
-        () => _dataSource.getFollows(ProfileModel(profile))
-            .then((modelList) => modelList.map((model) => model.toEntity())
-            .toList())
-    );
+    return exceptionToFailureCall(() => _dataSource
+        .getFollows(ProfileModel(profile))
+        .then((modelList) =>
+            modelList.map((model) => model.toEntity()).toList()));
   }
 
   @override
@@ -40,4 +39,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
         () => _dataSource.toggleFollow(ProfileModel(profile)));
   }
 
+  @override
+  Future<Either<Failure, AvatarURL>> updateAvatar(AvatarFile newAvatar) async {
+    return exceptionToFailureCall(() => _dataSource.updateAvatar(newAvatar));
+  }
 }

@@ -4,10 +4,10 @@ import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
+import 'package:socnet/features/profile/domain/values/avatar.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
 import '../../../../core/error/helpers.dart';
-import '../../../../core/simple_file/simple_file.dart';
 
 abstract class ProfileNetworkDataSource {
   /// throws:
@@ -29,6 +29,11 @@ abstract class ProfileNetworkDataSource {
   /// [NoTokenException]
   /// [NetworkException]
   Future<ProfileModel> updateProfile(ProfileUpdate update);
+
+  /// throws:
+  /// [NoTokenException]
+  /// [NetworkException]
+  Future<AvatarURL> updateAvatar(AvatarFile newAvatar);
 }
 
 class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
@@ -38,7 +43,8 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<List<ProfileModel>> getFollows(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
+      final response =
+          await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
 
       final profiles = json.decode(response.body)['profiles'];
@@ -62,7 +68,9 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<ProfileModel> updateProfile(ProfileUpdate update) async {
     return exceptionConverterCall(() async {
-      final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
+      final data = update.newAbout != null
+          ? {'about': update.newAbout!}
+          : <String, String>{};
 
       final response = await _apiFacade.put(updateProfileEndpoint(), data);
       checkStatusCode(response);
@@ -75,8 +83,15 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<void> toggleFollow(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.post(toggleFollowEndpoint(profile.toEntity().id), {});
+      final response = await _apiFacade
+          .post(toggleFollowEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
     });
+  }
+
+  @override
+  Future<AvatarURL> updateAvatar(AvatarFile newAvatar) {
+    // TODO: implement updateAvatar
+    throw UnimplementedError();
   }
 }
