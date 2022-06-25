@@ -6,6 +6,7 @@ import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
 import '../../../../core/error/helpers.dart';
+import '../../../../core/simple_file/simple_file.dart';
 import '../models/my_profile_model.dart';
 
 abstract class ProfileNetworkDataSource {
@@ -66,8 +67,8 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
     return exceptionConverterCall(() async {
       const endpoint = "profiles/me/";
 
-      final files = {'avatar': update.newAvatar};
-      final data = {'about': update.newAbout};
+      final files = update.newAvatar != null ? {'avatar': update.newAvatar!} : <String, SimpleFile>{};
+      final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
 
       final response = await _apiFacade.sendFiles("PUT", endpoint, files, data);
       checkStatusCode(response);

@@ -52,25 +52,21 @@ class AuthenticatedAPIFacade {
   Future<http.Response> sendFiles(
     String method,
     String endpoint,
-    Map<String, SimpleFile?> files,
-    Map<String, String?> data,
+    Map<String, SimpleFile> files,
+    Map<String, String> data,
   ) async {
     final headers = _getHeaders(_obtainTokenOrThrow().token);
     final request = http.MultipartRequest(method, Uri.https(apiHost, endpoint));
 
     for (final fileEntry in files.entries) {
-      final path = fileEntry.value?.path;
-      if (path == null) continue;
-      final fileBytes = await File(path).readAsBytes();
+      final fileBytes = await File(fileEntry.value.path).readAsBytes();
       request.files.add(http.MultipartFile.fromBytes(fileEntry.key, fileBytes,
           filename: 'file'));
     }
 
     for (final fieldEntry in data.entries) {
       final value = fieldEntry.value;
-      if (value != null) {
-        request.fields[fieldEntry.key] = value;
-      }
+      request.fields[fieldEntry.key] = value;
     }
 
     for (final header in headers.entries) {
@@ -82,9 +78,10 @@ class AuthenticatedAPIFacade {
   }
 
   Token _obtainTokenOrThrow() {
-    try {
-      return _token!;
-    } catch (e) {
+    final token = _token;
+    if (token != null) {
+       return token;
+    } else {
       throw NoTokenException();
     }
   }

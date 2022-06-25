@@ -132,7 +132,7 @@ void main() {
         final result = await sut.updateProfile(tProfileUpdate);
         // assert
         expect(result, tMyProfile);
-        final expectedRequestData = {'about': tProfileUpdate.newAbout};
+        final expectedRequestData = {'about': tProfileUpdate.newAbout!};
         final files = {'avatar': tProfileUpdate.newAvatar!};
         verify(() => mockApiFacade.sendFiles(
             "PUT", "profiles/me/", files, expectedRequestData));
