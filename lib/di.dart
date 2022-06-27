@@ -20,6 +20,7 @@ import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
+import 'package:socnet/features/profile/presentation/profile/bloc/profile_bloc.dart';
 
 import 'core/facades/authenticated_api_facade.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -61,6 +62,8 @@ Future initialize() async {
   sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImpl(sl()));
   // blocs
   sl.registerFactory(() => MyProfileBloc(sl(), sl(), sl()));
+  // yes, this is a singleton, because it is not actually a bloc, but a wrapper for bloc creator
+  sl.registerLazySingleton(() => ProfileBlocCreator(sl()));
 
   //! External
   final sharedPrefs = await SharedPreferences.getInstance();
