@@ -45,12 +45,15 @@ void main() {
         // assert
         expect(result, tToken);
         final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
-        verify(() => mockHttpClient.post(Uri.https(endpoints.apiHost, endpoint), body: {
-              'username': tUsername,
-              'password': tPassword,
-            }, headers: {
-              'Accept': 'application/json'
-            }));
+        final wantBody = {
+          'username': tUsername,
+          'password': tPassword,
+        };
+        verify(() => mockHttpClient.post(
+              Uri.https(endpoints.apiHost, endpoint),
+              body: json.encode(wantBody),
+              headers: {'Accept': 'application/json'},
+            ));
         verifyNoMoreInteractions(mockHttpClient);
       },
     );

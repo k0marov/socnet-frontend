@@ -1,9 +1,7 @@
-import 'package:flutter_bcrypt/flutter_bcrypt.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socnet/auth_gate/bloc/auth_gate_bloc.dart';
-import 'package:socnet/features/auth/data/datasources/hasher_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/features/auth/domain/repositories/auth_repository.dart';
@@ -40,11 +38,8 @@ Future initialize() async {
   // datasources
   sl.registerLazySingleton<LocalTokenDataSource>(() => LocalTokenDataSourceImpl(sl()));
   sl.registerLazySingleton<NetworkAuthDataSource>(() => NetworkAuthDataSourceImpl(sl()));
-  sl.registerLazySingleton<HasherDataSource>(
-    () => HasherDataSourceImpl(FlutterBcrypt.salt, FlutterBcrypt.hashPw),
-  );
   // repositories
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl(), sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl()));
 
   // blocs
   // yes, this is a singleton, because it is not actually a bloc, but a wrapper for bloc creator

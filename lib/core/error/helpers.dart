@@ -1,5 +1,6 @@
-import 'exceptions.dart';
 import 'package:http/http.dart' as http;
+
+import 'exceptions.dart';
 
 /// protects from unknown exceptions by substituting them for NetworkException.unknown()
 /// should be used in datasources

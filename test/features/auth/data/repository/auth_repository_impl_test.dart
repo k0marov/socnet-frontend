@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/features/auth/data/datasources/hasher_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
@@ -16,22 +15,17 @@ class MockLocalTokenDataSource extends Mock implements LocalTokenDataSource {}
 
 class MockNetworkAuthDataSource extends Mock implements NetworkAuthDataSource {}
 
-class MockHasherDataSource extends Mock implements HasherDataSource {}
-
 void main() {
   late MockLocalTokenDataSource mockLocalTokenDataSource;
   late MockNetworkAuthDataSource mockNetworkAuthDataSource;
-  late MockHasherDataSource mockHasherDataSource;
   late AuthRepositoryImpl sut;
 
   setUp(() {
     mockLocalTokenDataSource = MockLocalTokenDataSource();
     mockNetworkAuthDataSource = MockNetworkAuthDataSource();
-    mockHasherDataSource = MockHasherDataSource();
     sut = AuthRepositoryImpl(
       mockLocalTokenDataSource,
       mockNetworkAuthDataSource,
-      mockHasherDataSource,
     );
     registerFallbackValue(const TokenModel(Token(token: "")));
   });
@@ -79,14 +73,12 @@ void main() {
   void sharedLoginAndRegister({required bool isLogin}) {
     const tUsername = "username";
     const tPassword = "password";
-    const tPassHash = "hashed_password";
     const tToken = Token(token: "42");
     const tTokenModel = TokenModel(tToken);
     test(
       "should hash the password, call the network datasource, then store token in cache and return it, if everything is successful",
       () async {
         // arrange
-        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
           when(() => mockNetworkAuthDataSource.login(any(), any()))
               .thenAnswer((_) async => tTokenModel);
@@ -101,11 +93,10 @@ void main() {
             : await sut.register(tUsername, tPassword);
         // assert
         expect(result, const Right(tToken));
-        verify(() => mockHasherDataSource.hash(tPassword));
         if (isLogin) {
-          verify(() => mockNetworkAuthDataSource.login(tUsername, tPassHash));
+          verify(() => mockNetworkAuthDataSource.login(tUsername, tPassword));
         } else {
-          verify(() => mockNetworkAuthDataSource.register(tUsername, tPassHash));
+          verify(() => mockNetworkAuthDataSource.register(tUsername, tPassword));
         }
         verify(() => mockLocalTokenDataSource.storeToken(tTokenModel));
         verifyNoMoreInteractions(mockNetworkAuthDataSource);
@@ -113,24 +104,10 @@ void main() {
       },
     );
     test(
-      "should return hash failure if hasher datasource throws HashingException",
-      () async {
-        // arrange
-        when(() => mockHasherDataSource.hash(any())).thenThrow(HashingException());
-        // act
-        final result = isLogin
-            ? await sut.login(tUsername, tPassword)
-            : await sut.register(tUsername, tPassword);
-        // assert
-        expect(result, const Left(HashingFailure()));
-      },
-    );
-    test(
       "should return NetworkFailure if network datasource throws NetworkException",
       () async {
         // arrange
         final tException = randomNetworkException();
-        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
           when(() => mockNetworkAuthDataSource.login(any(), any())).thenThrow(tException);
         } else {
@@ -149,7 +126,6 @@ void main() {
       "should return CacheFailure if local datasource throws CacheException",
       () async {
         // arrange
-        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
           when(() => mockNetworkAuthDataSource.login(any(), any()))
               .thenAnswer((_) async => tTokenModel);

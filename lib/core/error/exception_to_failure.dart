@@ -13,7 +13,8 @@ Future<Either<Failure, T>> exceptionToFailureCall<T>(Future<T> Function() call) 
   } on HashingException {
     return const Left(HashingFailure());
   } catch (e) {
-    final failure = e is NetworkException ? NetworkFailure(e) : NetworkFailure.unknown;
+    final failure =
+        e is NetworkException ? NetworkFailure(e) : NetworkFailure(NetworkException(-1, null));
     return Left(failure);
   }
 }

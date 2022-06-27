@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:socnet/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
-import 'package:http/http.dart' as http;
 
 abstract class NetworkAuthDataSource {
   /// Logins using the api
@@ -31,8 +31,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
     return _loginOrRegister(username, password, endpoints.registerEndpoint());
   }
 
-  Future<TokenModel> _loginOrRegister(
-      String username, String password, String endpoint) async {
+  Future<TokenModel> _loginOrRegister(String username, String password, String endpoint) async {
     try {
       final uri = Uri.https(endpoints.apiHost, endpoint);
       final requestBody = {
@@ -43,7 +42,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
           headers: {
             'Accept': 'application/json',
           },
-          body: requestBody);
+          body: json.encode(requestBody));
       if (apiResponse.statusCode != 200) {
         throw NetworkException.fromApiResponse(
           apiResponse.statusCode,

@@ -6,16 +6,14 @@ import 'package:socnet/features/auth/data/datasources/network_auth_datasource.da
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/hasher_datasource.dart';
 import '../datasources/local_token_datasource.dart';
 import '../models/token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final LocalTokenDataSource _localDataSource;
   final NetworkAuthDataSource _networkDataSource;
-  final HasherDataSource _hasherDataSource;
 
-  AuthRepositoryImpl(this._localDataSource, this._networkDataSource, this._hasherDataSource);
+  AuthRepositoryImpl(this._localDataSource, this._networkDataSource);
 
   @override
   Future<Either<Failure, Token>> getToken() async {
@@ -34,7 +32,7 @@ class AuthRepositoryImpl implements AuthRepository {
     return _sharedLoginAndRegister(
       () async => _networkDataSource.login(
         username,
-        await _hasherDataSource.hash(password),
+        password,
       ),
     );
   }
@@ -44,7 +42,7 @@ class AuthRepositoryImpl implements AuthRepository {
     return _sharedLoginAndRegister(
       () async => _networkDataSource.register(
         username,
-        await _hasherDataSource.hash(password),
+        password,
       ),
     );
   }
