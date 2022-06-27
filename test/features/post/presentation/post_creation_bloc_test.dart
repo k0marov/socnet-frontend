@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/posts/presentation/post_creation_bloc/post_creation_bloc.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../core/helpers/helpers.dart';
 import '../post_helpers.dart';
@@ -23,8 +23,7 @@ void main() {
   test(
     "should have state = DefaultCreationState",
     () async {
-      expect(sut.state,
-          const DefaultCreationState(images: [], currentSavedText: ""));
+      expect(sut.state, const DefaultCreationState(images: [], currentSavedText: ""));
     },
   );
 
@@ -58,8 +57,7 @@ void main() {
         final tImage = createTestFile();
         final tInitialImages = [createTestFile(), createTestFile()];
         final tText = randomString();
-        sut.emit(DefaultCreationState(
-            images: tInitialImages, currentSavedText: tText));
+        sut.emit(DefaultCreationState(images: tInitialImages, currentSavedText: tText));
         // assert later
         final expectedState = DefaultCreationState(
           images: tInitialImages + [tImage],
@@ -78,11 +76,7 @@ void main() {
       "should update state with image removed if state is not CreationSuccessful",
       () async {
         // arrange
-        final tInitialImages = [
-          createTestFile(),
-          createTestFile(),
-          createTestFile()
-        ];
+        final tInitialImages = [createTestFile(), createTestFile(), createTestFile()];
         final tImageToDelete = tInitialImages[1];
         final tText = randomString();
         sut.emit(DefaultCreationState(
@@ -114,8 +108,8 @@ void main() {
           images: tImages,
           currentSavedText: "asdf",
         ));
-        when(() => mockCreatePost(PostCreateParams(
-                newPost: NewPostValue(images: tImages, text: tText))))
+        when(() => mockCreatePost(
+                PostCreateParams(newPost: NewPostValue(images: tImages, text: tText))))
             .thenAnswer((_) async => Right(createTestPost()));
         // assert later
         expect(sut.stream, emitsInOrder([CreationSuccessful()]));
@@ -127,13 +121,13 @@ void main() {
       "should set state to CreationFailed if the usecase call was unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         sut.emit(DefaultCreationState(
           images: tImages,
           currentSavedText: "asdf",
         ));
-        when(() => mockCreatePost(PostCreateParams(
-                newPost: NewPostValue(images: tImages, text: tText))))
+        when(() => mockCreatePost(
+                PostCreateParams(newPost: NewPostValue(images: tImages, text: tText))))
             .thenAnswer((_) async => Left(tFailure));
         // assert later
         expect(

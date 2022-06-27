@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/feed/domain/usecases/get_next_feed_posts.dart';
 import 'package:socnet/features/feed/presentation/bloc/feed_bloc.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../core/helpers/helpers.dart';
 import '../../post/post_helpers.dart';
@@ -95,7 +95,7 @@ void main() {
       "should set state to [Loading, Failure] if usecase call is unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         emitLoaded();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         // assert later
@@ -168,7 +168,7 @@ void main() {
       "should set state to [Loading, Failure] if usecase call is unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         emitLoaded();
         // assert later

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/comments/domain/entities/comment.dart';
 import 'package:socnet/features/comments/domain/usecases/add_comment.dart';
@@ -10,7 +11,6 @@ import 'package:socnet/features/comments/domain/usecases/get_post_comments.dart'
 import 'package:socnet/features/comments/domain/usecases/toggle_like_on_comment.dart';
 import 'package:socnet/features/comments/presentation/comments_bloc/comments_bloc.dart';
 import 'package:socnet/features/posts/domain/usecases/post_params.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../core/helpers/helpers.dart';
 import '../../post/post_helpers.dart';
@@ -36,8 +36,7 @@ void main() {
     mockAddComment = MockAddComment();
     mockGetComments = MockGetComments();
     mockToggleLike = MockToggleLikeOnComments();
-    sut = CommentsBloc(
-        mockAddComment, mockDeleteComment, mockGetComments, mockToggleLike);
+    sut = CommentsBloc(mockAddComment, mockDeleteComment, mockGetComments, mockToggleLike);
   });
 
   test(
@@ -56,13 +55,8 @@ void main() {
   }
 
   final tPost = createTestPost();
-  final tComments = [
-    createTestComment(),
-    createTestComment(),
-    createTestComment()
-  ];
-  void emitLoaded() =>
-      sut.emit(CommentsLoaded(post: tPost, comments: tComments));
+  final tComments = [createTestComment(), createTestComment(), createTestComment()];
+  void emitLoaded() => sut.emit(CommentsLoaded(post: tPost, comments: tComments));
   group('GetComments', () {
     Future<Either<Failure, List<Comment>>> useCaseCall() =>
         mockGetComments(PostParams(post: tPost));
@@ -115,7 +109,7 @@ void main() {
       "should set state to [Loading, LoadingFailure] if usecase call was unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         // assert
         expect(
@@ -188,15 +182,14 @@ void main() {
       "should set state to LoadedFailure if usecase call is unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         emitLoaded();
         // assert later
         expect(
             sut.stream,
             emitsInOrder([
-              CommentsLoadedFailure(
-                  failure: tFailure, post: tPost, comments: tComments),
+              CommentsLoadedFailure(failure: tFailure, post: tPost, comments: tComments),
             ]));
         // act
         act();
@@ -262,7 +255,7 @@ void main() {
       "should set state to LoadedFailure if usecase call is unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         emitLoaded();
         // assert
@@ -327,9 +320,7 @@ void main() {
         expect(
             sut.stream,
             emitsInOrder([
-              CommentsLoaded(
-                  post: tPost,
-                  comments: [tComments[0], tComments[1], tLikedComment]),
+              CommentsLoaded(post: tPost, comments: [tComments[0], tComments[1], tLikedComment]),
             ]));
         // act
         act();
@@ -339,15 +330,14 @@ void main() {
       "should set state to LoadedFailure if usecase call is unsuccessful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         emitLoaded();
         // assert
         expect(
             sut.stream,
             emitsInOrder([
-              CommentsLoadedFailure(
-                  failure: tFailure, post: tPost, comments: tComments),
+              CommentsLoadedFailure(failure: tFailure, post: tPost, comments: tComments),
             ]));
         // act
         act();

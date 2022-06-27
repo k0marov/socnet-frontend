@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
 import 'package:socnet/features/profile/domain/usecases/toggle_follow.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../shared.dart';
 
@@ -23,10 +23,9 @@ void main() {
     "should call usecase and return the result",
     () async {
       // arrange
-      const tResult = Left(NetworkFailure.unknown());
+      const tResult = Left(NetworkFailure.unknown);
       final tProfile = createTestProfile();
-      when(() => mockProfileRepository.toggleFollow(tProfile))
-          .thenAnswer((_) async => tResult);
+      when(() => mockProfileRepository.toggleFollow(tProfile)).thenAnswer((_) async => tResult);
       // act
       final result = await sut(ProfileParams(profile: tProfile));
       // assert

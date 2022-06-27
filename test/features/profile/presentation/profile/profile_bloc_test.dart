@@ -7,6 +7,7 @@ import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
 import 'package:socnet/features/profile/domain/usecases/toggle_follow.dart';
 import 'package:socnet/features/profile/presentation/profile/bloc/profile_bloc.dart';
 
+import '../../../../core/helpers/helpers.dart';
 import '../../shared.dart';
 
 class MockToggleFollow extends Mock implements ToggleFollow {}
@@ -51,9 +52,9 @@ void main() {
       setUpUseCaseAndAct(const Right(null));
     });
     test("should set state to Loaded with failure if usecase call throws", () async {
-      const tFailure = NetworkFailure(4242, "Some detail");
+      final tFailure = randomFailure();
       expect(sut.stream, emitsInOrder([ProfileLoaded(tProfile, tFailure)]));
-      setUpUseCaseAndAct(const Left(tFailure));
+      setUpUseCaseAndAct(Left(tFailure));
     });
   });
 }

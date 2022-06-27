@@ -1,10 +1,9 @@
+import 'package:dartz/dartz.dart';
+import 'package:socnet/core/error/exception_to_failure.dart';
 import 'package:socnet/core/error/exceptions.dart';
+import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
-
-import 'package:socnet/core/error/failures.dart';
-
-import 'package:dartz/dartz.dart';
 
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/local_token_datasource.dart';
@@ -30,28 +29,21 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Token>> login(String username, String password) async {
-    return _sharedLoginAndRegister(
-        () => _networkDataSource.login(username, password));
+    return _sharedLoginAndRegister(() => _networkDataSource.login(username, password));
   }
 
   @override
-  Future<Either<Failure, Token>> register(
-      String username, String password) async {
-    return _sharedLoginAndRegister(
-        () => _networkDataSource.register(username, password));
+  Future<Either<Failure, Token>> register(String username, String password) async {
+    return _sharedLoginAndRegister(() => _networkDataSource.register(username, password));
   }
 
   Future<Either<Failure, Token>> _sharedLoginAndRegister(
       Future<TokenModel> Function() networkLoginOrRegister) async {
-    try {
+    return exceptionToFailureCall(() async {
       final authToken = await networkLoginOrRegister();
       _localDataSource.storeToken(authToken);
-      return Right(authToken.toEntity());
-    } on CacheException {
-      return Left(CacheFailure());
-    } catch (e) {
-      return Left(NetworkFailure.fromException(e as NetworkException));
-    }
+      return authToken.toEntity();
+    });
   }
 
   @override

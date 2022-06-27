@@ -38,11 +38,10 @@ void main() {
     );
   });
   final tProfile = createTestProfile();
-  const tFailure = NetworkFailure(4242, "Some detail");
+  final tFailure = randomFailure();
 
   setUpAll(() {
-    registerFallbackValue(
-        ProfileUpdateParams(newInfo: createTestProfileUpdate()));
+    registerFallbackValue(ProfileUpdateParams(newInfo: createTestProfileUpdate()));
     registerFallbackValue(ProfileParams(profile: tProfile));
   });
 
@@ -56,8 +55,7 @@ void main() {
 
   group('ProfileLoadRequested', () {
     void setupUseCaseAndAct(Either<Failure, Profile> useCaseReturn) {
-      when(() => mockGetMyProfile(NoParams()))
-          .thenAnswer((_) async => useCaseReturn);
+      when(() => mockGetMyProfile(NoParams())).thenAnswer((_) async => useCaseReturn);
       sut.add(ProfileLoadRequested());
     }
 
@@ -93,9 +91,9 @@ void main() {
             sut.stream,
             emitsInOrder([
               const MyProfileLoading(),
-              const MyProfileFailure(tFailure),
+              MyProfileFailure(tFailure),
             ]));
-        setupUseCaseAndAct(const Left(tFailure));
+        setupUseCaseAndAct(Left(tFailure));
       },
     );
   });
@@ -126,8 +124,7 @@ void main() {
         // arrange
         sut.emit(MyProfileLoaded(tProfile));
         setUpUseCaseAndAct(Right(tProfile));
-        await untilCalled(
-            () => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo)));
+        await untilCalled(() => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo)));
         verify(() => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo)));
         verifyNoMoreInteractions(mockUpdateInfo);
         verifyZeroInteractions(mockGetMyProfile);
@@ -148,7 +145,7 @@ void main() {
         sut.emit(MyProfileLoaded(tProfile));
         // assert later
         expect(sut.stream, emitsInOrder([MyProfileLoaded(tProfile, tFailure)]));
-        setUpUseCaseAndAct(const Left(tFailure));
+        setUpUseCaseAndAct(Left(tFailure));
       },
     );
   });
@@ -187,23 +184,20 @@ void main() {
         // arrange
         sut.emit(MyProfileLoaded(tProfile));
         setUpUseCaseAndAct(Right(tUrl));
-        await untilCalled(
-            () => mockUpdateAvatar(AvatarParams(newAvatar: tAvatar)));
+        await untilCalled(() => mockUpdateAvatar(AvatarParams(newAvatar: tAvatar)));
         verifyZeroInteractions(mockGetMyProfile);
         verifyZeroInteractions(mockUpdateInfo);
       },
     );
-    test("should emit Loaded when usecase call compeletes successfuly",
-        () async {
+    test("should emit Loaded when usecase call compeletes successfuly", () async {
       sut.emit(MyProfileLoaded(tProfile));
       expect(sut.stream, emitsInOrder([MyProfileLoaded(updatedProfile)]));
       setUpUseCaseAndAct(Right(tUrl));
     });
-    test("should emit Loaded with error and previous profile if usecase throws",
-        () async {
+    test("should emit Loaded with error and previous profile if usecase throws", () async {
       sut.emit(MyProfileLoaded(tProfile));
       expect(sut.stream, emitsInOrder([MyProfileLoaded(tProfile, tFailure)]));
-      setUpUseCaseAndAct(const Left(tFailure));
+      setUpUseCaseAndAct(Left(tFailure));
     });
   });
 }

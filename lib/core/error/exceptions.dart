@@ -6,15 +6,34 @@ class NoTokenException implements Exception {}
 
 class CacheException implements Exception {}
 
+class ClientError extends Equatable {
+  final String detailCode;
+  final String readableDetail;
+  @override
+  List get props => [detailCode, readableDetail];
+
+  const ClientError(this.detailCode, this.readableDetail);
+
+  ClientError.fromJson(Map<String, dynamic> json)
+      : this(
+          json['detail_code'] as String,
+          json['readable_detail'] as String,
+        );
+  Map<String, dynamic> toJson() => {
+        'detail_code': detailCode,
+        'readable_detail': readableDetail,
+      };
+}
+
 /// statusCode == -1 means "Unknown, probably no internet connection"
 class NetworkException extends Equatable implements Exception {
   final int statusCode;
-  final String? detail;
+  final ClientError? clientError;
 
   @override
-  List get props => [statusCode, detail];
+  List get props => [statusCode, clientError];
 
-  const NetworkException(this.statusCode, this.detail);
+  const NetworkException(this.statusCode, this.clientError);
   const NetworkException.unknown() : this(-1, null);
 
   NetworkException.fromApiResponse(int statusCode, String jsonBody)
@@ -23,9 +42,9 @@ class NetworkException extends Equatable implements Exception {
           _safeJsonDecode(jsonBody),
         );
 
-  static String? _safeJsonDecode(String jsonBody) {
+  static ClientError? _safeJsonDecode(String jsonBody) {
     try {
-      return json.decode(jsonBody)['detail'];
+      return ClientError.fromJson(json.decode(jsonBody));
     } catch (e) {
       return null;
     }

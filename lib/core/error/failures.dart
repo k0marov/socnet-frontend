@@ -11,19 +11,13 @@ class NoTokenFailure extends Failure {}
 
 /// statusCode == -1 means "Unknown, probably no internet connection"
 class NetworkFailure extends Failure {
-  final int statusCode;
-  final String? detail;
+  final NetworkException exception;
 
   @override
-  List get props => [statusCode, detail];
+  List get props => [exception];
 
-  const NetworkFailure(this.statusCode, this.detail);
-  const NetworkFailure.unknown() : this(-1, null);
-  NetworkFailure.fromException(NetworkException e)
-      : this(
-          e.statusCode,
-          e.detail,
-        );
+  const NetworkFailure(this.exception);
+  static const unknown = NetworkFailure(NetworkException(-1, null));
 }
 
 class CacheFailure extends Failure {}

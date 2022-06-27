@@ -1,13 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
-import 'package:http/http.dart' as http;
 import 'package:socnet/features/auth/data/models/token_model.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../../core/fixtures/fixture_reader.dart';
+import '../../../../core/helpers/helpers.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 
@@ -33,17 +36,15 @@ void main() {
       () async {
         // arrange
         when(() => mockHttpClient.post(any(),
-                headers: any(named: "headers"), body: any(named: "body")))
-            .thenAnswer((_) async => http.Response(tTokenResponse, 200));
+            headers: any(named: "headers"),
+            body: any(named: "body"))).thenAnswer((_) async => http.Response(tTokenResponse, 200));
         // act
         final result = isLogin
             ? await sut.login(tUsername, tPassword)
             : await sut.register(tUsername, tPassword);
         // assert
         expect(result, tToken);
-        final endpoint = isLogin
-            ? endpoints.loginEndpoint()
-            : endpoints.registerEndpoint();
+        final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
         verify(() => mockHttpClient.post(Uri.https(endpoints.apiHost, endpoint), body: {
               'username': tUsername,
               'password': tPassword,
@@ -57,17 +58,19 @@ void main() {
       "should throw NetworkException if api returned status code != 200",
       () async {
         // arrange
+        const tStatusCode = 403;
+        final tClientError = ClientError(randomString(), randomString());
         when(() => mockHttpClient.post(
-                  any(),
-                  headers: any(named: "headers"),
-                  body: any(named: "body"),
-                ))
-            .thenAnswer(
-                (_) async => http.Response('{"detail": "Something."}', 400));
+              any(),
+              headers: any(named: "headers"),
+              body: any(named: "body"),
+            )).thenAnswer((_) async => http.Response(
+              json.encode(tClientError.toJson()),
+              tStatusCode,
+            ));
         // assert
-        const expectedException = NetworkException(400, "Something.");
-        expect(() => sut.login(tUsername, tPassword),
-            throwsA(equals(expectedException)));
+        final expectedException = NetworkException(tStatusCode, tClientError);
+        expect(() => sut.login(tUsername, tPassword), throwsA(equals(expectedException)));
       },
     );
     test(
@@ -80,8 +83,8 @@ void main() {
               headers: any(named: "headers"),
             )).thenThrow(Exception());
         // assert
-        expect(() => sut.login(tUsername, tPassword),
-            throwsA(const TypeMatcher<NetworkException>()));
+        expect(
+            () => sut.login(tUsername, tPassword), throwsA(const TypeMatcher<NetworkException>()));
       },
     );
   }

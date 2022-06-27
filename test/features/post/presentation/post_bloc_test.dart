@@ -1,13 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
 import 'package:socnet/features/posts/domain/usecases/delete_post.dart';
 import 'package:socnet/features/posts/domain/usecases/post_params.dart';
 import 'package:socnet/features/posts/domain/usecases/toggle_like.dart';
 import 'package:socnet/features/posts/presentation/post_bloc/post_bloc.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../core/helpers/helpers.dart';
 import '../post_helpers.dart';
@@ -38,8 +38,7 @@ void main() {
   );
 
   group('PostDeletedEvent', () {
-    Future<Either<Failure, void>> useCaseCall() =>
-        mockDeletePost(PostParams(post: tPost));
+    Future<Either<Failure, void>> useCaseCall() => mockDeletePost(PostParams(post: tPost));
     test(
       "should do nothing if state is not PostLoaded",
       () async {
@@ -90,11 +89,10 @@ void main() {
       "should set state to [Deleting, Failure] if usecase call is not successful",
       () async {
         // arrange
-        final tFailure = NetworkFailure(4242, randomString());
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         // assert later
-        expect(sut.stream,
-            emitsInOrder([PostDeleting(tPost), PostFailure(tPost, tFailure)]));
+        expect(sut.stream, emitsInOrder([PostDeleting(tPost), PostFailure(tPost, tFailure)]));
         // act
         sut.add(PostDeletedEvent());
       },
@@ -102,8 +100,7 @@ void main() {
   });
   group('LikeToggled', () {
     final tPostLiked = createTestPost();
-    Future<Either<Failure, Post>> useCaseCall() =>
-        mockToggleLike(PostParams(post: tPost));
+    Future<Either<Failure, Post>> useCaseCall() => mockToggleLike(PostParams(post: tPost));
     test(
       "should do nothing if state is not PostLoaded",
       () async {
@@ -153,7 +150,7 @@ void main() {
       "should set state to [PostLikeUpdating, Failure] if usecase call is not successful",
       () async {
         // arrange
-        final tFailure = createTestFailure();
+        final tFailure = randomFailure();
         when(useCaseCall).thenAnswer((_) async => Left(tFailure));
         // assert later
         expect(
