@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:socnet/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/core/error/exceptions.dart';
+import 'package:socnet/core/error/helpers.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
 
 abstract class NetworkAuthDataSource {
@@ -32,7 +33,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   }
 
   Future<TokenModel> _loginOrRegister(String username, String password, String endpoint) async {
-    try {
+    return exceptionConverterCall(() async {
       final uri = Uri.https(endpoints.apiHost, endpoint);
       final requestBody = {
         'username': username,
@@ -51,9 +52,6 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
       }
       final jsonResponse = json.decode(apiResponse.body);
       return TokenModel.fromJson(jsonResponse);
-    } catch (e) {
-      if (e is NetworkException) rethrow;
-      throw const NetworkException(-1, null);
-    }
+    });
   }
 }
