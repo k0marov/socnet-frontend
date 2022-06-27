@@ -21,3 +21,7 @@ class NetworkFailure extends Failure {
 }
 
 class CacheFailure extends Failure {}
+
+class HashingFailure extends Failure {
+  const HashingFailure();
+}

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
+import 'package:socnet/features/auth/data/datasources/hasher_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
@@ -15,15 +16,24 @@ class MockLocalTokenDataSource extends Mock implements LocalTokenDataSource {}
 
 class MockNetworkAuthDataSource extends Mock implements NetworkAuthDataSource {}
 
+class MockHasherDataSource extends Mock implements HasherDataSource {}
+
 void main() {
   late MockLocalTokenDataSource mockLocalTokenDataSource;
   late MockNetworkAuthDataSource mockNetworkAuthDataSource;
+  late MockHasherDataSource mockHasherDataSource;
   late AuthRepositoryImpl sut;
 
   setUp(() {
     mockLocalTokenDataSource = MockLocalTokenDataSource();
     mockNetworkAuthDataSource = MockNetworkAuthDataSource();
-    sut = AuthRepositoryImpl(mockLocalTokenDataSource, mockNetworkAuthDataSource);
+    mockHasherDataSource = MockHasherDataSource();
+    sut = AuthRepositoryImpl(
+      mockLocalTokenDataSource,
+      mockNetworkAuthDataSource,
+      mockHasherDataSource,
+    );
+    registerFallbackValue(const TokenModel(Token(token: "")));
   });
 
   group('getToken', () {
@@ -69,30 +79,33 @@ void main() {
   void sharedLoginAndRegister({required bool isLogin}) {
     const tUsername = "username";
     const tPassword = "password";
+    const tPassHash = "hashed_password";
     const tToken = Token(token: "42");
     const tTokenModel = TokenModel(tToken);
     test(
-      "should call the network datasource, then store token in cache and return it, if everything is successful",
+      "should hash the password, call the network datasource, then store token in cache and return it, if everything is successful",
       () async {
         // arrange
+        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(tUsername, tPassword))
+          when(() => mockNetworkAuthDataSource.login(any(), any()))
               .thenAnswer((_) async => tTokenModel);
         } else {
-          when(() => mockNetworkAuthDataSource.register(tUsername, tPassword))
+          when(() => mockNetworkAuthDataSource.register(any(), any()))
               .thenAnswer((_) async => tTokenModel);
         }
-        when(() => mockLocalTokenDataSource.storeToken(tTokenModel)).thenAnswer((_) async {});
+        when(() => mockLocalTokenDataSource.storeToken(any())).thenAnswer((_) async {});
         // act
         final result = isLogin
             ? await sut.login(tUsername, tPassword)
             : await sut.register(tUsername, tPassword);
         // assert
         expect(result, const Right(tToken));
+        verify(() => mockHasherDataSource.hash(tPassword));
         if (isLogin) {
-          verify(() => mockNetworkAuthDataSource.login(tUsername, tPassword));
+          verify(() => mockNetworkAuthDataSource.login(tUsername, tPassHash));
         } else {
-          verify(() => mockNetworkAuthDataSource.register(tUsername, tPassword));
+          verify(() => mockNetworkAuthDataSource.register(tUsername, tPassHash));
         }
         verify(() => mockLocalTokenDataSource.storeToken(tTokenModel));
         verifyNoMoreInteractions(mockNetworkAuthDataSource);
@@ -100,15 +113,28 @@ void main() {
       },
     );
     test(
+      "should return hash failure if hasher datasource throws HashingException",
+      () async {
+        // arrange
+        when(() => mockHasherDataSource.hash(any())).thenThrow(HashingException());
+        // act
+        final result = isLogin
+            ? await sut.login(tUsername, tPassword)
+            : await sut.register(tUsername, tPassword);
+        // assert
+        expect(result, const Left(HashingFailure()));
+      },
+    );
+    test(
       "should return NetworkFailure if network datasource throws NetworkException",
       () async {
         // arrange
         final tException = randomNetworkException();
+        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(tUsername, tPassword)).thenThrow(tException);
+          when(() => mockNetworkAuthDataSource.login(any(), any())).thenThrow(tException);
         } else {
-          when(() => mockNetworkAuthDataSource.register(tUsername, tPassword))
-              .thenThrow(tException);
+          when(() => mockNetworkAuthDataSource.register(any(), any())).thenThrow(tException);
         }
         // act
         final result = isLogin
@@ -123,14 +149,15 @@ void main() {
       "should return CacheFailure if local datasource throws CacheException",
       () async {
         // arrange
+        when(() => mockHasherDataSource.hash(any())).thenAnswer((_) async => tPassHash);
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(tUsername, tPassword))
+          when(() => mockNetworkAuthDataSource.login(any(), any()))
               .thenAnswer((_) async => tTokenModel);
         } else {
-          when(() => mockNetworkAuthDataSource.register(tUsername, tPassword))
+          when(() => mockNetworkAuthDataSource.register(any(), any()))
               .thenAnswer((_) async => tTokenModel);
         }
-        when(() => mockLocalTokenDataSource.storeToken(tTokenModel)).thenThrow(CacheException());
+        when(() => mockLocalTokenDataSource.storeToken(any())).thenThrow(CacheException());
         // act
         final result = isLogin
             ? await sut.login(tUsername, tPassword)

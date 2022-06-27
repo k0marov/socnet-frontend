@@ -6,14 +6,16 @@ import 'package:socnet/features/auth/data/datasources/network_auth_datasource.da
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 
 import '../../domain/repositories/auth_repository.dart';
+import '../datasources/hasher_datasource.dart';
 import '../datasources/local_token_datasource.dart';
 import '../models/token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final LocalTokenDataSource _localDataSource;
   final NetworkAuthDataSource _networkDataSource;
+  final HasherDataSource _hasherDataSource;
 
-  AuthRepositoryImpl(this._localDataSource, this._networkDataSource);
+  AuthRepositoryImpl(this._localDataSource, this._networkDataSource, this._hasherDataSource);
 
   @override
   Future<Either<Failure, Token>> getToken() async {
@@ -29,12 +31,22 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Token>> login(String username, String password) async {
-    return _sharedLoginAndRegister(() => _networkDataSource.login(username, password));
+    return _sharedLoginAndRegister(
+      () async => _networkDataSource.login(
+        username,
+        await _hasherDataSource.hash(password),
+      ),
+    );
   }
 
   @override
   Future<Either<Failure, Token>> register(String username, String password) async {
-    return _sharedLoginAndRegister(() => _networkDataSource.register(username, password));
+    return _sharedLoginAndRegister(
+      () async => _networkDataSource.register(
+        username,
+        await _hasherDataSource.hash(password),
+      ),
+    );
   }
 
   Future<Either<Failure, Token>> _sharedLoginAndRegister(

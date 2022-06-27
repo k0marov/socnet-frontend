@@ -2,27 +2,19 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class NoTokenException implements Exception {}
-
-class CacheException implements Exception {}
-
-class ClientError extends Equatable {
-  final String detailCode;
-  final String readableDetail;
+class NoTokenException extends Equatable implements Exception {
   @override
-  List get props => [detailCode, readableDetail];
+  List<Object?> get props => [];
+}
 
-  const ClientError(this.detailCode, this.readableDetail);
+class CacheException extends Equatable implements Exception {
+  @override
+  List<Object?> get props => [];
+}
 
-  ClientError.fromJson(Map<String, dynamic> json)
-      : this(
-          json['detail_code'] as String,
-          json['readable_detail'] as String,
-        );
-  Map<String, dynamic> toJson() => {
-        'detail_code': detailCode,
-        'readable_detail': readableDetail,
-      };
+class HashingException extends Equatable implements Exception {
+  @override
+  List<Object?> get props => [];
 }
 
 /// statusCode == -1 means "Unknown, probably no internet connection"
@@ -49,4 +41,23 @@ class NetworkException extends Equatable implements Exception {
       return null;
     }
   }
+}
+
+class ClientError extends Equatable {
+  final String detailCode;
+  final String readableDetail;
+  @override
+  List get props => [detailCode, readableDetail];
+
+  const ClientError(this.detailCode, this.readableDetail);
+
+  ClientError.fromJson(Map<String, dynamic> json)
+      : this(
+          json['detail_code'] as String,
+          json['readable_detail'] as String,
+        );
+  Map<String, dynamic> toJson() => {
+        'detail_code': detailCode,
+        'readable_detail': readableDetail,
+      };
 }
