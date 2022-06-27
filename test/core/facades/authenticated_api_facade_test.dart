@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:http/http.dart' as http;
 
 import '../fixtures/fixture_reader.dart';
 import '../helpers/helpers.dart';
@@ -40,8 +41,7 @@ void main() {
       "should throw NoTokenException if called when token is null",
       () async {
         // assert
-        expect(() => sut.get(tEndpoint, tBody),
-            throwsA(const TypeMatcher<NoTokenException>()));
+        expect(() => sut.get(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
       },
     );
     test(
@@ -72,8 +72,7 @@ void main() {
       "should throw NoTokenException if called when token is null",
       () async {
         // assert
-        expect(() => sut.post(tEndpoint, tBody),
-            throwsA(const TypeMatcher<NoTokenException>()));
+        expect(() => sut.post(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
       },
     );
     test(
@@ -93,8 +92,11 @@ void main() {
         // assert
         expect(result, tResponse);
         verify(
-          () => mockHttpClient.post(Uri.https(apiHost, tEndpoint),
-              body: tBody, headers: tRightHeaders),
+          () => mockHttpClient.post(
+            Uri.https(apiHost, tEndpoint),
+            body: json.encode(tBody),
+            headers: tRightHeaders,
+          ),
         );
         verifyNoMoreInteractions(mockHttpClient);
       },
@@ -138,8 +140,7 @@ void main() {
       "should throw NoTokenException if called when token is null",
       () async {
         // assert
-        expect(() => sut.put(tEndpoint, tBody),
-            throwsA(const TypeMatcher<NoTokenException>()));
+        expect(() => sut.put(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
       },
     );
     test(
@@ -162,7 +163,7 @@ void main() {
           () => mockHttpClient.put(
             Uri.https(apiHost, tEndpoint),
             headers: tRightHeaders,
-            body: tBody,
+            body: json.encode(tBody),
           ),
         );
         verifyNoMoreInteractions(mockHttpClient);
@@ -176,8 +177,7 @@ void main() {
       "should throw NoTokenException if called when token is null",
       () async {
         // act
-        expect(() => sut.sendFiles("", "", {}, {}),
-            throwsA(isA<NoTokenException>()));
+        expect(() => sut.sendFiles("", "", {}, {}), throwsA(isA<NoTokenException>()));
       },
     );
     test(
@@ -193,21 +193,18 @@ void main() {
           await File(tAvatarFile.path).readAsBytes(),
         ));
         tRightRequest.headers['Accept'] = tRightHeaders['Accept']!;
-        tRightRequest.headers['Authorization'] =
-            tRightHeaders['Authorization']!;
+        tRightRequest.headers['Authorization'] = tRightHeaders['Authorization']!;
         tRightRequest.fields['about'] = "New about";
-        when(() => mockHttpClient.send(any())).thenAnswer(
-            (_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
+        when(() => mockHttpClient.send(any()))
+            .thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
         // act
         sut.setToken(tToken);
-        await sut.sendFiles(
-            "PUT", tEndpoint, {'avatar': tAvatarFile}, {'about': 'New about'});
+        await sut.sendFiles("PUT", tEndpoint, {'avatar': tAvatarFile}, {'about': 'New about'});
         // assert
-        final capturedRequest = verify(() => mockHttpClient.send(captureAny()))
-            .captured[0] as http.MultipartRequest;
+        final capturedRequest =
+            verify(() => mockHttpClient.send(captureAny())).captured[0] as http.MultipartRequest;
         expect(capturedRequest.files.length, 1);
-        expect(capturedRequest.files.first.length,
-            tRightRequest.files.first.length);
+        expect(capturedRequest.files.first.length, tRightRequest.files.first.length);
         expect(capturedRequest.files.first.field, 'avatar');
         expect(capturedRequest.fields.length, 1);
         expect(capturedRequest.fields['about'], 'New about');

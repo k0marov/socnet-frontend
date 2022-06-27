@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -16,8 +17,7 @@ class AuthenticatedAPIFacade {
   Future<http.Response> get(String endpoint, Map<String, dynamic> body) {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    return _httpClient.get(Uri.https(apiHost, endpoint, body),
-        headers: headers);
+    return _httpClient.get(Uri.https(apiHost, endpoint, body), headers: headers);
   }
 
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) {
@@ -25,7 +25,7 @@ class AuthenticatedAPIFacade {
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.post(
       Uri.https(apiHost, endpoint),
-      body: body,
+      body: json.encode(body),
       headers: headers,
     );
   }
@@ -44,7 +44,7 @@ class AuthenticatedAPIFacade {
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.put(
       Uri.https(apiHost, endpoint),
-      body: body,
+      body: json.encode(body),
       headers: headers,
     );
   }
@@ -60,8 +60,7 @@ class AuthenticatedAPIFacade {
 
     for (final fileEntry in files.entries) {
       final fileBytes = await File(fileEntry.value.path).readAsBytes();
-      request.files.add(http.MultipartFile.fromBytes(fileEntry.key, fileBytes,
-          filename: 'file'));
+      request.files.add(http.MultipartFile.fromBytes(fileEntry.key, fileBytes, filename: 'file'));
     }
 
     for (final fieldEntry in data.entries) {
@@ -80,7 +79,7 @@ class AuthenticatedAPIFacade {
   Token _obtainTokenOrThrow() {
     final token = _token;
     if (token != null) {
-       return token;
+      return token;
     } else {
       throw NoTokenException();
     }
