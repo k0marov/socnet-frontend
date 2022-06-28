@@ -12,10 +12,8 @@ class AuthGatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-          create: (context) =>
-              sl<AuthGateBloc>()..add(AuthStateUpdateRequested()),
-          child: BlocBuilder<AuthGateBloc, AuthGateState>(
-              builder: (context, state) {
+          create: (context) => sl<AuthGateBloc>()..add(AuthStateUpdateRequested()),
+          child: BlocBuilder<AuthGateBloc, AuthGateState>(builder: (context, state) {
             if (state is AuthGateInitial) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is AuthGateUnauthenticated) {
@@ -28,18 +26,3 @@ class AuthGatePage extends StatelessWidget {
     );
   }
 }
-
-// class _TmpWidget extends StatelessWidget {
-//   const _TmpWidget({
-//     Key? key,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextButton(
-//       child: const Text("Logout"), 
-//       onPressed: () => context.read<AuthGateBloc>().add(LoggedOut()),
-//     );
-//   }
-// }
-

@@ -43,14 +43,12 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<List<ProfileModel>> getFollows(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final response =
-          await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
+      final response = await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
 
       final profiles = json.decode(response.body)['profiles'];
       return profiles
-          .map<ProfileModel>(
-              (profileJson) => ProfileModel.fromJson(profileJson))
+          .map<ProfileModel>((profileJson) => ProfileModel.fromJson(profileJson))
           .toList();
     });
   }
@@ -68,14 +66,13 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<ProfileModel> updateProfile(ProfileUpdate update) async {
     return exceptionConverterCall(() async {
-      final data = update.newAbout != null
-          ? {'about': update.newAbout!}
-          : <String, String>{};
+      final data = update.newAbout != null ? {'about': update.newAbout!} : <String, String>{};
 
       final response = await _apiFacade.put(updateProfileEndpoint(), data);
       checkStatusCode(response);
 
       final profileJson = json.decode(response.body);
+      print(profileJson);
       return ProfileModel.fromJson(profileJson);
     });
   }
@@ -83,8 +80,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<void> toggleFollow(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade
-          .post(toggleFollowEndpoint(profile.toEntity().id), {});
+      final response = await _apiFacade.post(toggleFollowEndpoint(profile.toEntity().id), {});
       checkStatusCode(response);
     });
   }
@@ -93,8 +89,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   Future<AvatarURL> updateAvatar(AvatarFile newAvatar) async {
     return exceptionConverterCall(() async {
       final files = {"avatar": newAvatar};
-      final response =
-          await _apiFacade.sendFiles("PUT", updateAvatarEndpoint(), files, {});
+      final response = await _apiFacade.sendFiles("PUT", updateAvatarEndpoint(), files, {});
       checkStatusCode(response);
       return json.decode(response.body)['avatar_url'];
     });

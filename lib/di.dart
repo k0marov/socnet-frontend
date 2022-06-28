@@ -10,6 +10,15 @@ import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/features/auth/presentation/bloc/auth_page_bloc.dart';
+import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
+import 'package:socnet/features/posts/data/repositories/post_repository_impl.dart';
+import 'package:socnet/features/posts/domain/repositories/post_repository.dart';
+import 'package:socnet/features/posts/domain/usecases/create_post.dart';
+import 'package:socnet/features/posts/domain/usecases/delete_post.dart';
+import 'package:socnet/features/posts/domain/usecases/get_profile_posts.dart';
+import 'package:socnet/features/posts/domain/usecases/toggle_like.dart';
+import 'package:socnet/features/posts/presentation/post_bloc/post_bloc.dart';
+import 'package:socnet/features/posts/presentation/post_creation_bloc/post_creation_bloc.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
@@ -59,6 +68,21 @@ Future initialize() async {
   sl.registerFactory(() => MyProfileBloc(sl(), sl(), sl()));
   // yes, this is a singleton, because it is not actually a bloc, but a wrapper for bloc creator
   sl.registerLazySingleton(() => ProfileBlocCreator(sl()));
+
+  //! Posts
+  // usecases
+  sl.registerLazySingleton(() => CreatePost(sl()));
+  sl.registerLazySingleton(() => DeletePost(sl()));
+  sl.registerLazySingleton(() => GetProfilePosts(sl()));
+  sl.registerLazySingleton(() => ToggleLike(sl()));
+  // datasources
+  sl.registerLazySingleton<NetworkPostDataSource>(() => NetworkPostDataSourceImpl(sl()));
+  // repositories
+  sl.registerLazySingleton<PostRepository>(() => PostRepositoryImpl(sl()));
+  // blocs
+  sl.registerFactory(() => PostCreationBloc(sl()));
+  // yes, this is a singleton, because it is not actually a bloc, but a wrapper for bloc creator
+  sl.registerLazySingleton(() => PostBlocCreator(sl(), sl()));
 
   //! External
   final sharedPrefs = await SharedPreferences.getInstance();

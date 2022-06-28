@@ -35,27 +35,21 @@ class _AuthPageInternal extends StatelessWidget {
                   if (state is AuthPageLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is AuthPageLogin) {
-                    final failure =
-                        state is AuthPageLoginFailure ? state.failure : null;
+                    final failure = state is AuthPageLoginFailure ? state.failure : null;
                     return Column(children: [
                       LoginForm(failure: failure),
                       TextButton(
                         child: const Text("Switch to Registration"),
-                        onPressed: () => context
-                            .read<AuthPageBloc>()
-                            .add(SwitchedToRegistration()),
+                        onPressed: () => context.read<AuthPageBloc>().add(SwitchedToRegistration()),
                       )
                     ]);
                   } else if (state is AuthPageRegistration) {
-                    final failure = state is AuthPageRegistrationFailure
-                        ? state.failure
-                        : null;
+                    final failure = state is AuthPageRegistrationFailure ? state.failure : null;
                     return Column(children: [
                       RegisterForm(failure: failure),
                       TextButton(
                         child: const Text("Switch to Login"),
-                        onPressed: () =>
-                            context.read<AuthPageBloc>().add(SwitchedToLogin()),
+                        onPressed: () => context.read<AuthPageBloc>().add(SwitchedToLogin()),
                       )
                     ]);
                   } else {
