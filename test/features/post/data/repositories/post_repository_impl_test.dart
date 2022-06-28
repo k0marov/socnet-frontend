@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 import 'package:socnet/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../../../core/helpers/base_tests.dart';
 import '../../../profile/shared.dart';
@@ -29,7 +29,7 @@ void main() {
       () => sut.createPost(tNewPost),
       () => mockDataSource.createPost(tNewPost),
       PostModel(tPost),
-      (result) => result == tPost,
+      (result) => result == null,
       () => mockDataSource,
     );
   });
@@ -49,8 +49,7 @@ void main() {
   group('getProfilePosts', () {
     final tProfile = createTestProfile();
     final tPosts = [createTestPost(), createTestPost()];
-    final tPostsModels =
-        tPosts.map<PostModel>((post) => PostModel(post)).toList();
+    final tPostsModels = tPosts.map<PostModel>((post) => PostModel(post)).toList();
     baseRepositoryTests(
       () => sut.getProfilePosts(tProfile),
       () => mockDataSource.getProfilePosts(ProfileModel(tProfile)),

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/features/posts/domain/repositories/post_repository.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../post_helpers.dart';
 
@@ -22,16 +22,11 @@ void main() {
     () async {
       // arrange
       final tNewPost = createTestNewPost();
-      final tPost = createTestPost();
-      when(() => mockPostRepository.createPost(tNewPost))
-          .thenAnswer((_) async => Right(tPost));
+      when(() => mockPostRepository.createPost(tNewPost)).thenAnswer((_) async => Right(null));
       // act
       final result = await sut(PostCreateParams(newPost: tNewPost));
       // assert
-      result.fold(
-        (failure) => throw AssertionError(),
-        (post) => expect(identical(post, tPost), true),
-      );
+      expect(result, Right(null));
       verify(() => mockPostRepository.createPost(tNewPost));
       verifyNoMoreInteractions(mockPostRepository);
     },

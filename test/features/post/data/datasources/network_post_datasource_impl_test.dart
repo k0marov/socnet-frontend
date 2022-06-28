@@ -2,22 +2,21 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../../core/fixtures/fixture_reader.dart';
 import '../../../../core/helpers/base_tests.dart';
 import '../../../profile/shared.dart';
 import '../../post_helpers.dart';
 
-class MockAuthenticatedAPIFacade extends Mock
-    implements AuthenticatedAPIFacade {}
+class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}
 
 void main() {
   late NetworkPostDataSourceImpl sut;
@@ -39,12 +38,9 @@ void main() {
       () async {
         // arrange
         when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
-            .thenAnswer(
-                (_) async => http.Response(json.encode(tPost.toJson()), 200));
+            .thenAnswer((_) async => http.Response(json.encode(tPost.toJson()), 200));
         // act
         final result = await sut.createPost(tNewPost);
-        // assert
-        expect(result, tPost);
         final expectedFiles = {
           "image_1": tNewPost.images[0],
           "image_2": tNewPost.images[1],
@@ -72,8 +68,7 @@ void main() {
     final tPostModel = PostModel(createTestPost());
     test("should call api and return void if status code = 200", () async {
       // arrange
-      when(() => mockApiFacade.delete(any()))
-          .thenAnswer((_) async => http.Response("", 200));
+      when(() => mockApiFacade.delete(any())).thenAnswer((_) async => http.Response("", 200));
       // act
       await sut.deletePost(tPostModel);
       // assert
@@ -91,13 +86,8 @@ void main() {
       "should call api and return parsed result if status code = 200",
       () async {
         // arrange
-        final tPosts = [
-          PostModel(createTestPost()),
-          PostModel(createTestPost())
-        ];
-        final tPostsJson = {
-          'posts': tPosts.map((post) => post.toJson()).toList()
-        };
+        final tPosts = [PostModel(createTestPost()), PostModel(createTestPost())];
+        final tPostsJson = {'posts': tPosts.map((post) => post.toJson()).toList()};
         final tResponseBody = json.encode(tPostsJson);
         when(() => mockApiFacade.get(any(), any()))
             .thenAnswer((_) async => http.Response(tResponseBody, 200));
