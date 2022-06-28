@@ -1,10 +1,10 @@
+import 'package:dartz/dartz.dart';
+import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
-import 'package:socnet/core/error/failures.dart';
-import 'package:dartz/dartz.dart';
 import 'package:socnet/features/posts/domain/repositories/post_repository.dart';
-import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
+import 'package:socnet/features/profile/domain/entities/profile.dart';
 
 import '../../../../core/error/exception_to_failure.dart';
 import '../../../profile/data/models/profile_model.dart';
@@ -15,10 +15,9 @@ class PostRepositoryImpl implements PostRepository {
   PostRepositoryImpl(this._dataSource);
 
   @override
-  Future<Either<Failure, Post>> createPost(NewPostValue newPost) async {
+  Future<Either<Failure, void>> createPost(NewPostValue newPost) async {
     return exceptionToFailureCall(() async {
-      final result = await _dataSource.createPost(newPost);
-      return result.toEntity();
+      await _dataSource.createPost(newPost);
     });
   }
 

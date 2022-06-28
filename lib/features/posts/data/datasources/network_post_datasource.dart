@@ -11,7 +11,7 @@ import 'package:socnet/features/profile/data/models/profile_model.dart';
 
 abstract class NetworkPostDataSource {
   /// Throws [NetworkException] and [NoTokenException]
-  Future<PostModel> createPost(NewPostValue newPost);
+  Future<void> createPost(NewPostValue newPost);
 
   /// Throws [NetworkException] and [NoTokenException]
   Future<void> deletePost(PostModel postModel);
@@ -28,7 +28,7 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
   NetworkPostDataSourceImpl(this._apiFacade);
 
   @override
-  Future<PostModel> createPost(NewPostValue newPost) async {
+  Future<void> createPost(NewPostValue newPost) async {
     return exceptionConverterCall(() async {
       final files = <String, SimpleFile>{};
       for (int i = 0; i < newPost.images.length; ++i) {
@@ -38,11 +38,8 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
         'text': newPost.text,
       };
 
-      final response =
-          await _apiFacade.sendFiles("POST", createPostEndpoint(), files, data);
+      final response = await _apiFacade.sendFiles("POST", createPostEndpoint(), files, data);
       checkStatusCode(response);
-
-      return PostModel.fromJson(json.decode(response.body));
     });
   }
 
@@ -65,9 +62,7 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
       checkStatusCode(response);
 
       final postsJson = json.decode(response.body)["posts"];
-      return (postsJson as List)
-          .map((postJson) => PostModel.fromJson(postJson))
-          .toList();
+      return (postsJson as List).map((postJson) => PostModel.fromJson(postJson)).toList();
     });
   }
 

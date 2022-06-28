@@ -9,5 +9,5 @@ abstract class PostRepository {
   Future<Either<Failure, Post>> toggleLike(Post post);
   Future<Either<Failure, void>> deletePost(Post post);
   Future<Either<Failure, List<Post>>> getProfilePosts(Profile profile);
-  Future<Either<Failure, Post>> createPost(NewPostValue newPost);
+  Future<Either<Failure, void>> createPost(NewPostValue newPost);
 }
