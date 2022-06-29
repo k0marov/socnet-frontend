@@ -21,7 +21,10 @@ abstract class NetworkAuthDataSource {
 class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   final http.Client _httpClient;
   final String _apiHost;
-  NetworkAuthDataSourceImpl(this._httpClient, this._apiHost);
+  final bool useHTTPS;
+
+  /// useHTTPS should be set to false only in tests
+  NetworkAuthDataSourceImpl(this._httpClient, this._apiHost, {this.useHTTPS = true});
 
   @override
   Future<TokenModel> login(String username, String password) async {
@@ -35,7 +38,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
 
   Future<TokenModel> _loginOrRegister(String username, String password, String endpoint) async {
     return exceptionConverterCall(() async {
-      final uri = Uri.https(_apiHost, endpoint);
+      final uri = useHTTPS ? Uri.https(_apiHost, endpoint) : Uri.http(_apiHost, endpoint);
       final requestBody = {
         'username': username,
         'password': password,

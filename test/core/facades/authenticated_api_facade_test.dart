@@ -37,7 +37,7 @@ void main() {
 
   group('get', () {
     const tEndpoint = "profiles-detail/1";
-    const tBody = <String, dynamic>{'something': 'value'};
+    const tBody = <String, String>{'something': 'value'};
     test(
       "should throw NoTokenException if called when token is null",
       () async {

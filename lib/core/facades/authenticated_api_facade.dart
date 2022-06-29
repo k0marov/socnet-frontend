@@ -7,24 +7,27 @@ import 'package:socnet/core/simple_file/simple_file.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 
 class AuthenticatedAPIFacade {
-  final String _apiHost;
   final http.Client _httpClient;
-  AuthenticatedAPIFacade(this._httpClient, this._apiHost);
+  final String _apiHost;
+  final bool useHTTPS;
+
+  /// useHTTPS should be set to false only in tests
+  AuthenticatedAPIFacade(this._httpClient, this._apiHost, {this.useHTTPS = true});
 
   Token? _token;
   void setToken(Token? newToken) => _token = newToken;
 
-  Future<http.Response> get(String endpoint, Map<String, dynamic> body) {
+  Future<http.Response> get(String endpoint, Map<String, String> body) {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    return _httpClient.get(Uri.https(_apiHost, endpoint, body), headers: headers);
+    return _httpClient.get(_composeURL(endpoint, body), headers: headers);
   }
 
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.post(
-      Uri.https(_apiHost, endpoint),
+      _composeURL(endpoint),
       body: json.encode(body),
       headers: headers,
     );
@@ -34,7 +37,7 @@ class AuthenticatedAPIFacade {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.delete(
-      Uri.https(_apiHost, endpoint),
+      _composeURL(endpoint),
       headers: headers,
     );
   }
@@ -43,7 +46,7 @@ class AuthenticatedAPIFacade {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.put(
-      Uri.https(_apiHost, endpoint),
+      _composeURL(endpoint),
       body: json.encode(body),
       headers: headers,
     );
@@ -56,7 +59,7 @@ class AuthenticatedAPIFacade {
     Map<String, String> data,
   ) async {
     final headers = _getHeaders(_obtainTokenOrThrow().token);
-    final request = http.MultipartRequest(method, Uri.https(_apiHost, endpoint));
+    final request = http.MultipartRequest(method, _composeURL(endpoint));
 
     for (final fileEntry in files.entries) {
       final fileBytes = await File(fileEntry.value.path).readAsBytes();
@@ -89,4 +92,7 @@ class AuthenticatedAPIFacade {
         'Authorization': 'Token $token',
         'Accept': "application/json",
       };
+  Uri _composeURL(String endpoint, [Map<String, String>? queryParams]) {
+    return useHTTPS ? Uri.https(_apiHost, endpoint, queryParams) : Uri.http(_apiHost, endpoint, queryParams);
+  }
 }
