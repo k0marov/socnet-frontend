@@ -18,9 +18,11 @@ void main() {
   late MockHttpClient mockHttpClient;
   late NetworkAuthDataSourceImpl sut;
 
+  const tApiHost = "example.com";
+
   setUp(() {
     mockHttpClient = MockHttpClient();
-    sut = NetworkAuthDataSourceImpl(mockHttpClient);
+    sut = NetworkAuthDataSourceImpl(mockHttpClient, tApiHost);
     registerFallbackValue(Uri());
   });
 
@@ -35,13 +37,10 @@ void main() {
       "should call api and return the token model if everything was successful",
       () async {
         // arrange
-        when(() => mockHttpClient.post(any(),
-            headers: any(named: "headers"),
-            body: any(named: "body"))).thenAnswer((_) async => http.Response(tTokenResponse, 200));
+        when(() => mockHttpClient.post(any(), headers: any(named: "headers"), body: any(named: "body")))
+            .thenAnswer((_) async => http.Response(tTokenResponse, 200));
         // act
-        final result = isLogin
-            ? await sut.login(tUsername, tPassword)
-            : await sut.register(tUsername, tPassword);
+        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
         // assert
         expect(result, tToken);
         final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
@@ -50,7 +49,7 @@ void main() {
           'password': tPassword,
         };
         verify(() => mockHttpClient.post(
-              Uri.https(endpoints.apiHost, endpoint),
+              Uri.https(tApiHost, endpoint),
               body: json.encode(wantBody),
               headers: {'Accept': 'application/json'},
             ));
@@ -86,8 +85,7 @@ void main() {
               headers: any(named: "headers"),
             )).thenThrow(Exception());
         // assert
-        expect(
-            () => sut.login(tUsername, tPassword), throwsA(const TypeMatcher<NetworkException>()));
+        expect(() => sut.login(tUsername, tPassword), throwsA(const TypeMatcher<NetworkException>()));
       },
     );
   }

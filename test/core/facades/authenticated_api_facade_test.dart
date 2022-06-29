@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
@@ -18,9 +17,11 @@ void main() {
   late MockHttpClient mockHttpClient;
   late AuthenticatedAPIFacade sut;
 
+  const tApiHost = "example.com";
+
   setUp(() {
     mockHttpClient = MockHttpClient();
-    sut = AuthenticatedAPIFacade(mockHttpClient);
+    sut = AuthenticatedAPIFacade(mockHttpClient, tApiHost);
   });
   setUpAll(() {
     registerFallbackValue(Uri());
@@ -48,8 +49,7 @@ void main() {
       "should call http client with proper arguments and return the response",
       () async {
         // arrange
-        when(() => mockHttpClient.get(any(), headers: any(named: "headers")))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockHttpClient.get(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
         sut.setToken(tToken);
         final result = await sut.get(tEndpoint, tBody);
@@ -57,7 +57,7 @@ void main() {
         expect(result, tResponse);
         verify(
           () => mockHttpClient.get(
-            Uri.https(apiHost, tEndpoint, tBody),
+            Uri.https(tApiHost, tEndpoint, tBody),
             headers: tRightHeaders,
           ),
         );
@@ -93,7 +93,7 @@ void main() {
         expect(result, tResponse);
         verify(
           () => mockHttpClient.post(
-            Uri.https(apiHost, tEndpoint),
+            Uri.https(tApiHost, tEndpoint),
             body: json.encode(tBody),
             headers: tRightHeaders,
           ),
@@ -116,8 +116,7 @@ void main() {
       () async {
         // arrange
         final tResponse = http.Response(randomString(), 4242);
-        when(() => mockHttpClient.delete(any(), headers: any(named: "headers")))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockHttpClient.delete(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
         sut.setToken(tToken);
         final result = await sut.delete(tEndpoint);
@@ -125,7 +124,7 @@ void main() {
         expect(result, tResponse);
         verify(
           () => mockHttpClient.delete(
-            Uri.https(apiHost, tEndpoint),
+            Uri.https(tApiHost, tEndpoint),
             headers: tRightHeaders,
           ),
         );
@@ -161,7 +160,7 @@ void main() {
         expect(result, tResponse);
         verify(
           () => mockHttpClient.put(
-            Uri.https(apiHost, tEndpoint),
+            Uri.https(tApiHost, tEndpoint),
             headers: tRightHeaders,
             body: json.encode(tBody),
           ),
@@ -186,7 +185,7 @@ void main() {
         // arrange
         final tRightRequest = http.MultipartRequest(
           "PUT",
-          Uri.https(apiHost, tEndpoint),
+          Uri.https(tApiHost, tEndpoint),
         );
         tRightRequest.files.add(http.MultipartFile.fromBytes(
           "avatar",
@@ -195,14 +194,12 @@ void main() {
         tRightRequest.headers['Accept'] = tRightHeaders['Accept']!;
         tRightRequest.headers['Authorization'] = tRightHeaders['Authorization']!;
         tRightRequest.fields['about'] = "New about";
-        when(() => mockHttpClient.send(any()))
-            .thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
+        when(() => mockHttpClient.send(any())).thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
         // act
         sut.setToken(tToken);
         await sut.sendFiles("PUT", tEndpoint, {'avatar': tAvatarFile}, {'about': 'New about'});
         // assert
-        final capturedRequest =
-            verify(() => mockHttpClient.send(captureAny())).captured[0] as http.MultipartRequest;
+        final capturedRequest = verify(() => mockHttpClient.send(captureAny())).captured[0] as http.MultipartRequest;
         expect(capturedRequest.files.length, 1);
         expect(capturedRequest.files.first.length, tRightRequest.files.first.length);
         expect(capturedRequest.files.first.field, 'avatar');

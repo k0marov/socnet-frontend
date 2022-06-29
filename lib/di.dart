@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
@@ -45,12 +46,16 @@ class UseCases {
   late final GetProfilePosts getProfilePosts;
   late final ToggleLike toggleLike;
 
-  UseCases({required SharedPreferences sharedPrefs, required http.Client httpClient}) {
+  UseCases({
+    required SharedPreferences sharedPrefs,
+    required http.Client httpClient,
+    required String apiHost,
+  }) {
     // core
-    final apiFacade = AuthenticatedAPIFacade(httpClient);
+    final apiFacade = AuthenticatedAPIFacade(httpClient, apiHost);
     // auth
     final localAuthDS = LocalTokenDataSourceImpl(sharedPrefs);
-    final netAuthDS = NetworkAuthDataSourceImpl(httpClient);
+    final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost);
     final authRepo = AuthRepositoryImpl(localAuthDS, netAuthDS);
     getAuthToken = GetAuthTokenUseCase(authRepo);
     login = LoginUseCase(authRepo);
@@ -77,7 +82,11 @@ class UseCases {
 final sl = GetIt.instance;
 
 Future initialize() async {
-  final usecases = UseCases(sharedPrefs: await SharedPreferences.getInstance(), httpClient: http.Client());
+  final usecases = UseCases(
+    sharedPrefs: await SharedPreferences.getInstance(),
+    httpClient: http.Client(),
+    apiHost: realApiHost,
+  );
 
   sl.registerLazySingleton(() => AuthPageBlocCreator(usecases.login, usecases.register));
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));

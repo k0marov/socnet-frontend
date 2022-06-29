@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/simple_file/simple_file.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 
 class AuthenticatedAPIFacade {
+  final String _apiHost;
   final http.Client _httpClient;
-  AuthenticatedAPIFacade(this._httpClient);
+  AuthenticatedAPIFacade(this._httpClient, this._apiHost);
 
   Token? _token;
   void setToken(Token? newToken) => _token = newToken;
@@ -17,14 +17,14 @@ class AuthenticatedAPIFacade {
   Future<http.Response> get(String endpoint, Map<String, dynamic> body) {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    return _httpClient.get(Uri.https(apiHost, endpoint, body), headers: headers);
+    return _httpClient.get(Uri.https(_apiHost, endpoint, body), headers: headers);
   }
 
   Future<http.Response> post(String endpoint, Map<String, dynamic> body) {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.post(
-      Uri.https(apiHost, endpoint),
+      Uri.https(_apiHost, endpoint),
       body: json.encode(body),
       headers: headers,
     );
@@ -34,7 +34,7 @@ class AuthenticatedAPIFacade {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.delete(
-      Uri.https(apiHost, endpoint),
+      Uri.https(_apiHost, endpoint),
       headers: headers,
     );
   }
@@ -43,7 +43,7 @@ class AuthenticatedAPIFacade {
     final tokenEntity = _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.put(
-      Uri.https(apiHost, endpoint),
+      Uri.https(_apiHost, endpoint),
       body: json.encode(body),
       headers: headers,
     );
@@ -56,7 +56,7 @@ class AuthenticatedAPIFacade {
     Map<String, String> data,
   ) async {
     final headers = _getHeaders(_obtainTokenOrThrow().token);
-    final request = http.MultipartRequest(method, Uri.https(apiHost, endpoint));
+    final request = http.MultipartRequest(method, Uri.https(_apiHost, endpoint));
 
     for (final fileEntry in files.entries) {
       final fileBytes = await File(fileEntry.value.path).readAsBytes();

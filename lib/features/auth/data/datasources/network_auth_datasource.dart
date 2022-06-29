@@ -20,7 +20,8 @@ abstract class NetworkAuthDataSource {
 
 class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   final http.Client _httpClient;
-  NetworkAuthDataSourceImpl(this._httpClient);
+  final String _apiHost;
+  NetworkAuthDataSourceImpl(this._httpClient, this._apiHost);
 
   @override
   Future<TokenModel> login(String username, String password) async {
@@ -34,7 +35,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
 
   Future<TokenModel> _loginOrRegister(String username, String password, String endpoint) async {
     return exceptionConverterCall(() async {
-      final uri = Uri.https(endpoints.apiHost, endpoint);
+      final uri = Uri.https(_apiHost, endpoint);
       final requestBody = {
         'username': username,
         'password': password,

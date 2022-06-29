@@ -1,4 +1,4 @@
-const apiHost = "socio.skomarov.com";
+const realApiHost = "socio.skomarov.com";
 
 String registerEndpoint() {
   return "/auth/register";

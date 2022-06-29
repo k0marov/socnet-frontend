@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/mappers/url_mapper.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
@@ -24,7 +22,7 @@ void main() {
     author: const Profile(
       id: "42",
       username: "some-username",
-      avatarUrl:"static.example.com/media/user_1/avatar1234blablabla.png",
+      avatarUrl: "static.example.com/media/user_1/avatar1234blablabla.png",
       followers: 42,
       follows: 21,
       about: "A Test Profile",
