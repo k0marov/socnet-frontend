@@ -1,4 +1,5 @@
-trap "rm -rf go-socnet && cd .. && rm -rf go-socnet" EXIT
+trap "rm -rf go-socnet && rm -rf static && cd .. && rm -rf go-socnet && rm -rf static" EXIT
+rm -r static
 mkdir static
 rm -rf go-socnet
 

@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,20 +8,27 @@ import 'backend.dart';
 void main() {
   late Backend backend;
   late di.UseCases usecases;
-  setUpAll(() {
-    WidgetsFlutterBinding.ensureInitialized();
-  });
+  // setUpAll(() {
+  //   WidgetsFlutterBinding.ensureInitialized();
+  // });
   setUp(() async {
     backend = Backend();
     await backend.setUp();
-    SharedPreferences.setMockInitialValues({});
     usecases = di.UseCases(
-      sharedPrefs: await SharedPreferences.getInstance(),
+      sharedPrefs: await _getSharedPrefs(),
       httpClient: http.Client(),
     );
   });
   tearDown(() async {
     await backend.tearDown();
   });
-  test("", () {});
+
+  test("happy path", () {
+    //
+  });
+}
+
+Future<SharedPreferences> _getSharedPrefs() {
+  SharedPreferences.setMockInitialValues({});
+  return SharedPreferences.getInstance();
 }
