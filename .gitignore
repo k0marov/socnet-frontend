@@ -1,3 +1,8 @@
+test/e2e/backend/go-socnet
+test/e2e/backend/static
+
+
+
 # Miscellaneous
 *.class
 *.log

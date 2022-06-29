@@ -23,6 +23,7 @@ dependencies:
   image_picker: ^0.8.5
   image_cropper: ^2.0.2
   fake_async: ^1.2.0
+  path: ^1.8.1
 
 dev_dependencies:
   english_words: ^4.0.0
