@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:socnet/core/mappers/url_mapper.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 
 class ProfileModel extends Equatable {
@@ -28,9 +27,7 @@ class ProfileModel extends Equatable {
         'id': _entity.id,
         'username': _entity.username,
         'about': _entity.about,
-        'avatar_url': _entity.avatarUrl != null
-            ? URLMapper().longToShort(_entity.avatarUrl!)
-            : null,
+        'avatar_url': _entity.avatarUrl,
         'followers': _entity.followers,
         'follows': _entity.follows,
         'is_mine': _entity.isMine,

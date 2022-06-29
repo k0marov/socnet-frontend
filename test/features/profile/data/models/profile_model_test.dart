@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 
 import '../../../../core/fixtures/fixture_reader.dart';
+import '../../shared.dart';
 
 void main() {
   late Profile profile;
@@ -57,5 +57,10 @@ void main() {
         expect(tJson, tExpectedJson);
       },
     );
+  });
+
+  test("should not change an entity that is passed through toJson and then fromJson", () async {
+    final tProfile = createTestProfile();
+    expect(ProfileModel.fromJson(ProfileModel(tProfile).toJson()).toEntity(), tProfile);
   });
 }
