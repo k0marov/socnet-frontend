@@ -22,6 +22,7 @@ void main() {
       sharedPrefs: await _getSharedPrefs(),
       httpClient: http.Client(),
       apiHost: apiHost,
+      useHTTPS: false,
     );
   });
   tearDown(() async {

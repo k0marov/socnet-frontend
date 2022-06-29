@@ -50,12 +50,13 @@ class UseCases {
     required SharedPreferences sharedPrefs,
     required http.Client httpClient,
     required String apiHost,
+    bool useHTTPS = true,
   }) {
     // core
-    final apiFacade = AuthenticatedAPIFacade(httpClient, apiHost);
+    final apiFacade = AuthenticatedAPIFacade(httpClient, apiHost, useHTTPS: useHTTPS);
     // auth
     final localAuthDS = LocalTokenDataSourceImpl(sharedPrefs);
-    final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost);
+    final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost, useHTTPS: useHTTPS);
     final authRepo = AuthRepositoryImpl(localAuthDS, netAuthDS);
     getAuthToken = GetAuthTokenUseCase(authRepo);
     login = LoginUseCase(authRepo);
