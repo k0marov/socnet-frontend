@@ -43,6 +43,8 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
         'username': username,
         'password': password,
       };
+      print(uri);
+      print(requestBody);
       final apiResponse = await _httpClient.post(uri,
           headers: {
             'Accept': 'application/json',
@@ -55,6 +57,7 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
         );
       }
       final jsonResponse = json.decode(apiResponse.body);
+      print(jsonResponse);
       return TokenModel.fromJson(jsonResponse);
     });
   }

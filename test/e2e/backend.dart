@@ -3,18 +3,24 @@ import 'dart:io' as io;
 import 'package:path/path.dart' as p;
 
 class Backend {
-  late final io.Process process;
-
+  late final io.Process _process;
   Future<void> setUp() async {
-    process = await io.Process.start(
-      _backendPath("run.sh"),
+    await io.Process.run("./setup.sh", [], workingDirectory: _backendDir);
+    _process = await io.Process.start(
+      "./main",
       [],
-      workingDirectory: _backendDir,
+      environment: {
+        "SOCIO_STATIC_DIR": _staticDir,
+        "SOCIO_STATIC_HOST": "static.example.com",
+      },
+      workingDirectory: _backendPath("go-socnet"),
     );
+    io.sleep(Duration(seconds: 1)); // increase this value if server refuses connection with the test code
   }
 
   Future<void> tearDown() async {
-    process.kill();
+    _process.kill();
+    await io.Process.run("./cleanup.sh", [], workingDirectory: _backendDir);
   }
 }
 
