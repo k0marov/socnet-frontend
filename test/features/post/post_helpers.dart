@@ -1,4 +1,3 @@
-import 'package:socnet/core/simple_file/simple_file.dart';
 import 'package:socnet/features/posts/domain/entities/post.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 
@@ -22,6 +21,6 @@ Post createTestPost() => Post(
     );
 
 NewPostValue createTestNewPost() => NewPostValue(
-      images: [SimpleFile(path: randomString(), filename: randomString())],
+      images: [createTestFile()],
       text: randomString(),
     );

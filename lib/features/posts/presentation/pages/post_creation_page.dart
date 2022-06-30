@@ -47,7 +47,7 @@ class _InternalPage extends StatelessWidget {
                       if (imageFile != null) {
                         context.read<PostCreationBloc>().add(
                               ImageAdded(
-                                newImage: SimpleFile(path: imageFile.path, filename: 'img'),
+                                newImage: SimpleFile(imageFile.path),
                               ),
                             );
                       }
@@ -56,9 +56,7 @@ class _InternalPage extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      context
-                          .read<PostCreationBloc>()
-                          .add(PostButtonPressed(finalText: "abracadabra"));
+                      context.read<PostCreationBloc>().add(PostButtonPressed(finalText: "abracadabra"));
                     },
                     child: Text("Post"),
                   )

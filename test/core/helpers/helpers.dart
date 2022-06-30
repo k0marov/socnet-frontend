@@ -11,7 +11,8 @@ String randomAdjective() => english_words.adjectives[Random().nextInt(english_wo
 String randomString() => randomAdjective() + " " + randomNoun();
 
 DateTime randomTime() =>
-    DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch / 1000000).floor() * 1000000).toUtc(); // accuracy to seconds
+    DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch / 1000000).floor() * 1000000)
+        .toUtc(); // accuracy to seconds
 int randomInt() => Random().nextInt(100);
 bool randomBool() => Random().nextInt(1) > 0.5;
 
@@ -22,10 +23,7 @@ NetworkException randomNetworkException() => NetworkException(
 
 Failure randomFailure() => NetworkFailure(randomNetworkException());
 
-SimpleFile createTestFile() => SimpleFile(
-      path: randomString(),
-      filename: randomString(),
-    );
+SimpleFile createTestFile() => SimpleFile(randomString());
 
 T forceRight<T>(Either<Failure, T> target) {
   late final T result;

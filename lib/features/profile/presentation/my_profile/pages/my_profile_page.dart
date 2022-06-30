@@ -69,7 +69,7 @@ class _InternalPage extends StatelessWidget {
                           if (croppedImage == null) return;
                           context
                               .read<MyProfileBloc>()
-                              .add(AvatarUpdateRequested(newAvatar: SimpleFile(filename: "avatar", path: croppedImage.path)));
+                              .add(AvatarUpdateRequested(newAvatar: SimpleFile(croppedImage.path)));
                         }
                       },
                     ),
