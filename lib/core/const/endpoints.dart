@@ -52,6 +52,10 @@ String getMyProfileEndpoint() {
   return "/api/profiles/me";
 }
 
+String getProfileEndpoint(String id) {
+  return "/api/profiles/$id";
+}
+
 String updateProfileEndpoint() {
   return "/api/profiles/me";
 }

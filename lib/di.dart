@@ -22,6 +22,7 @@ import 'package:socnet/features/profile/data/datasources/profile_network_datasou
 import 'package:socnet/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:socnet/features/profile/domain/usecases/get_follows.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
+import 'package:socnet/features/profile/domain/usecases/get_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/toggle_follow.dart';
 import 'package:socnet/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
@@ -38,6 +39,7 @@ class UseCases {
 
   late final GetFollows getFollows;
   late final GetMyProfile getMyProfile;
+  late final GetProfile getProfile;
   late final UpdateProfile updateProfile;
   late final UpdateAvatar updateAvatar;
   late final ToggleFollow toggleFollow;
@@ -68,6 +70,7 @@ class UseCases {
     final profileRepo = ProfileRepositoryImpl(netProfileDS);
     getFollows = GetFollows(profileRepo);
     getMyProfile = GetMyProfile(profileRepo);
+    getProfile = GetProfile(profileRepo);
     updateProfile = UpdateProfile(profileRepo);
     updateAvatar = UpdateAvatar(profileRepo);
     toggleFollow = ToggleFollow(profileRepo);

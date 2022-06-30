@@ -28,6 +28,11 @@ abstract class ProfileNetworkDataSource {
   /// throws:
   /// [NoTokenException]
   /// [NetworkException]
+  Future<ProfileModel> getProfile(String id);
+
+  /// throws:
+  /// [NoTokenException]
+  /// [NetworkException]
   Future<ProfileModel> updateProfile(ProfileUpdate update);
 
   /// throws:
@@ -89,6 +94,16 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
       final response = await _apiFacade.sendFiles("PUT", updateAvatarEndpoint(), files, {});
       checkStatusCode(response);
       return json.decode(response.body)['avatar_url'];
+    });
+  }
+
+  @override
+  Future<ProfileModel> getProfile(String id) async {
+    return exceptionConverterCall(() async {
+      final response = await _apiFacade.get(getProfileEndpoint(id), {});
+      checkStatusCode(response);
+      final profileJson = json.decode(response.body);
+      return ProfileModel.fromJson(profileJson);
     });
   }
 }

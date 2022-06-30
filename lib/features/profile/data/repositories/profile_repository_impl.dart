@@ -14,16 +14,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<Failure, List<Profile>>> getFollows(Profile profile) async {
-    return exceptionToFailureCall(() => _dataSource
-        .getFollows(ProfileModel(profile))
-        .then((modelList) =>
-            modelList.map((model) => model.toEntity()).toList()));
+    return exceptionToFailureCall(
+        () => _dataSource.getFollows(ProfileModel(profile)).then((modelList) => modelList.map((model) => model.toEntity()).toList()));
   }
 
   @override
   Future<Either<Failure, Profile>> getMyProfile() async {
-    return exceptionToFailureCall(
-        () => _dataSource.getMyProfile().then((model) => model.toEntity()));
+    return exceptionToFailureCall(() => _dataSource.getMyProfile().then((model) => model.toEntity()));
   }
 
   @override
@@ -35,12 +32,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<Failure, void>> toggleFollow(Profile profile) async {
-    return exceptionToFailureCall(
-        () => _dataSource.toggleFollow(ProfileModel(profile)));
+    return exceptionToFailureCall(() => _dataSource.toggleFollow(ProfileModel(profile)));
   }
 
   @override
   Future<Either<Failure, AvatarURL>> updateAvatar(AvatarFile newAvatar) async {
     return exceptionToFailureCall(() => _dataSource.updateAvatar(newAvatar));
+  }
+
+  @override
+  Future<Either<Failure, Profile>> getProfile(String id) async {
+    return exceptionToFailureCall(() => _dataSource.getProfile(id).then((model) => model.toEntity()));
   }
 }

@@ -9,8 +9,7 @@ import '../../../../core/helpers/base_tests.dart';
 import '../../../../core/helpers/helpers.dart';
 import '../../shared.dart';
 
-class MockProfileNetworkDataSource extends Mock
-    implements ProfileNetworkDataSource {}
+class MockProfileNetworkDataSource extends Mock implements ProfileNetworkDataSource {}
 
 void main() {
   late ProfileRepositoryImpl sut;
@@ -23,13 +22,8 @@ void main() {
 
   group('getFollows', () {
     final tProfile = createTestProfile();
-    final tFollows = [
-      createTestProfile(),
-      createTestProfile(),
-      createTestProfile()
-    ];
-    final tFollowsModels =
-        tFollows.map((profile) => ProfileModel(profile)).toList();
+    final tFollows = [createTestProfile(), createTestProfile(), createTestProfile()];
+    final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
     baseRepositoryTests(
       () => sut.getFollows(tProfile),
       () => mockDataSource.getFollows(ProfileModel(tProfile)),
@@ -45,6 +39,18 @@ void main() {
     baseRepositoryTests(
       () => sut.getMyProfile(),
       () => mockDataSource.getMyProfile(),
+      tProfileModel,
+      (result) => result == tProfile,
+      () => mockDataSource,
+    );
+  });
+  group('getProfile', () {
+    final tProfile = createTestProfile();
+    final tProfileModel = ProfileModel(tProfile);
+    final tId = randomString();
+    baseRepositoryTests(
+      () => sut.getProfile(tId),
+      () => mockDataSource.getProfile(tId),
       tProfileModel,
       (result) => result == tProfile,
       () => mockDataSource,
