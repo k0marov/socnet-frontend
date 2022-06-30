@@ -47,9 +47,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
       checkStatusCode(response);
 
       final profiles = json.decode(response.body)['profiles'];
-      return profiles
-          .map<ProfileModel>((profileJson) => ProfileModel.fromJson(profileJson))
-          .toList();
+      return profiles.map<ProfileModel>((profileJson) => ProfileModel.fromJson(profileJson)).toList();
     });
   }
 
@@ -72,7 +70,6 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
       checkStatusCode(response);
 
       final profileJson = json.decode(response.body);
-      print(profileJson);
       return ProfileModel.fromJson(profileJson);
     });
   }
