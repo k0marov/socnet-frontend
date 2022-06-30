@@ -7,6 +7,7 @@ import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/di.dart' as di;
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
+import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
 
 import '../core/helpers/helpers.dart';
 import 'backend.dart';
@@ -35,17 +36,30 @@ void main() {
 
   test("happy path", () async {
     // register a user
-    final token = forceRight(await usecases.register(RegisterParams(username: "sam", password: "speedx3D")));
+    final token1 = forceRight(await usecases.register(RegisterParams(username: "sam", password: "speedx3D")));
     // try to login with the same credentials
-    final tokenFromLogin = forceRight(await usecases.login(LoginParams(username: "sam", password: "speedx3D")));
+    final token1FromLogin = forceRight(await usecases.login(LoginParams(username: "sam", password: "speedx3D")));
     // assert that returned tokens are equal
-    expect(tokenFromLogin, token);
+    expect(token1FromLogin, token1);
 
     // get my profile
-    final myProfile = forceRight(await usecases.getMyProfile(NoParams()));
-    expect(myProfile.username, "sam");
-    expect(myProfile.isMine, true);
-    expect(myProfile.isFollowed, false);
+    final profile1 = forceRight(await usecases.getMyProfile(NoParams()));
+    expect(profile1.username, "sam");
+    expect(profile1.isMine, true);
+    expect(profile1.isFollowed, false);
+
+    // logout
+    var isSuccessful = await usecases.logout(NoParams());
+    expect(isSuccessful.isRight(), true);
+
+    // register another user
+    final token2 = forceRight(await usecases.register(RegisterParams(username: "test", password: "pass12345")));
+    final profile2 = forceRight(await usecases.getMyProfile(NoParams()));
+    expect(profile2.username, "test");
+
+    // follow first user from second user
+    isSuccessful = await usecases.toggleFollow(ProfileParams(profile: profile1));
+    expect(isSuccessful.isRight(), true);
   });
 }
 
