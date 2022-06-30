@@ -1,4 +1,7 @@
 @Tags(["end-to-end"])
+
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -10,9 +13,11 @@ import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
+import 'package:socnet/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
+import '../core/fixtures/fixture_reader.dart';
 import '../core/helpers/helpers.dart';
 import 'backend.dart';
 
@@ -108,6 +113,10 @@ void main() {
     expect(updatedProfile2.about, "New About");
 
     print("update avatar");
+    final newAvatar = fileFixture("avatar.png");
+    final newURL = forceRight(await usecases.updateAvatar(AvatarParams(newAvatar: newAvatar)));
+    final avatarFromStatic = backend.getStaticFile(newURL);
+    expect(avatarFromStatic.readAsBytesSync(), File(newAvatar.path).readAsBytesSync());
   });
 }
 
