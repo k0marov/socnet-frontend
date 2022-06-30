@@ -1,16 +1,14 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:dartz/dartz.dart';
 import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/auth/domain/repositories/auth_repository.dart';
 
-import '../entities/token_entity.dart';
-
-class LoginUseCase extends UseCase<Token, LoginParams> {
+class LoginUseCase extends UseCase<void, LoginParams> {
   final AuthRepository _repository;
   LoginUseCase(this._repository);
   @override
-  Future<Either<Failure, Token>> call(LoginParams params) async {
+  Future<Either<Failure, void>> call(LoginParams params) async {
     return _repository.login(params.username, params.password);
   }
 }

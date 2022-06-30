@@ -28,7 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Token>> login(String username, String password) async {
+  Future<Either<Failure, void>> login(String username, String password) async {
     return _sharedLoginAndRegister(
       () async => _networkDataSource.login(
         username,
@@ -38,7 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Token>> register(String username, String password) async {
+  Future<Either<Failure, void>> register(String username, String password) async {
     return _sharedLoginAndRegister(
       () async => _networkDataSource.register(
         username,
@@ -47,12 +47,10 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  Future<Either<Failure, Token>> _sharedLoginAndRegister(
-      Future<TokenModel> Function() networkLoginOrRegister) async {
+  Future<Either<Failure, void>> _sharedLoginAndRegister(Future<TokenModel> Function() networkLoginOrRegister) async {
     return exceptionToFailureCall(() async {
       final authToken = await networkLoginOrRegister();
       _localDataSource.storeToken(authToken);
-      return authToken.toEntity();
     });
   }
 

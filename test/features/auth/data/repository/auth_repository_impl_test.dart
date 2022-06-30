@@ -73,26 +73,21 @@ void main() {
   void sharedLoginAndRegister({required bool isLogin}) {
     const tUsername = "username";
     const tPassword = "password";
-    const tToken = Token(token: "42");
-    const tTokenModel = TokenModel(tToken);
+    const tTokenModel = TokenModel(Token(token: "42"));
     test(
-      "should hash the password, call the network datasource, then store token in cache and return it, if everything is successful",
+      "should call the network datasource, then store token in cache and return it, if everything is successful",
       () async {
         // arrange
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any()))
-              .thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tTokenModel);
         } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any()))
-              .thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tTokenModel);
         }
         when(() => mockLocalTokenDataSource.storeToken(any())).thenAnswer((_) async {});
         // act
-        final result = isLogin
-            ? await sut.login(tUsername, tPassword)
-            : await sut.register(tUsername, tPassword);
+        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
         // assert
-        expect(result, const Right(tToken));
+        expect(result, const Right(null));
         if (isLogin) {
           verify(() => mockNetworkAuthDataSource.login(tUsername, tPassword));
         } else {
@@ -114,9 +109,7 @@ void main() {
           when(() => mockNetworkAuthDataSource.register(any(), any())).thenThrow(tException);
         }
         // act
-        final result = isLogin
-            ? await sut.login(tUsername, tPassword)
-            : await sut.register(tUsername, tPassword);
+        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
         // assert
         expect(result, Left(NetworkFailure(tException)));
       },
@@ -127,17 +120,13 @@ void main() {
       () async {
         // arrange
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any()))
-              .thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tTokenModel);
         } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any()))
-              .thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tTokenModel);
         }
         when(() => mockLocalTokenDataSource.storeToken(any())).thenThrow(CacheException());
         // act
-        final result = isLogin
-            ? await sut.login(tUsername, tPassword)
-            : await sut.register(tUsername, tPassword);
+        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
         // assert
         expect(result, Left(CacheFailure()));
       },
