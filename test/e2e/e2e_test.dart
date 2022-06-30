@@ -1,3 +1,4 @@
+@Tags(["end-to-end"])
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -40,6 +41,7 @@ void main() {
     // assert that returned tokens are equal
     expect(tokenFromLogin, token);
 
+    // get my profile
     final myProfile = forceRight(await usecases.getMyProfile(NoParams()));
     expect(myProfile.username, "sam");
     expect(myProfile.isMine, true);
