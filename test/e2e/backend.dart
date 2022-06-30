@@ -9,6 +9,8 @@ class Backend {
   String get _workDir => p.join(_backendDir, "workdir");
   String get _staticDir => p.join(_workDir, "static");
 
+  static const _staticHost = "static.example.com";
+
   late final io.Process _process;
   Future<void> setUp() async {
     await io.Process.run("./setup.sh", [], workingDirectory: _backendDir, runInShell: true);
@@ -17,7 +19,7 @@ class Backend {
       [],
       environment: {
         "SOCIO_STATIC_DIR": _staticDir,
-        "SOCIO_STATIC_HOST": "static.example.com",
+        "SOCIO_STATIC_HOST": _staticHost,
       },
       workingDirectory: _workDir,
     );
@@ -27,5 +29,10 @@ class Backend {
   Future<void> tearDown() async {
     _process.kill();
     Directory(_workDir).delete(recursive: true);
+  }
+
+  File getStaticFile(String url) {
+    final path = url.replaceFirst(url, _staticHost);
+    return File(p.join(_staticDir, path));
   }
 }
