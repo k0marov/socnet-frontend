@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/di.dart';
-import 'package:socnet/features/auth/presentation/widgets/login_form.dart';
-import 'package:socnet/features/auth/presentation/widgets/register_form.dart';
 
 import '../bloc/auth_page_bloc.dart';
+import '../widgets/login_form.dart';
+import '../widgets/register_form.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({Key? key}) : super(key: key);

@@ -108,9 +108,12 @@ void main() {
           images: tImages,
           currentSavedText: "asdf",
         ));
-        when(() => mockCreatePost(
-                PostCreateParams(newPost: NewPostValue(images: tImages, text: tText))))
-            .thenAnswer((_) async => Right(createTestPost()));
+        when(() => mockCreatePost(PostCreateParams(
+              newPost: NewPostValue(
+                images: tImages,
+                text: tText,
+              ),
+            ))).thenAnswer((_) async => Right(createTestPost()));
         // assert later
         expect(sut.stream, emitsInOrder([CreationSuccessful()]));
         // act
@@ -126,8 +129,7 @@ void main() {
           images: tImages,
           currentSavedText: "asdf",
         ));
-        when(() => mockCreatePost(
-                PostCreateParams(newPost: NewPostValue(images: tImages, text: tText))))
+        when(() => mockCreatePost(PostCreateParams(newPost: NewPostValue(images: tImages, text: tText))))
             .thenAnswer((_) async => Left(tFailure));
         // assert later
         expect(

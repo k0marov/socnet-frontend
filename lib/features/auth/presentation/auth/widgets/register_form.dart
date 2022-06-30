@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:socnet/features/auth/presentation/bloc/auth_page_bloc.dart';
 
-import '../../../../core/error/failures.dart';
+import '../../../../../core/error/failures.dart';
+import '../bloc/auth_page_bloc.dart';
 
 class RegisterForm extends StatefulWidget {
   final Failure? failure;
@@ -35,18 +35,13 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
               TextFormField(
                 onChanged: (value) => setState(() => _passwordRepeat = value),
-                validator: (value) =>
-                    value != _password ? "Passwords don't match" : null,
+                validator: (value) => value != _password ? "Passwords don't match" : null,
               ),
               TextButton(
                   child: const Text("Register"),
-                  onPressed: _username.isNotEmpty &&
-                          _password.isNotEmpty &&
-                          _passwordRepeat.isNotEmpty
+                  onPressed: _username.isNotEmpty && _password.isNotEmpty && _passwordRepeat.isNotEmpty
                       ? () => _formKey.currentState!.validate()
-                          ? context
-                              .read<AuthPageBloc>()
-                              .add(RegistrationRequested(
+                          ? context.read<AuthPageBloc>().add(RegistrationRequested(
                                 username: _username,
                                 password: _password,
                               ))

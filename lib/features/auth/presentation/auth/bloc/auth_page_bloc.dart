@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:socnet/auth_gate/bloc/auth_gate_bloc.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
+
+import '../../auth_gate/bloc/auth_gate_bloc.dart';
 
 part 'auth_page_event.dart';
 part 'auth_page_state.dart';
@@ -42,11 +43,7 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
           username: event.username,
           password: event.password,
         ));
-        result.fold(
-            (failure) => emit(AuthPageLoginFailure(
-                username: event.username,
-                password: event.password,
-                failure: failure)),
+        result.fold((failure) => emit(AuthPageLoginFailure(username: event.username, password: event.password, failure: failure)),
             (token) => _authGateBloc.add(AuthStateUpdateRequested()));
       } else if (event is RegistrationRequested) {
         emit(const AuthPageLoading());
@@ -55,10 +52,7 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
           password: event.password,
         ));
         result.fold(
-          (failure) => emit(AuthPageRegistrationFailure(
-              username: event.username,
-              password: event.password,
-              failure: failure)),
+          (failure) => emit(AuthPageRegistrationFailure(username: event.username, password: event.password, failure: failure)),
           (token) => _authGateBloc.add(AuthStateUpdateRequested()),
         );
         _authGateBloc.add(AuthStateUpdateRequested());

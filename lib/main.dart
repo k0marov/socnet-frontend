@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:socnet/auth_gate/auth_gate.dart';
+
 import 'di.dart' as di;
+import 'features/auth/presentation/auth_gate/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

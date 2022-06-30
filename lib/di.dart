@@ -10,7 +10,6 @@ import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/features/auth/presentation/bloc/auth_page_bloc.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
@@ -28,6 +27,8 @@ import 'package:socnet/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
 import 'package:socnet/features/profile/presentation/profile/bloc/profile_bloc.dart';
+
+import 'features/auth/presentation/auth/bloc/auth_page_bloc.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
@@ -52,8 +53,6 @@ class UseCases {
     required String apiHost,
     bool useHTTPS = true,
   }) {
-    // core
-    final apiFacade = AuthenticatedAPIFacade(httpClient, apiHost, useHTTPS: useHTTPS);
     // auth
     final localAuthDS = LocalTokenDataSourceImpl(sharedPrefs);
     final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost, useHTTPS: useHTTPS);
@@ -62,6 +61,8 @@ class UseCases {
     login = LoginUseCase(authRepo);
     logout = LogoutUsecase(authRepo);
     register = RegisterUseCase(authRepo);
+    // api facade
+    final apiFacade = AuthenticatedAPIFacade(getAuthToken, httpClient, apiHost, useHTTPS: useHTTPS);
     // profiles
     final netProfileDS = ProfileNetworkDataSourceImpl(apiFacade);
     final profileRepo = ProfileRepositoryImpl(netProfileDS);

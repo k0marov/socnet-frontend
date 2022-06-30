@@ -9,7 +9,7 @@ import 'package:socnet/features/profile/domain/values/profile_update.dart';
 import 'package:socnet/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../../auth_gate/bloc/auth_gate_bloc.dart';
+import '../../../../auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
 
 class MyProfilePage extends StatelessWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -63,14 +63,13 @@ class _InternalPage extends StatelessWidget {
                     TextButton(
                       child: const Text("Update Avatar"),
                       onPressed: () async {
-                        final imageFile =
-                            await ImagePicker().pickImage(source: ImageSource.gallery);
+                        final imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                         if (imageFile != null) {
-                          final croppedImage =
-                              await ImageCropper().cropImage(sourcePath: imageFile.path);
+                          final croppedImage = await ImageCropper().cropImage(sourcePath: imageFile.path);
                           if (croppedImage == null) return;
-                          context.read<MyProfileBloc>().add(AvatarUpdateRequested(
-                              newAvatar: SimpleFile(filename: "avatar", path: croppedImage.path)));
+                          context
+                              .read<MyProfileBloc>()
+                              .add(AvatarUpdateRequested(newAvatar: SimpleFile(filename: "avatar", path: croppedImage.path)));
                         }
                       },
                     ),
