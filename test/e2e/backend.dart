@@ -32,7 +32,7 @@ class Backend {
   }
 
   File getStaticFile(String url) {
-    final path = url.replaceFirst(_staticHost, "");
+    final path = url.replaceFirst(_staticHost + "/", "");
     return File(p.join(_staticDir, path));
   }
 }
