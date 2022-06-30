@@ -10,6 +10,8 @@ import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
+import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
+import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
 import '../core/helpers/helpers.dart';
 import 'backend.dart';
@@ -37,14 +39,14 @@ void main() {
   });
 
   test("happy path", () async {
-    // register a user
+    print("register a user");
     final token1 = forceRight(await usecases.register(RegisterParams(username: "sam", password: "speedx3D")));
-    // try to login with the same credentials
+    print("try to login with the same credentials");
     final token1FromLogin = forceRight(await usecases.login(LoginParams(username: "sam", password: "speedx3D")));
-    // assert that returned tokens are equal
+    print("assert that returned tokens are equal");
     expect(token1FromLogin, token1);
 
-    // get my profile
+    print("get my profile");
     final profile1 = forceRight(await usecases.getMyProfile(NoParams()));
     expect(profile1.username, "sam");
     expect(profile1.isMine, true);
@@ -52,16 +54,16 @@ void main() {
     expect(profile1.follows, 0);
     expect(profile1.followers, 0);
 
-    // logout
+    print("logout");
     var isSuccessful = await usecases.logout(NoParams());
     expect(isSuccessful.isRight(), true);
 
-    // register another user
+    print("register another user");
     final token2 = forceRight(await usecases.register(RegisterParams(username: "test", password: "pass12345")));
     final profile2 = forceRight(await usecases.getMyProfile(NoParams()));
     expect(profile2.username, "test");
 
-    // get first profile, viewing it from second user
+    print("get first profile, viewing from second user");
     final gotProfile1 = forceRight(await usecases.getProfile(ProfileIDParams(profile1.id)));
     final wantProfile1 = Profile(
       id: profile1.id,
@@ -75,11 +77,11 @@ void main() {
     );
     expect(gotProfile1, wantProfile1);
 
-    // follow first user from second user
+    print("follow first user from second user");
     isSuccessful = await usecases.toggleFollow(ProfileParams(profile: gotProfile1));
     expect(isSuccessful.isRight(), true);
 
-    // assert it was followed
+    print("assert it was followed");
     final wantProfile1Followed = Profile(
       id: profile1.id,
       username: profile1.username,
@@ -92,6 +94,24 @@ void main() {
     );
     final gotProfile1Followed = forceRight(await usecases.getProfile(ProfileIDParams(profile1.id)));
     expect(gotProfile1Followed, wantProfile1Followed);
+
+    final gotProfile2AfterFollowing = forceRight(await usecases.getMyProfile(NoParams()));
+    expect(gotProfile2AfterFollowing.follows, 1);
+
+    print("get follows of second profile");
+    final profile2Follows = forceRight(await usecases.getFollows(ProfileParams(profile: gotProfile2AfterFollowing)));
+    expect(profile2Follows.length, 1);
+    expect(profile2Follows[0], wantProfile1Followed);
+
+    print("update about");
+    final updatedProfile2 = forceRight(await usecases.updateProfile(
+      const ProfileUpdateParams(
+        newInfo: ProfileUpdate(newAbout: "New About"),
+      ),
+    ));
+    expect(updatedProfile2.about, "New About");
+
+    print("update avatar");
   });
 }
 
