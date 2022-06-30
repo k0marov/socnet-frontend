@@ -40,11 +40,9 @@ void main() {
 
   test("happy path", () async {
     print("register a user");
-    final token1 = forceRight(await usecases.register(RegisterParams(username: "sam", password: "speedx3D")));
+    forceRight(await usecases.register(RegisterParams(username: "sam", password: "speedx3D")));
     print("try to login with the same credentials");
-    final token1FromLogin = forceRight(await usecases.login(LoginParams(username: "sam", password: "speedx3D")));
-    print("assert that returned tokens are equal");
-    expect(token1FromLogin, token1);
+    forceRight(await usecases.login(LoginParams(username: "sam", password: "speedx3D")));
 
     print("get my profile");
     final profile1 = forceRight(await usecases.getMyProfile(NoParams()));
@@ -55,11 +53,10 @@ void main() {
     expect(profile1.followers, 0);
 
     print("logout");
-    var isSuccessful = await usecases.logout(NoParams());
-    expect(isSuccessful.isRight(), true);
+    forceRight(await usecases.logout(NoParams()));
 
     print("register another user");
-    final token2 = forceRight(await usecases.register(RegisterParams(username: "test", password: "pass12345")));
+    forceRight(await usecases.register(RegisterParams(username: "test", password: "pass12345")));
     final profile2 = forceRight(await usecases.getMyProfile(NoParams()));
     expect(profile2.username, "test");
 
@@ -78,8 +75,7 @@ void main() {
     expect(gotProfile1, wantProfile1);
 
     print("follow first user from second user");
-    isSuccessful = await usecases.toggleFollow(ProfileParams(profile: gotProfile1));
-    expect(isSuccessful.isRight(), true);
+    forceRight(await usecases.toggleFollow(ProfileParams(profile: gotProfile1)));
 
     print("assert it was followed");
     final wantProfile1Followed = Profile(
