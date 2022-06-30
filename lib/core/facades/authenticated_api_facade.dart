@@ -4,27 +4,27 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/simple_file/simple_file.dart';
+import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
+import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
 class AuthenticatedAPIFacade {
   final http.Client _httpClient;
+  final GetAuthTokenUseCase _getToken;
   final String _apiHost;
   final bool useHTTPS;
 
   /// useHTTPS should be set to false only in tests
-  AuthenticatedAPIFacade(this._httpClient, this._apiHost, {this.useHTTPS = true});
+  AuthenticatedAPIFacade(this._getToken, this._httpClient, this._apiHost, {this.useHTTPS = true});
 
-  Token? _token;
-  void setToken(Token? newToken) => _token = newToken;
-
-  Future<http.Response> get(String endpoint, Map<String, String> body) {
-    final tokenEntity = _obtainTokenOrThrow();
+  Future<http.Response> get(String endpoint, Map<String, String> body) async {
+    final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.get(_composeURL(endpoint, body), headers: headers);
   }
 
-  Future<http.Response> post(String endpoint, Map<String, dynamic> body) {
-    final tokenEntity = _obtainTokenOrThrow();
+  Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
+    final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.post(
       _composeURL(endpoint),
@@ -33,8 +33,8 @@ class AuthenticatedAPIFacade {
     );
   }
 
-  Future<http.Response> delete(String endpoint) {
-    final tokenEntity = _obtainTokenOrThrow();
+  Future<http.Response> delete(String endpoint) async {
+    final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.delete(
       _composeURL(endpoint),
@@ -42,8 +42,8 @@ class AuthenticatedAPIFacade {
     );
   }
 
-  Future<http.Response> put(String endpoint, Map<String, dynamic> body) {
-    final tokenEntity = _obtainTokenOrThrow();
+  Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
+    final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
     return _httpClient.put(
       _composeURL(endpoint),
@@ -58,7 +58,8 @@ class AuthenticatedAPIFacade {
     Map<String, SimpleFile> files,
     Map<String, String> data,
   ) async {
-    final headers = _getHeaders(_obtainTokenOrThrow().token);
+    final token = await _obtainTokenOrThrow();
+    final headers = _getHeaders(token.token);
     final request = http.MultipartRequest(method, _composeURL(endpoint));
 
     for (final fileEntry in files.entries) {
@@ -79,13 +80,14 @@ class AuthenticatedAPIFacade {
     return http.Response.fromStream(response);
   }
 
-  Token _obtainTokenOrThrow() {
-    final token = _token;
-    if (token != null) {
-      return token;
-    } else {
-      throw NoTokenException();
-    }
+  Future<Token> _obtainTokenOrThrow() async {
+    late final Token token;
+    final tokenEither = await _getToken(NoParams());
+    tokenEither.fold(
+      (failure) => throw NoTokenException(),
+      (gotToken) => token = gotToken,
+    );
+    return token;
   }
 
   Map<String, String> _getHeaders(String token) => {

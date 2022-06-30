@@ -1,27 +1,35 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/exceptions.dart';
+import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/core/facades/authenticated_api_facade.dart';
+import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
+import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
 import '../fixtures/fixture_reader.dart';
 import '../helpers/helpers.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 
+class MockGetAuthToken extends Mock implements GetAuthTokenUseCase {}
+
 void main() {
   late MockHttpClient mockHttpClient;
+  late MockGetAuthToken mockGetAuthToken;
   late AuthenticatedAPIFacade sut;
 
   const tApiHost = "example.com";
 
   setUp(() {
     mockHttpClient = MockHttpClient();
-    sut = AuthenticatedAPIFacade(mockHttpClient, tApiHost);
+    mockGetAuthToken = MockGetAuthToken();
+    sut = AuthenticatedAPIFacade(mockGetAuthToken, mockHttpClient, tApiHost);
   });
   setUpAll(() {
     registerFallbackValue(Uri());
@@ -35,23 +43,33 @@ void main() {
   };
   final tResponse = http.Response("", 200);
 
-  group('get', () {
-    const tEndpoint = "profiles-detail/1";
-    const tBody = <String, String>{'something': 'value'};
+  void baseTestNoTokenException(Function act) {
     test(
       "should throw NoTokenException if called when token is null",
       () async {
+        // arrange
+        when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => Left(CacheFailure()));
         // assert
-        expect(() => sut.get(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
+        expect(act, throwsA(NoTokenException()));
       },
     );
+  }
+
+  void arrangeToken() {
+    when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => Right(tToken));
+  }
+
+  group('get', () {
+    const tEndpoint = "profiles-detail/1";
+    const tBody = <String, String>{'something': 'value'};
+    baseTestNoTokenException(() => sut.get(tEndpoint, tBody));
     test(
       "should call http client with proper arguments and return the response",
       () async {
         // arrange
+        arrangeToken();
         when(() => mockHttpClient.get(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
-        sut.setToken(tToken);
         final result = await sut.get(tEndpoint, tBody);
         // assert
         expect(result, tResponse);
@@ -68,17 +86,12 @@ void main() {
   group('post', () {
     const tEndpoint = "update-avatar/1234";
     final tBody = {'avatar': "testtesttest", 'something': 'value'};
-    test(
-      "should throw NoTokenException if called when token is null",
-      () async {
-        // assert
-        expect(() => sut.post(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
-      },
-    );
+    baseTestNoTokenException(() => sut.post(tEndpoint, tBody));
     test(
       "should call http client with proper arguments and return the result",
       () async {
         // arrange
+        arrangeToken();
         when(
           () => mockHttpClient.post(
             any(),
@@ -87,7 +100,6 @@ void main() {
           ),
         ).thenAnswer((_) async => tResponse);
         // act
-        sut.setToken(tToken);
         final result = await sut.post(tEndpoint, tBody);
         // assert
         expect(result, tResponse);
@@ -104,21 +116,15 @@ void main() {
   });
   group('delete', () {
     final tEndpoint = randomString();
-    test(
-      "should throw NoTokenException if called when token is null",
-      () async {
-        // assert
-        expect(() => sut.delete(tEndpoint), throwsA(isA<NoTokenException>()));
-      },
-    );
+    baseTestNoTokenException(() => sut.delete(tEndpoint));
     test(
       "should call http client with proper arguments and return the result",
       () async {
         // arrange
+        arrangeToken();
         final tResponse = http.Response(randomString(), 4242);
         when(() => mockHttpClient.delete(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
-        sut.setToken(tToken);
         final result = await sut.delete(tEndpoint);
         // assert
         expect(result, tResponse);
@@ -135,17 +141,12 @@ void main() {
   group('put', () {
     const tEndpoint = "update-avatar/1234";
     final tBody = {'avatar': "testtesttest", 'something': 'value'};
-    test(
-      "should throw NoTokenException if called when token is null",
-      () async {
-        // assert
-        expect(() => sut.put(tEndpoint, tBody), throwsA(const TypeMatcher<NoTokenException>()));
-      },
-    );
+    baseTestNoTokenException(() => sut.put(tEndpoint, tBody));
     test(
       "should call http client with proper arguments and return the result",
       () async {
         // arrange
+        arrangeToken();
         when(
           () => mockHttpClient.put(
             any(),
@@ -154,7 +155,6 @@ void main() {
           ),
         ).thenAnswer((_) async => tResponse);
         // act
-        sut.setToken(tToken);
         final result = await sut.put(tEndpoint, tBody);
         // assert
         expect(result, tResponse);
@@ -170,43 +170,29 @@ void main() {
     );
   });
   group('sendFiles', () {
-    final tAvatarFile = fileFixture('avatar.png');
+    final tFile = fileFixture('avatar.png');
+    const tFileField = 'avatar';
+    final tFiles = {tFileField: fileFixture('avatar.png')};
+    final tBody = {'about': 'New about'};
+    const tMethod = "PUT";
     const tEndpoint = "update-avatar/42";
-    test(
-      "should throw NoTokenException if called when token is null",
-      () async {
-        // act
-        expect(() => sut.sendFiles("", "", {}, {}), throwsA(isA<NoTokenException>()));
-      },
-    );
+    baseTestNoTokenException(() => sut.sendFiles(tMethod, tEndpoint, tFiles, tBody));
     test(
       "should call http client with proper args and return the result",
       () async {
         // arrange
-        final tRightRequest = http.MultipartRequest(
-          "PUT",
-          Uri.https(tApiHost, tEndpoint),
-        );
-        tRightRequest.files.add(http.MultipartFile.fromBytes(
-          "avatar",
-          await File(tAvatarFile.path).readAsBytes(),
-        ));
-        tRightRequest.headers['Accept'] = tRightHeaders['Accept']!;
-        tRightRequest.headers['Authorization'] = tRightHeaders['Authorization']!;
-        tRightRequest.fields['about'] = "New about";
+        arrangeToken();
         when(() => mockHttpClient.send(any())).thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
         // act
-        sut.setToken(tToken);
-        await sut.sendFiles("PUT", tEndpoint, {'avatar': tAvatarFile}, {'about': 'New about'});
+        await sut.sendFiles(tMethod, tEndpoint, tFiles, tBody);
         // assert
         final capturedRequest = verify(() => mockHttpClient.send(captureAny())).captured[0] as http.MultipartRequest;
-        expect(capturedRequest.files.length, 1);
-        expect(capturedRequest.files.first.length, tRightRequest.files.first.length);
-        expect(capturedRequest.files.first.field, 'avatar');
-        expect(capturedRequest.fields.length, 1);
-        expect(capturedRequest.fields['about'], 'New about');
-        expect(capturedRequest.url, tRightRequest.url);
-        expect(capturedRequest.method, tRightRequest.method);
+        expect(capturedRequest.files.length, tFiles.length);
+        expect(capturedRequest.files.first.length, await File(tFile.path).length());
+        expect(capturedRequest.files.first.field, tFileField);
+        expect(capturedRequest.fields, tBody);
+        expect(capturedRequest.url, Uri.https(tApiHost, tEndpoint));
+        expect(capturedRequest.method, tMethod);
         verifyNoMoreInteractions(mockHttpClient);
       },
     );
