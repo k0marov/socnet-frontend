@@ -6,10 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socnet/core/usecases/usecase.dart';
+import 'package:socnet/core/usecase.dart';
 import 'package:socnet/di.dart' as di;
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
+import 'package:socnet/features/posts/domain/usecases/create_post.dart';
+import 'package:socnet/features/posts/domain/usecases/get_profile_posts.dart' as get_profile_posts;
+import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
@@ -117,6 +120,29 @@ void main() {
     final newURL = forceRight(await usecases.updateAvatar(AvatarParams(newAvatar: newAvatar)));
     final avatarFromStatic = backend.getStaticFile(newURL);
     expect(avatarFromStatic.readAsBytesSync(), File(newAvatar.path).readAsBytesSync());
+
+    print("create post");
+    final postImages = [
+      fileFixture("avatar.png"),
+      fileFixture("avatar.png"),
+    ];
+    final newPost = NewPostValue(images: postImages, text: "The First Post");
+    forceRight(await usecases.createPost(PostCreateParams(newPost: newPost)));
+    final posts = forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
+    expect(posts.length, 1);
+    final createdPost = posts[0];
+    expect(createdPost.isMine, true);
+    expect(createdPost.author, updatedProfile2);
+    expect(createdPost.text, "The First Post");
+    expect(createdPost.isLiked, false);
+    expect(createdPost.createdAt.difference(DateTime.now()).inSeconds.abs(), lessThan(30));
+    expect(createdPost.images.length, 2);
+    final firstStaticImage = createdPost.images[0].url;
+    final secondStaticImage = createdPost.images[1].url;
+    expect(backend.getStaticFile(firstStaticImage).readAsBytesSync(), File(postImages[0].path).readAsBytesSync());
+    expect(backend.getStaticFile(secondStaticImage).readAsBytesSync(), File(postImages[1].path).readAsBytesSync());
+    expect(createdPost.isLiked, false);
+    expect(createdPost.likes, 0);
   });
 }
 
