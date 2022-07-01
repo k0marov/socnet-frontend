@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/helpers.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 
 abstract class FeedNetworkDataSource {

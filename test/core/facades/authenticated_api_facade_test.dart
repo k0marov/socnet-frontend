@@ -5,10 +5,10 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
-import 'package:socnet/core/usecases/usecase.dart';
+import 'package:socnet/core/usecase.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
@@ -182,7 +182,8 @@ void main() {
       () async {
         // arrange
         arrangeToken();
-        when(() => mockHttpClient.send(any())).thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
+        when(() => mockHttpClient.send(any()))
+            .thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
         // act
         await sut.sendFiles(tMethod, tEndpoint, tFiles, tBody);
         // assert

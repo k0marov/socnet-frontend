@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 
-import '../../../../core/usecases/usecase.dart';
+import '../../../../core/usecase.dart';
 import '../entities/profile.dart';
 
 class GetProfile extends UseCase<Profile, ProfileIDParams> {

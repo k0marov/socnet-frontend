@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/features/auth/data/repositories/auth_repository_impl.dart';

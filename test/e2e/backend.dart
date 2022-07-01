@@ -13,7 +13,7 @@ class Backend {
 
   late final io.Process _process;
   Future<void> setUp() async {
-    await io.Process.run("./setup.sh", [], workingDirectory: _backendDir, runInShell: true);
+    await io.Process.run("./setup.sh", [], workingDirectory: _backendDir);
     _process = await io.Process.start(
       "./main",
       [],

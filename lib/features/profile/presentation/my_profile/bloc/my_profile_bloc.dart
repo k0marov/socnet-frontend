@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 
+import '../../../../../core/usecase.dart';
 import '../../../domain/usecases/update_avatar.dart';
 import '../../../domain/values/avatar.dart';
 
@@ -17,12 +17,10 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
   final GetMyProfile _getMyProfile;
   final UpdateProfile _updateInfo;
   final UpdateAvatar _updateAvatar;
-  MyProfileBloc(this._getMyProfile, this._updateInfo, this._updateAvatar)
-      : super(const MyProfileInitial()) {
+  MyProfileBloc(this._getMyProfile, this._updateInfo, this._updateAvatar) : super(const MyProfileInitial()) {
     on<MyProfileEvent>((event, emit) async {
       final currentState = state;
-      final currentProfile =
-          currentState is MyProfileLoaded ? currentState.profile : null;
+      final currentProfile = currentState is MyProfileLoaded ? currentState.profile : null;
       if (event is ProfileLoadRequested) {
         emit(const MyProfileLoading());
         final profileEither = await _getMyProfile(NoParams());
@@ -32,16 +30,14 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
         );
       } else if (event is ProfileUpdateRequested) {
         if (currentProfile == null) return;
-        final profileEither = await _updateInfo(
-            ProfileUpdateParams(newInfo: event.profileUpdate));
+        final profileEither = await _updateInfo(ProfileUpdateParams(newInfo: event.profileUpdate));
         profileEither.fold(
           (failure) => emit(MyProfileLoaded(currentProfile, failure)),
           (profile) => emit(MyProfileLoaded(profile)),
         );
       } else if (event is AvatarUpdateRequested) {
         if (currentProfile == null) return;
-        final newAvatarEither =
-            await _updateAvatar(AvatarParams(newAvatar: event.newAvatar));
+        final newAvatarEither = await _updateAvatar(AvatarParams(newAvatar: event.newAvatar));
         newAvatarEither.fold(
           (failure) => emit(MyProfileLoaded(currentProfile, failure)),
           (newURL) {

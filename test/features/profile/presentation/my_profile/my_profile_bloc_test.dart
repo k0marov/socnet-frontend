@@ -3,7 +3,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/core/usecases/usecase.dart';
+import 'package:socnet/core/usecase.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_my_profile.dart';
 import 'package:socnet/features/profile/domain/usecases/profile_params.dart';
@@ -101,8 +101,7 @@ void main() {
   group('ProfileUpdateRequested', () {
     final tInfo = createTestProfileUpdate();
     void setUpUseCaseAndAct(Either<Failure, Profile> result) {
-      when(() => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo)))
-          .thenAnswer((_) async => result);
+      when(() => mockUpdateInfo(ProfileUpdateParams(newInfo: tInfo))).thenAnswer((_) async => result);
       sut.add(ProfileUpdateRequested(profileUpdate: tInfo));
     }
 
@@ -163,8 +162,7 @@ void main() {
       isFollowed: tProfile.isFollowed,
     );
     void setUpUseCaseAndAct(Either<Failure, AvatarURL> result) {
-      when(() => mockUpdateAvatar(AvatarParams(newAvatar: tAvatar)))
-          .thenAnswer((_) async => result);
+      when(() => mockUpdateAvatar(AvatarParams(newAvatar: tAvatar))).thenAnswer((_) async => result);
       sut.add(AvatarUpdateRequested(newAvatar: tAvatar));
     }
 

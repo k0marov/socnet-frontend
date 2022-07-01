@@ -1,20 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/features/comments/data/models/comment_model.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../../core/helpers/base_tests.dart';
 import '../../../post/post_helpers.dart';
 import '../../comment_helpers.dart';
 
-class MockAuthenticatedAPIFacade extends Mock
-    implements AuthenticatedAPIFacade {}
+class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}
 
 void main() {
   late CommentNetworkDataSourceImpl sut;
@@ -31,8 +30,7 @@ void main() {
       "should call api and return void if result status code = 200",
       () async {
         // arrange
-        when(() => mockAPIFacade.delete(any()))
-            .thenAnswer((_) async => http.Response("", 200));
+        when(() => mockAPIFacade.delete(any())).thenAnswer((_) async => http.Response("", 200));
         // act
         await sut.deleteComment(CommentModel(tComment));
         // assert
@@ -55,8 +53,8 @@ void main() {
       "should call api and return the parsed result if result status code = 200",
       () async {
         // arrange
-        when(() => mockAPIFacade.post(any(), any())).thenAnswer(
-            (_) async => http.Response(json.encode(tCreatedJson), 200));
+        when(() => mockAPIFacade.post(any(), any()))
+            .thenAnswer((_) async => http.Response(json.encode(tCreatedJson), 200));
         // act
         final result = await sut.addPostComment(PostModel(tPost), tNewComment);
         // assert
@@ -81,15 +79,13 @@ void main() {
       CommentModel(tComments[0]),
       CommentModel(tComments[1]),
     ];
-    final tCommentsJson = {
-      'comments': tCommentModels.map((model) => model.toJson()).toList()
-    };
+    final tCommentsJson = {'comments': tCommentModels.map((model) => model.toJson()).toList()};
     test(
       "should call api and return the parsed result if result status code = 200",
       () async {
         // arrange
-        when(() => mockAPIFacade.get(any(), any())).thenAnswer(
-            (_) async => http.Response(json.encode(tCommentsJson), 200));
+        when(() => mockAPIFacade.get(any(), any()))
+            .thenAnswer((_) async => http.Response(json.encode(tCommentsJson), 200));
         // act
         final result = await sut.getPostComments(PostModel(tPost));
         // assert
@@ -111,13 +107,11 @@ void main() {
       "should call api and return void if result status code is not 200",
       () async {
         // arrange
-        when(() => mockAPIFacade.post(any(), any()))
-            .thenAnswer((_) async => http.Response("", 200));
+        when(() => mockAPIFacade.post(any(), any())).thenAnswer((_) async => http.Response("", 200));
         // act
         await sut.toggleLikeOnComment(tCommentModel);
         // assert
-        verify(() =>
-            mockAPIFacade.post(toggleLikeOnCommentEndpoint(tComment.id), {}));
+        verify(() => mockAPIFacade.post(toggleLikeOnCommentEndpoint(tComment.id), {}));
         verifyNoMoreInteractions(mockAPIFacade);
       },
     );

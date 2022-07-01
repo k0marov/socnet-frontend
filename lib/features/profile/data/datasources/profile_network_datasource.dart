@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
 import 'package:socnet/features/profile/domain/values/avatar.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';

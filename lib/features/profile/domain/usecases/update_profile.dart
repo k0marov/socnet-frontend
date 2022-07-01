@@ -1,7 +1,7 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:dartz/dartz.dart';
-import 'package:socnet/core/usecases/usecase.dart';
+import 'package:socnet/core/usecase.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';
 

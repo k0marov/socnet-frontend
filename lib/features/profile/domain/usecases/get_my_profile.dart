@@ -1,8 +1,8 @@
-import 'package:socnet/core/error/failures.dart';
 import 'package:dartz/dartz.dart';
+import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/features/profile/domain/repositories/profile_repository.dart';
 
-import '../../../../core/usecases/usecase.dart';
+import '../../../../core/usecase.dart';
 import '../entities/profile.dart';
 
 class GetMyProfile extends UseCase<Profile, NoParams> {

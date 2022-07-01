@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
 import 'package:socnet/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';
 
@@ -118,7 +118,8 @@ void main() {
     final response = json.encode({'avatar_url': newUrl});
     test("should call api and return the result if it was successful", () async {
       // arrange
-      when(() => mockApiFacade.sendFiles(any(), any(), any(), any())).thenAnswer((_) async => http.Response(response, 200));
+      when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
+          .thenAnswer((_) async => http.Response(response, 200));
       // act
       final result = await sut.updateAvatar(newAvatar);
       // assert

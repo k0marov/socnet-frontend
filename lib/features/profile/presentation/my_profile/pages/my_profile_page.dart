@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:socnet/core/simple_file/simple_file.dart';
+import 'package:socnet/core/simple_file.dart';
 import 'package:socnet/di.dart';
 import 'package:socnet/features/posts/presentation/pages/post_creation_page.dart';
 import 'package:socnet/features/profile/domain/values/profile_update.dart';

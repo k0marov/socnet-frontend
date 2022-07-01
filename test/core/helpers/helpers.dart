@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:english_words/english_words.dart' as english_words;
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/core/simple_file/simple_file.dart';
+import 'package:socnet/core/simple_file.dart';
 
 String randomNoun() => english_words.nouns[Random().nextInt(english_words.nouns.length)];
 String randomAdjective() => english_words.adjectives[Random().nextInt(english_words.adjectives.length)];

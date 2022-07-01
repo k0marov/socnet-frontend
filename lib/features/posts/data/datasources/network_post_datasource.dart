@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:socnet/core/authenticated_api_facade.dart';
 import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/helpers.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
-import 'package:socnet/core/simple_file/simple_file.dart';
+import 'package:socnet/core/simple_file.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/profile/data/models/profile_model.dart';

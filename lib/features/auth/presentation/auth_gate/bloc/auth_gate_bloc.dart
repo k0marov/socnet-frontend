@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:socnet/core/usecases/usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/logout_usecase.dart';
 
 import '../../../../../core/error/failures.dart';
+import '../../../../../core/usecase.dart';
 import '../../../domain/usecases/get_auth_token_usecase.dart';
 
 part 'auth_gate_event.dart';

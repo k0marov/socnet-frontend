@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/core/usecases/usecase.dart';
+import 'package:socnet/core/usecase.dart';
 import 'package:socnet/features/feed/domain/repositories/feed_repository.dart';
 
 import '../../../posts/domain/entities/post.dart';

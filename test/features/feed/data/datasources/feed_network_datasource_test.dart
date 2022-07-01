@@ -1,19 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/endpoints.dart';
-import 'package:socnet/core/facades/authenticated_api_facade.dart';
-import 'package:socnet/features/feed/data/datasources/feed_network_datasource.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
+import 'package:socnet/core/authenticated_api_facade.dart';
+import 'package:socnet/core/const/endpoints.dart';
+import 'package:socnet/features/feed/data/datasources/feed_network_datasource.dart';
 import 'package:socnet/features/posts/data/models/post_model.dart';
 
 import '../../../../core/helpers/base_tests.dart';
 import '../../../../core/helpers/helpers.dart';
 import '../../../post/post_helpers.dart';
 
-class MockAuthenticatedAPIFacade extends Mock
-    implements AuthenticatedAPIFacade {}
+class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}
 
 void main() {
   late FeedNetworkDataSourceImpl sut;
@@ -27,8 +26,7 @@ void main() {
   group('getNextPosts', () {
     final tAmount = randomInt();
     Future<List<PostModel>> act() => sut.getNextPosts(tAmount);
-    Future<http.Response> apiCall() =>
-        mockAPIFacade.get(feedEndpoint(tAmount), {});
+    Future<http.Response> apiCall() => mockAPIFacade.get(feedEndpoint(tAmount), {});
     test(
       "should call api and return parsed result if response status code = 200",
       () async {
