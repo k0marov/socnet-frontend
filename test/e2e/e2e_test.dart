@@ -133,7 +133,7 @@ void main() {
     expect(posts.length, 1);
     final createdPost = posts[0];
     expect(createdPost.isMine, true);
-    expect(createdPost.author, updatedProfile2);
+    expect(createdPost.author.id, profile2.id);
     expect(createdPost.text, "The First Post");
     expect(createdPost.isLiked, false);
     expect(createdPost.createdAt.difference(DateTime.now()).inSeconds.abs(), lessThan(30));

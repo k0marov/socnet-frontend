@@ -43,7 +43,7 @@ EndpointQuery feedEndpoint(int postAmount) {
 }
 
 EndpointQuery createPostEndpoint() {
-  return const EndpointQuery("/posts");
+  return const EndpointQuery("/api/posts");
 }
 
 EndpointQuery deletePostEndpoint(String postId) {
