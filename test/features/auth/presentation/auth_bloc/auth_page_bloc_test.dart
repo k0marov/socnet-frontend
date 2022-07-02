@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/error/failures.dart';
-import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/features/auth/presentation/auth/bloc/auth_page_bloc.dart';
@@ -70,7 +69,7 @@ void main() {
       "should call the login use case and also notify the auth gate if the call was successful",
       () async {
         // arrange
-        when(() => mockLoginUseCase(tLoginParams)).thenAnswer((_) async => const Right(Token(token: "42")));
+        when(() => mockLoginUseCase(tLoginParams)).thenAnswer((_) async => const Right(null));
         when(() => mockAuthGateBloc.add(AuthStateUpdateRequested())).thenReturn(null);
         // act
         sut.add(const LoginRequested(username: tUsername, password: tPassword));
@@ -87,7 +86,7 @@ void main() {
       "should set state to Loading when called",
       () async {
         // arrange
-        when(() => mockLoginUseCase(tLoginParams)).thenAnswer((_) async => const Right(Token(token: "42")));
+        when(() => mockLoginUseCase(tLoginParams)).thenAnswer((_) async => const Right(null));
         when(() => mockAuthGateBloc.add(AuthStateUpdateRequested())).thenReturn(null);
         // assert later
         expect(sut.stream, emitsInOrder([const AuthPageLoading()]));
@@ -123,7 +122,7 @@ void main() {
       "should validate the data, call the register usecase, and notify the auth gate if everything was successful",
       () async {
         // arrange
-        when(() => mockRegisterUseCase(tRegisterParams)).thenAnswer((_) async => const Right(Token(token: '42')));
+        when(() => mockRegisterUseCase(tRegisterParams)).thenAnswer((_) async => const Right(null));
         when(() => mockAuthGateBloc.add(AuthStateUpdateRequested())).thenReturn(null);
         // act
         sut.add(const RegistrationRequested(username: tUsername, password: tPassword));
@@ -140,7 +139,7 @@ void main() {
       "should set state to Loading at first",
       () async {
         // arrange
-        when(() => mockRegisterUseCase(tRegisterParams)).thenAnswer((_) async => const Right(Token(token: '42')));
+        when(() => mockRegisterUseCase(tRegisterParams)).thenAnswer((_) async => const Right(null));
         when(() => mockAuthGateBloc.add(AuthStateUpdateRequested())).thenReturn(null);
         // assert later
         expect(sut.stream, emitsInOrder([const AuthPageLoading()]));
@@ -159,8 +158,10 @@ void main() {
         // assert later
         expect(
             sut.stream,
-            emitsInOrder(
-                [const AuthPageLoading(), AuthPageRegistrationFailure(username: tUsername, password: tPassword, failure: CacheFailure())]));
+            emitsInOrder([
+              const AuthPageLoading(),
+              AuthPageRegistrationFailure(username: tUsername, password: tPassword, failure: CacheFailure())
+            ]));
         // act
         sut.add(const RegistrationRequested(username: tUsername, password: tPassword));
       },

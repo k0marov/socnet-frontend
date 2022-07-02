@@ -22,7 +22,7 @@ void main() {
   late NetworkPostDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockApiFacade;
 
-  setUpAll(() => registerFallbackValue(EndpointQuery("")));
+  setUpAll(() => registerFallbackValue(const EndpointQuery("")));
   setUp(() {
     mockApiFacade = MockAuthenticatedAPIFacade();
     sut = NetworkPostDataSourceImpl(mockApiFacade);
@@ -41,7 +41,6 @@ void main() {
         when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
             .thenAnswer((_) async => http.Response(json.encode(tPost.toJson()), 200));
         // act
-        final result = await sut.createPost(tNewPost);
         final expectedFiles = {
           "image_1": tNewPost.images[0],
           "image_2": tNewPost.images[1],

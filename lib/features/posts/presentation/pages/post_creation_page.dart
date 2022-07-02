@@ -15,7 +15,7 @@ class PostCreationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<PostCreationBloc>(
       create: (_) => sl<PostCreationBloc>(),
-      child: _InternalPage(),
+      child: const _InternalPage(),
     );
   }
 }
@@ -52,19 +52,19 @@ class _InternalPage extends StatelessWidget {
                             );
                       }
                     },
-                    child: Text("Add image"),
+                    child: const Text("Add image"),
                   ),
                   TextButton(
                     onPressed: () {
-                      context.read<PostCreationBloc>().add(PostButtonPressed(finalText: "abracadabra"));
+                      context.read<PostCreationBloc>().add(const PostButtonPressed(finalText: "abracadabra"));
                     },
-                    child: Text("Post"),
+                    child: const Text("Post"),
                   )
                 ]);
               } else if (state is CreationFailed) {
                 return Text(state.failure.toString());
               } else {
-                return Text("Successfully created");
+                return const Text("Successfully created");
               }
             }),
       ),

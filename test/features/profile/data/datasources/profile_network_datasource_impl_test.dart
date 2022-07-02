@@ -18,7 +18,7 @@ void main() {
   late ProfileNetworkDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockApiFacade;
 
-  setUpAll(() => registerFallbackValue(EndpointQuery("")));
+  setUpAll(() => registerFallbackValue(const EndpointQuery("")));
   setUp(() {
     mockApiFacade = MockAuthenticatedAPIFacade();
     sut = ProfileNetworkDataSourceImpl(mockApiFacade);

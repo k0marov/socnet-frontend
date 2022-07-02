@@ -19,7 +19,7 @@ void main() {
   late CommentNetworkDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockAPIFacade;
 
-  setUpAll(() => registerFallbackValue(EndpointQuery("")));
+  setUpAll(() => registerFallbackValue(const EndpointQuery("")));
 
   setUp(() {
     mockAPIFacade = MockAuthenticatedAPIFacade();

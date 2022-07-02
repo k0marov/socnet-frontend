@@ -27,7 +27,7 @@ EndpointQuery addPostCommentEndpoint(String postId) {
 }
 
 EndpointQuery deleteCommentEndpoint(String commentId) {
-  return EndpointQuery("unimplemented");
+  return const EndpointQuery("unimplemented");
 }
 
 EndpointQuery getPostCommentsEndpoint(String postId) {
@@ -39,7 +39,7 @@ EndpointQuery toggleLikeOnCommentEndpoint(String commentId) {
 }
 
 EndpointQuery feedEndpoint(int postAmount) {
-  return EndpointQuery("unimplemented");
+  return const EndpointQuery("unimplemented");
 }
 
 EndpointQuery createPostEndpoint() {
@@ -63,7 +63,7 @@ EndpointQuery getFollowsEndpoint(String profileId) {
 }
 
 EndpointQuery getMyProfileEndpoint() {
-  return EndpointQuery("api/profiles/me");
+  return const EndpointQuery("api/profiles/me");
 }
 
 EndpointQuery getProfileEndpoint(String id) {
@@ -71,11 +71,11 @@ EndpointQuery getProfileEndpoint(String id) {
 }
 
 EndpointQuery updateProfileEndpoint() {
-  return EndpointQuery("api/profiles/me");
+  return const EndpointQuery("api/profiles/me");
 }
 
 EndpointQuery updateAvatarEndpoint() {
-  return EndpointQuery("/api/profiles/me/avatar");
+  return const EndpointQuery("/api/profiles/me/avatar");
 }
 
 EndpointQuery toggleFollowEndpoint(String targetProfileId) {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/features/comments/data/models/comment_model.dart';
 import 'package:socnet/features/comments/domain/entities/comment.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';

@@ -23,7 +23,7 @@ class Backend {
       },
       workingDirectory: _workDir,
     );
-    io.sleep(Duration(seconds: 1)); // increase this value if server refuses connection with the test code
+    io.sleep(const Duration(seconds: 1)); // increase this value if server refuses connection with the test code
   }
 
   Future<void> tearDown() async {

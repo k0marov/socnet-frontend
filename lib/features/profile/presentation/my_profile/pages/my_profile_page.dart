@@ -45,7 +45,7 @@ class _InternalPage extends StatelessWidget {
                     if (state.nonFatalFailure != null) Text(state.nonFatalFailure.toString()),
                     if (state.profile.avatarUrl != null)
                       Image(
-                        key: Key(Uuid().v1()),
+                        key: Key(const Uuid().v1()),
                         image: NetworkImage("https://" + state.profile.avatarUrl!),
                       ),
                     Text(state.profile.username),
@@ -56,7 +56,7 @@ class _InternalPage extends StatelessWidget {
                       child: const Text("Update about to random string"),
                       onPressed: () => context.read<MyProfileBloc>().add(
                             ProfileUpdateRequested(
-                              profileUpdate: ProfileUpdate(newAbout: Uuid().v1()),
+                              profileUpdate: ProfileUpdate(newAbout: const Uuid().v1()),
                             ),
                           ),
                     ),
@@ -88,10 +88,10 @@ class _InternalPage extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (BuildContext context) {
-                  return PostCreationPage();
+                  return const PostCreationPage();
                 }),
               ),
-              child: Text("New Post"),
+              child: const Text("New Post"),
             )
           ],
         ),

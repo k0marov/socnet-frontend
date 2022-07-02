@@ -27,13 +27,12 @@ void main() {
   });
   group("FollowToggled", () {
     void setUpUseCaseAndAct(Either<Failure, void> useCaseReturn) {
-      when(() => mockToggleFollow(ProfileParams(profile: tProfile)))
-          .thenAnswer((_) async => useCaseReturn);
+      when(() => mockToggleFollow(ProfileParams(profile: tProfile))).thenAnswer((_) async => useCaseReturn);
       sut.add(FollowToggled());
     }
 
     test("should call toggle follow usecase", () async {
-      setUpUseCaseAndAct(Right(null));
+      setUpUseCaseAndAct(const Right(null));
       await untilCalled(() => mockToggleFollow(ProfileParams(profile: tProfile)));
     });
 

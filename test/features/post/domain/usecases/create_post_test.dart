@@ -22,11 +22,11 @@ void main() {
     () async {
       // arrange
       final tNewPost = createTestNewPost();
-      when(() => mockPostRepository.createPost(tNewPost)).thenAnswer((_) async => Right(null));
+      when(() => mockPostRepository.createPost(tNewPost)).thenAnswer((_) async => const Right(null));
       // act
       final result = await sut(PostCreateParams(newPost: tNewPost));
       // assert
-      expect(result, Right(null));
+      expect(result, const Right(null));
       verify(() => mockPostRepository.createPost(tNewPost));
       verifyNoMoreInteractions(mockPostRepository);
     },

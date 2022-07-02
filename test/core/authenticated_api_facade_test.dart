@@ -57,7 +57,7 @@ void main() {
   }
 
   void arrangeToken() {
-    when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => Right(tToken));
+    when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => const Right(tToken));
   }
 
   group('get', () {

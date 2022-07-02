@@ -7,7 +7,6 @@ import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/posts/presentation/post_creation_bloc/post_creation_bloc.dart';
 
 import '../../../core/helpers/helpers.dart';
-import '../post_helpers.dart';
 
 class MockCreatePost extends Mock implements CreatePost {}
 
@@ -113,7 +112,7 @@ void main() {
                 images: tImages,
                 text: tText,
               ),
-            ))).thenAnswer((_) async => Right(createTestPost()));
+            ))).thenAnswer((_) async => const Right(null));
         // assert later
         expect(sut.stream, emitsInOrder([CreationSuccessful()]));
         // act
