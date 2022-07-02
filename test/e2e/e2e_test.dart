@@ -204,6 +204,14 @@ void main() {
     final likedComment = postCommentsNow[0];
     expect(likedComment.isLiked, true);
     expect(likedComment.likes, 1);
+
+    printDebug("delete the post");
+    forceRight(await usecases.deletePost(PostParams(post: postLiked)));
+
+    printDebug("assert the post was deleted");
+    final postsNow =
+        forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
+    expect(postsNow.length, 0);
   });
 }
 
