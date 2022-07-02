@@ -11,6 +11,9 @@ import 'package:socnet/core/usecase.dart';
 import 'package:socnet/di.dart' as di;
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
+import 'package:socnet/features/comments/domain/usecases/add_comment.dart';
+import 'package:socnet/features/comments/domain/usecases/comment_params.dart';
+import 'package:socnet/features/comments/domain/values/new_comment_value.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
 import 'package:socnet/features/posts/domain/usecases/get_profile_posts.dart' as get_profile_posts;
 import 'package:socnet/features/posts/domain/usecases/post_params.dart';
@@ -25,6 +28,10 @@ import 'package:socnet/features/profile/domain/values/profile_update.dart';
 import '../core/fixtures/fixture_reader.dart';
 import '../core/helpers/helpers.dart';
 import 'backend.dart';
+
+void assertTimeAroundNow(DateTime time) {
+  expect(time.difference(DateTime.now()).inSeconds.abs(), lessThan(30));
+}
 
 const apiHost = "localhost:4242";
 
@@ -137,7 +144,7 @@ void main() {
     expect(createdPost.author.id, profile2.id);
     expect(createdPost.text, "The First Post");
     expect(createdPost.isLiked, false);
-    expect(createdPost.createdAt.difference(DateTime.now()).inSeconds.abs(), lessThan(30));
+    assertTimeAroundNow(createdPost.createdAt);
     expect(createdPost.images.length, 2);
     final firstStaticImage = createdPost.images[0].url;
     final secondStaticImage = createdPost.images[1].url;
@@ -169,6 +176,34 @@ void main() {
         forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)))[0];
     expect(postLiked.isLiked, true);
     expect(postLiked.likes, 1);
+
+    printDebug("add a comment");
+    const newComment = NewCommentValue(text: "A new comment");
+    final createdComment =
+        forceRight(await usecases.addComment(AddCommentParams(post: postLiked, newComment: newComment)));
+    assertTimeAroundNow(createdComment.createdAt);
+    expect(createdComment.text, newComment.text);
+    expect(createdComment.isMine, true);
+    final profile1Now = forceRight(await usecases.getMyProfile(NoParams()));
+    expect(createdComment.author, profile1Now);
+
+    printDebug("like it from second profile");
+    forceRight(await usecases.logout(NoParams()));
+    forceRight(await usecases.login(LoginParams(username: "test", password: "pass12345")));
+    final postComments = forceRight(await usecases.getPostComments(PostParams(post: postLiked)));
+    expect(postComments.length, 1);
+    final notLikedComment = postComments[0];
+    expect(notLikedComment.isMine, false); // since you're now logged in as the second profile
+    expect(notLikedComment.likes, 0);
+    expect(notLikedComment.isLiked, false);
+    forceRight(await usecases.toggleLikeOnComment(CommentParams(comment: notLikedComment)));
+
+    printDebug("assert it was liked");
+    final postCommentsNow = forceRight(await usecases.getPostComments(PostParams(post: postLiked)));
+    expect(postCommentsNow.length, 1);
+    final likedComment = postCommentsNow[0];
+    expect(likedComment.isLiked, true);
+    expect(likedComment.likes, 1);
   });
 }
 
