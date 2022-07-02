@@ -41,6 +41,7 @@ void main() {
         when(() => mockApiFacade.sendFiles(any(), any(), any(), any()))
             .thenAnswer((_) async => http.Response(json.encode(tPost.toJson()), 200));
         // act
+        await sut.createPost(tNewPost);
         final expectedFiles = {
           "image_1": tNewPost.images[0],
           "image_2": tNewPost.images[1],
