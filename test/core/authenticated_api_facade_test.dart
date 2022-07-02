@@ -6,14 +6,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/core/authenticated_api_facade.dart';
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/failures.dart';
 import 'package:socnet/core/usecase.dart';
 import 'package:socnet/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
-import '../fixtures/fixture_reader.dart';
-import '../helpers/helpers.dart';
+import 'fixtures/fixture_reader.dart';
+import 'helpers/helpers.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
 
@@ -60,9 +61,8 @@ void main() {
   }
 
   group('get', () {
-    const tEndpoint = "profiles-detail/1";
-    const tBody = <String, String>{'something': 'value'};
-    baseTestNoTokenException(() => sut.get(tEndpoint, tBody));
+    final tEndpointQuery = getProfileEndpoint("42");
+    baseTestNoTokenException(() => sut.get(tEndpointQuery));
     test(
       "should call http client with proper arguments and return the response",
       () async {
@@ -70,12 +70,12 @@ void main() {
         arrangeToken();
         when(() => mockHttpClient.get(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
-        final result = await sut.get(tEndpoint, tBody);
+        final result = await sut.get(tEndpointQuery);
         // assert
         expect(result, tResponse);
         verify(
           () => mockHttpClient.get(
-            Uri.https(tApiHost, tEndpoint, tBody),
+            tEndpointQuery.toURL(tApiHost, true),
             headers: tRightHeaders,
           ),
         );
@@ -84,9 +84,9 @@ void main() {
     );
   });
   group('post', () {
-    const tEndpoint = "update-avatar/1234";
+    final tEndpointQuery = createPostEndpoint();
     final tBody = {'avatar': "testtesttest", 'something': 'value'};
-    baseTestNoTokenException(() => sut.post(tEndpoint, tBody));
+    baseTestNoTokenException(() => sut.post(tEndpointQuery, tBody));
     test(
       "should call http client with proper arguments and return the result",
       () async {
@@ -100,12 +100,12 @@ void main() {
           ),
         ).thenAnswer((_) async => tResponse);
         // act
-        final result = await sut.post(tEndpoint, tBody);
+        final result = await sut.post(tEndpointQuery, tBody);
         // assert
         expect(result, tResponse);
         verify(
           () => mockHttpClient.post(
-            Uri.https(tApiHost, tEndpoint),
+            tEndpointQuery.toURL(tApiHost, true),
             body: json.encode(tBody),
             headers: tRightHeaders,
           ),
@@ -115,8 +115,8 @@ void main() {
     );
   });
   group('delete', () {
-    final tEndpoint = randomString();
-    baseTestNoTokenException(() => sut.delete(tEndpoint));
+    final tEndpointQuery = deletePostEndpoint("42");
+    baseTestNoTokenException(() => sut.delete(tEndpointQuery));
     test(
       "should call http client with proper arguments and return the result",
       () async {
@@ -125,12 +125,12 @@ void main() {
         final tResponse = http.Response(randomString(), 4242);
         when(() => mockHttpClient.delete(any(), headers: any(named: "headers"))).thenAnswer((_) async => tResponse);
         // act
-        final result = await sut.delete(tEndpoint);
+        final result = await sut.delete(tEndpointQuery);
         // assert
         expect(result, tResponse);
         verify(
           () => mockHttpClient.delete(
-            Uri.https(tApiHost, tEndpoint),
+            tEndpointQuery.toURL(tApiHost, true),
             headers: tRightHeaders,
           ),
         );
@@ -139,9 +139,9 @@ void main() {
     );
   });
   group('put', () {
-    const tEndpoint = "update-avatar/1234";
+    final tEndpointQuery = updateAvatarEndpoint();
     final tBody = {'avatar': "testtesttest", 'something': 'value'};
-    baseTestNoTokenException(() => sut.put(tEndpoint, tBody));
+    baseTestNoTokenException(() => sut.put(tEndpointQuery, tBody));
     test(
       "should call http client with proper arguments and return the result",
       () async {
@@ -155,12 +155,12 @@ void main() {
           ),
         ).thenAnswer((_) async => tResponse);
         // act
-        final result = await sut.put(tEndpoint, tBody);
+        final result = await sut.put(tEndpointQuery, tBody);
         // assert
         expect(result, tResponse);
         verify(
           () => mockHttpClient.put(
-            Uri.https(tApiHost, tEndpoint),
+            tEndpointQuery.toURL(tApiHost, true),
             headers: tRightHeaders,
             body: json.encode(tBody),
           ),
@@ -175,8 +175,8 @@ void main() {
     final tFiles = {tFileField: fileFixture('avatar.png')};
     final tBody = {'about': 'New about'};
     const tMethod = "PUT";
-    const tEndpoint = "update-avatar/42";
-    baseTestNoTokenException(() => sut.sendFiles(tMethod, tEndpoint, tFiles, tBody));
+    final tEndpointQuery = updateAvatarEndpoint();
+    baseTestNoTokenException(() => sut.sendFiles(tMethod, tEndpointQuery, tFiles, tBody));
     test(
       "should call http client with proper args and return the result",
       () async {
@@ -185,14 +185,14 @@ void main() {
         when(() => mockHttpClient.send(any()))
             .thenAnswer((_) async => http.StreamedResponse(Stream.value([1, 2, 3]), 200));
         // act
-        await sut.sendFiles(tMethod, tEndpoint, tFiles, tBody);
+        await sut.sendFiles(tMethod, tEndpointQuery, tFiles, tBody);
         // assert
         final capturedRequest = verify(() => mockHttpClient.send(captureAny())).captured[0] as http.MultipartRequest;
         expect(capturedRequest.files.length, tFiles.length);
         expect(capturedRequest.files.first.length, await File(tFile.path).length());
         expect(capturedRequest.files.first.field, tFileField);
         expect(capturedRequest.fields, tBody);
-        expect(capturedRequest.url, Uri.https(tApiHost, tEndpoint));
+        expect(capturedRequest.url, tEndpointQuery.toURL(tApiHost, true));
         expect(capturedRequest.method, tMethod);
         verifyNoMoreInteractions(mockHttpClient);
       },

@@ -1,69 +1,83 @@
+import 'package:equatable/equatable.dart';
+
 const realApiHost = "socio.skomarov.com";
 
-String registerEndpoint() {
-  return "/auth/register";
+class EndpointQuery extends Equatable {
+  final String endpoint;
+  final Map<String, dynamic> query;
+  @override
+  List get props => [endpoint, query];
+
+  const EndpointQuery(this.endpoint, [this.query = const <String, dynamic>{}]);
+
+  Uri toURL(String host, bool useHTTPS) =>
+      useHTTPS ? Uri.https(host, endpoint, query) : Uri.http(host, endpoint, query);
 }
 
-String loginEndpoint() {
-  return "/auth/login";
+EndpointQuery registerEndpoint() {
+  return const EndpointQuery("/auth/register");
 }
 
-String addPostCommentEndpoint(String postId) {
-  return "/api/comments/?post_id=$postId";
+EndpointQuery loginEndpoint() {
+  return const EndpointQuery("/auth/login");
 }
 
-String deleteCommentEndpoint(String commentId) {
-  return ""; // unimplemented
+EndpointQuery addPostCommentEndpoint(String postId) {
+  return EndpointQuery("/api/comments", {"post_id": postId});
 }
 
-String getPostCommentsEndpoint(String postId) {
-  return "/api/comments/?post_id=$postId";
+EndpointQuery deleteCommentEndpoint(String commentId) {
+  return EndpointQuery("unimplemented");
 }
 
-String toggleLikeOnCommentEndpoint(String commentId) {
-  return "/api/comments/$commentId/toggle-like";
+EndpointQuery getPostCommentsEndpoint(String postId) {
+  return EndpointQuery("api/comments/", {"post_id": postId});
 }
 
-String feedEndpoint(int postAmount) {
-  return ""; // unimplemented
+EndpointQuery toggleLikeOnCommentEndpoint(String commentId) {
+  return EndpointQuery("/api/comments/$commentId/toggle-like");
 }
 
-String createPostEndpoint() {
-  return "/api/posts";
+EndpointQuery feedEndpoint(int postAmount) {
+  return EndpointQuery("unimplemented");
 }
 
-String deletePostEndpoint(String postId) {
-  return "/api/posts/$postId";
+EndpointQuery createPostEndpoint() {
+  return const EndpointQuery("/posts");
 }
 
-String getProfilePostsEndpoint(String profileId) {
-  return "/api/posts/?profile_id=$profileId";
+EndpointQuery deletePostEndpoint(String postId) {
+  return EndpointQuery("/api/posts/$postId");
 }
 
-String toggleLikeOnPostEndpoint(String postId) {
-  return "/api/posts/$postId/toggle-like";
+EndpointQuery getProfilePostsEndpoint(String profileId) {
+  return EndpointQuery("api/posts/", {"profile_id": profileId});
 }
 
-String getFollowsEndpoint(String profileId) {
-  return "/api/profiles/$profileId/follows";
+EndpointQuery toggleLikeOnPostEndpoint(String postId) {
+  return EndpointQuery("/api/posts/$postId/toggle-like");
 }
 
-String getMyProfileEndpoint() {
-  return "/api/profiles/me";
+EndpointQuery getFollowsEndpoint(String profileId) {
+  return EndpointQuery("api/profiles/$profileId/follows");
 }
 
-String getProfileEndpoint(String id) {
-  return "/api/profiles/$id";
+EndpointQuery getMyProfileEndpoint() {
+  return EndpointQuery("api/profiles/me");
 }
 
-String updateProfileEndpoint() {
-  return "/api/profiles/me";
+EndpointQuery getProfileEndpoint(String id) {
+  return EndpointQuery("/api/profiles/$id");
 }
 
-String updateAvatarEndpoint() {
-  return "/api/profiles/me/avatar";
+EndpointQuery updateProfileEndpoint() {
+  return EndpointQuery("api/profiles/me");
 }
 
-String toggleFollowEndpoint(String targetProfileId) {
-  return "/api/profiles/$targetProfileId/toggle-follow";
+EndpointQuery updateAvatarEndpoint() {
+  return EndpointQuery("/api/profiles/me/avatar");
+}
+
+EndpointQuery toggleFollowEndpoint(String targetProfileId) {
+  return EndpointQuery("/api/profiles/$targetProfileId/toggle-follow");
 }

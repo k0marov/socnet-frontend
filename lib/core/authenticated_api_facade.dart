@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:socnet/core/const/endpoints.dart';
 import 'package:socnet/core/debug.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/simple_file.dart';
@@ -18,21 +19,21 @@ class AuthenticatedAPIFacade {
   /// useHTTPS should be set to false only in tests
   AuthenticatedAPIFacade(this._getToken, this._httpClient, this._apiHost, {this.useHTTPS = true});
 
-  Future<http.Response> get(String endpoint, Map<String, String> body) async {
+  Future<http.Response> get(EndpointQuery eq) async {
     final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    final url = _composeURL(endpoint, body);
+    final url = eq.toURL(_apiHost, useHTTPS);
     printDebug("GET $url");
     final response = await _httpClient.get(url, headers: headers);
     printResponse(response);
     return response;
   }
 
-  Future<http.Response> post(String endpoint, Map<String, dynamic> body) async {
+  Future<http.Response> post(EndpointQuery eq, Map<String, dynamic> body) async {
     final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    final url = _composeURL(endpoint);
     final bodyJson = json.encode(body);
+    final url = eq.toURL(_apiHost, useHTTPS);
     printDebug("POST $url: $bodyJson");
     final response = await _httpClient.post(
       url,
@@ -43,10 +44,10 @@ class AuthenticatedAPIFacade {
     return response;
   }
 
-  Future<http.Response> delete(String endpoint) async {
+  Future<http.Response> delete(EndpointQuery eq) async {
     final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    final url = _composeURL(endpoint);
+    final url = eq.toURL(_apiHost, useHTTPS);
     printDebug("DELETE $url");
     final response = await _httpClient.delete(
       url,
@@ -56,11 +57,11 @@ class AuthenticatedAPIFacade {
     return response;
   }
 
-  Future<http.Response> put(String endpoint, Map<String, dynamic> body) async {
+  Future<http.Response> put(EndpointQuery eq, Map<String, dynamic> body) async {
     final tokenEntity = await _obtainTokenOrThrow();
     final headers = _getHeaders(tokenEntity.token);
-    final url = _composeURL(endpoint);
     final bodyJson = json.encode(body);
+    final url = eq.toURL(_apiHost, useHTTPS);
     printDebug("PUT $url: $bodyJson");
     final response = await _httpClient.put(
       url,
@@ -73,13 +74,13 @@ class AuthenticatedAPIFacade {
 
   Future<http.Response> sendFiles(
     String method,
-    String endpoint,
+    EndpointQuery eq,
     Map<String, SimpleFile> files,
     Map<String, String> data,
   ) async {
     final token = await _obtainTokenOrThrow();
     final headers = _getHeaders(token.token);
-    final url = _composeURL(endpoint);
+    final url = eq.toURL(_apiHost, useHTTPS);
     final request = http.MultipartRequest(method, url);
 
     for (final fileEntry in files.entries) {
@@ -118,7 +119,4 @@ class AuthenticatedAPIFacade {
         'Authorization': 'Token $token',
         'Accept': "application/json",
       };
-  Uri _composeURL(String endpoint, [Map<String, String>? queryParams]) {
-    return useHTTPS ? Uri.https(_apiHost, endpoint, queryParams) : Uri.http(_apiHost, endpoint, queryParams);
-  }
 }
