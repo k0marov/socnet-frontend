@@ -10,6 +10,10 @@ import 'package:socnet/features/auth/domain/usecases/get_auth_token_usecase.dart
 import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
+import 'package:socnet/features/comments/data/datasources/comment_network_datasource.dart';
+import 'package:socnet/features/comments/data/repositories/comment_repository_impl.dart';
+import 'package:socnet/features/comments/domain/usecases/add_comment.dart';
+import 'package:socnet/features/comments/presentation/comments_bloc/comments_bloc.dart';
 import 'package:socnet/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
@@ -30,6 +34,9 @@ import 'package:socnet/features/profile/presentation/my_profile/bloc/my_profile_
 import 'package:socnet/features/profile/presentation/profile/bloc/profile_bloc.dart';
 
 import 'features/auth/presentation/auth/bloc/auth_page_bloc.dart';
+import 'features/comments/domain/usecases/delete_comment.dart';
+import 'features/comments/domain/usecases/get_post_comments.dart';
+import 'features/comments/domain/usecases/toggle_like_on_comment.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
@@ -48,6 +55,11 @@ class UseCases {
   late final DeletePost deletePost;
   late final GetProfilePosts getProfilePosts;
   late final ToggleLike toggleLike;
+
+  late final AddComment addComment;
+  late final DeleteComment deleteComment;
+  late final GetPostComments getPostComments;
+  late final ToggleLikeOnComment toggleLikeOnComment;
 
   UseCases({
     required SharedPreferences sharedPrefs,
@@ -81,6 +93,13 @@ class UseCases {
     deletePost = DeletePost(postRepo);
     getProfilePosts = GetProfilePosts(postRepo);
     toggleLike = ToggleLike(postRepo);
+    // comments
+    final netCommentDS = CommentNetworkDataSourceImpl(apiFacade);
+    final commentRepo = CommentRepositoryImpl(netCommentDS);
+    addComment = AddComment(commentRepo);
+    deleteComment = DeleteComment(commentRepo);
+    getPostComments = GetPostComments(commentRepo);
+    toggleLikeOnComment = ToggleLikeOnComment(commentRepo);
   }
 }
 
@@ -99,4 +118,10 @@ Future initialize() async {
 
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
   sl.registerFactory(() => PostCreationBloc(usecases.createPost));
+  sl.registerFactory(() => CommentsBloc(
+        usecases.addComment,
+        usecases.deleteComment,
+        usecases.getPostComments,
+        usecases.toggleLikeOnComment,
+      ));
 }
