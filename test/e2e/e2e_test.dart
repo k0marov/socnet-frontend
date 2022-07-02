@@ -13,6 +13,7 @@ import 'package:socnet/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/features/posts/domain/usecases/create_post.dart';
 import 'package:socnet/features/posts/domain/usecases/get_profile_posts.dart' as get_profile_posts;
+import 'package:socnet/features/posts/domain/usecases/post_params.dart';
 import 'package:socnet/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/features/profile/domain/entities/profile.dart';
 import 'package:socnet/features/profile/domain/usecases/get_profile.dart';
@@ -49,9 +50,9 @@ void main() {
 
   test("happy path", () async {
     printDebug("register a user");
-    forceRight(await usecases.register(const RegisterParams(username: "sam", password: "speedx3D")));
+    forceRight(await usecases.register(const RegisterParams(username: "sam", password: "secure_pass")));
     printDebug("try to login with the same credentials");
-    forceRight(await usecases.login(const LoginParams(username: "sam", password: "speedx3D")));
+    forceRight(await usecases.login(const LoginParams(username: "sam", password: "secure_pass")));
 
     printDebug("get my profile");
     final profile1 = forceRight(await usecases.getMyProfile(NoParams()));
@@ -144,6 +145,30 @@ void main() {
     expect(backend.getStaticFile(secondStaticImage).readAsBytesSync(), File(postImages[1].path).readAsBytesSync());
     expect(createdPost.isLiked, false);
     expect(createdPost.likes, 0);
+
+    printDebug("login from the first user");
+    forceRight(await usecases.logout(NoParams()));
+    forceRight(await usecases.login(LoginParams(username: "sam", password: "secure_pass")));
+
+    printDebug("get posts of the second user");
+    final postsAsProfile1 =
+        forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
+    expect(postsAsProfile1.length, 1);
+    final post = postsAsProfile1[0];
+
+    printDebug("assert it is not liked and isMine = false");
+    expect(post.isMine, false);
+    expect(post.isLiked, false);
+    expect(post.likes, 0);
+
+    printDebug("like the post");
+    forceRight(await usecases.toggleLike(PostParams(post: post)));
+
+    printDebug("assert it is now liked");
+    final postLiked =
+        forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)))[0];
+    expect(postLiked.isLiked, true);
+    expect(postLiked.likes, 1);
   });
 }
 
