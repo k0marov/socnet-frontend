@@ -130,6 +130,14 @@ void main() {
     final avatarFromStatic = backend.getStaticFile(newURL);
     expect(avatarFromStatic.readAsBytesSync(), File(newAvatar.path).readAsBytesSync());
 
+    printDebug(
+        "create post without images"); // just to test that api returns an adequate response for a post without images
+    const newPostWithoutImages = NewPostValue(images: [], text: "Post without images");
+    forceRight(await usecases.createPost(PostCreateParams(newPost: newPostWithoutImages)));
+    final posts = forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
+    expect(posts.length, 1);
+    expect(posts[0].text, newPostWithoutImages.text);
+
     printDebug("create post");
     final postImages = [
       fileFixture("avatar.png"),
@@ -137,9 +145,10 @@ void main() {
     ];
     final newPost = NewPostValue(images: postImages, text: "The First Post");
     forceRight(await usecases.createPost(PostCreateParams(newPost: newPost)));
-    final posts = forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
-    expect(posts.length, 1);
-    final createdPost = posts[0];
+    final postsNow =
+        forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
+    expect(postsNow.length, 1);
+    final createdPost = postsNow[0];
     expect(createdPost.isMine, true);
     expect(createdPost.author.id, profile2.id);
     expect(createdPost.text, "The First Post");
@@ -177,6 +186,10 @@ void main() {
     expect(postLiked.isLiked, true);
     expect(postLiked.likes, 1);
 
+    printDebug("assert there is now 0 comments for this post");
+    final comments = forceRight(await usecases.getPostComments(PostParams(post: postLiked)));
+    expect(comments.length, 0);
+
     printDebug("add a comment");
     const newComment = NewCommentValue(text: "A new comment");
     final createdComment =
@@ -209,9 +222,9 @@ void main() {
     forceRight(await usecases.deletePost(PostParams(post: postLiked)));
 
     printDebug("assert the post was deleted");
-    final postsNow =
+    final postsAfterDeletion =
         forceRight(await usecases.getProfilePosts(get_profile_posts.ProfileParams(profile: updatedProfile2)));
-    expect(postsNow.length, 0);
+    expect(postsAfterDeletion.length, 0);
   });
 }
 
