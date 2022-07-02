@@ -138,6 +138,9 @@ void main() {
     expect(posts.length, 1);
     expect(posts[0].text, newPostWithoutImages.text);
 
+    printDebug("delete post without images");
+    forceRight(await usecases.deletePost(PostParams(post: posts[0])));
+
     printDebug("create post");
     final postImages = [
       fileFixture("avatar.png"),
