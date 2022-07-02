@@ -27,7 +27,7 @@ EndpointQuery addPostCommentEndpoint(String postId) {
 }
 
 EndpointQuery deleteCommentEndpoint(String commentId) {
-  return const EndpointQuery("unimplemented");
+  return EndpointQuery("/api/comments/$commentId");
 }
 
 EndpointQuery getPostCommentsEndpoint(String postId) {

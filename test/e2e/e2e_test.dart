@@ -221,6 +221,18 @@ void main() {
     expect(likedComment.isLiked, true);
     expect(likedComment.likes, 1);
 
+    printDebug("login as first profile");
+    forceRight(await usecases.login(LoginParams(username: "sam", password: "secure_pass")));
+
+    printDebug("delete this comment");
+    forceRight(await usecases.deleteComment(CommentParams(comment: likedComment)));
+    printDebug("assert it was deleted");
+    final commentsAfterDeletion = forceRight(await usecases.getPostComments(PostParams(post: postLiked)));
+    expect(commentsAfterDeletion.length, 0);
+
+    printDebug("login as second profile");
+    forceRight(await usecases.login(LoginParams(username: "test", password: "pass12345")));
+
     printDebug("delete the post");
     forceRight(await usecases.deletePost(PostParams(post: postLiked)));
 
