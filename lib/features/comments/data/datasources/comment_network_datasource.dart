@@ -50,7 +50,7 @@ class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
   @override
   Future<List<CommentModel>> getPostComments(PostModel post) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(getPostCommentsEndpoint(post.toEntity().id), {});
+      final response = await _apiFacade.get(getPostCommentsEndpoint(post.toEntity().id));
       checkStatusCode(response);
       final commentsJson = json.decode(response.body)['comments'] as List;
       return commentsJson.map((json) => CommentModel.fromJson(json)).toList();

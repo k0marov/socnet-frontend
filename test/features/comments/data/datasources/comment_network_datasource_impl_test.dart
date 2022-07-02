@@ -19,6 +19,8 @@ void main() {
   late CommentNetworkDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockAPIFacade;
 
+  setUpAll(() => registerFallbackValue(EndpointQuery("")));
+
   setUp(() {
     mockAPIFacade = MockAuthenticatedAPIFacade();
     sut = CommentNetworkDataSourceImpl(mockAPIFacade);
@@ -84,18 +86,17 @@ void main() {
       "should call api and return the parsed result if result status code = 200",
       () async {
         // arrange
-        when(() => mockAPIFacade.get(any(), any()))
-            .thenAnswer((_) async => http.Response(json.encode(tCommentsJson), 200));
+        when(() => mockAPIFacade.get(any())).thenAnswer((_) async => http.Response(json.encode(tCommentsJson), 200));
         // act
         final result = await sut.getPostComments(PostModel(tPost));
         // assert
         expect(result, tCommentModels);
-        verify(() => mockAPIFacade.get(getPostCommentsEndpoint(tPost.id), {}));
+        verify(() => mockAPIFacade.get(getPostCommentsEndpoint(tPost.id)));
         verifyNoMoreInteractions(mockAPIFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockAPIFacade.get(any(), any())),
+      () => when(() => mockAPIFacade.get(any())),
       () => sut.getPostComments(PostModel(tPost)),
     );
   });

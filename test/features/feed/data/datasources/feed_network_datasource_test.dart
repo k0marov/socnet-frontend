@@ -26,7 +26,7 @@ void main() {
   group('getNextPosts', () {
     final tAmount = randomInt();
     Future<List<PostModel>> act() => sut.getNextPosts(tAmount);
-    Future<http.Response> apiCall() => mockAPIFacade.get(feedEndpoint(tAmount), {});
+    Future<http.Response> apiCall() => mockAPIFacade.get(feedEndpoint(tAmount));
     test(
       "should call api and return parsed result if response status code = 200",
       () async {

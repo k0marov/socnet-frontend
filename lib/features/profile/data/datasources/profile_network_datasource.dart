@@ -48,7 +48,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<List<ProfileModel>> getFollows(ProfileModel profile) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id), {});
+      final response = await _apiFacade.get(getFollowsEndpoint(profile.toEntity().id));
       checkStatusCode(response);
 
       final profiles = json.decode(response.body)['profiles'];
@@ -59,7 +59,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<ProfileModel> getMyProfile() async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(getMyProfileEndpoint(), {});
+      final response = await _apiFacade.get(getMyProfileEndpoint());
       checkStatusCode(response);
       final profileJson = json.decode(response.body);
       return ProfileModel.fromJson(profileJson);
@@ -100,7 +100,7 @@ class ProfileNetworkDataSourceImpl implements ProfileNetworkDataSource {
   @override
   Future<ProfileModel> getProfile(String id) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(getProfileEndpoint(id), {});
+      final response = await _apiFacade.get(getProfileEndpoint(id));
       checkStatusCode(response);
       final profileJson = json.decode(response.body);
       return ProfileModel.fromJson(profileJson);

@@ -49,7 +49,7 @@ void main() {
           'password': tPassword,
         };
         verify(() => mockHttpClient.post(
-              Uri.https(tApiHost, endpoint),
+              endpoint.toURL(tApiHost, true),
               body: json.encode(wantBody),
               headers: {'Accept': 'application/json'},
             ));

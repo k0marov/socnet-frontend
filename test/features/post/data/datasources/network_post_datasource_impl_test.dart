@@ -22,6 +22,7 @@ void main() {
   late NetworkPostDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockApiFacade;
 
+  setUpAll(() => registerFallbackValue(EndpointQuery("")));
   setUp(() {
     mockApiFacade = MockAuthenticatedAPIFacade();
     sut = NetworkPostDataSourceImpl(mockApiFacade);
@@ -89,17 +90,17 @@ void main() {
         final tPosts = [PostModel(createTestPost()), PostModel(createTestPost())];
         final tPostsJson = {'posts': tPosts.map((post) => post.toJson()).toList()};
         final tResponseBody = json.encode(tPostsJson);
-        when(() => mockApiFacade.get(any(), any())).thenAnswer((_) async => http.Response(tResponseBody, 200));
+        when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(tResponseBody, 200));
         // act
         final result = await sut.getProfilePosts(tProfile);
         // assert
         expect(listEquals(result, tPosts), true);
-        verify(() => mockApiFacade.get(getProfilePostsEndpoint(tProfile.toEntity().id), {}));
+        verify(() => mockApiFacade.get(getProfilePostsEndpoint(tProfile.toEntity().id)));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockApiFacade.get(any(), any())),
+      () => when(() => mockApiFacade.get(any())),
       () => sut.getProfilePosts(tProfile),
     );
   });

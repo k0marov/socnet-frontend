@@ -17,7 +17,7 @@ class FeedNetworkDataSourceImpl implements FeedNetworkDataSource {
   @override
   Future<List<PostModel>> getNextPosts(int amount) async {
     return exceptionConverterCall(() async {
-      final response = await _apiFacade.get(feedEndpoint(amount), {});
+      final response = await _apiFacade.get(feedEndpoint(amount));
       checkStatusCode(response);
       final postsJson = json.decode(response.body)['posts'] as List;
       return postsJson.map((postJson) => PostModel.fromJson(postJson)).toList();

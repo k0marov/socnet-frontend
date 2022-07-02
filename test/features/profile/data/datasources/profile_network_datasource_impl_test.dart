@@ -18,6 +18,7 @@ void main() {
   late ProfileNetworkDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockApiFacade;
 
+  setUpAll(() => registerFallbackValue(EndpointQuery("")));
   setUp(() {
     mockApiFacade = MockAuthenticatedAPIFacade();
     sut = ProfileNetworkDataSourceImpl(mockApiFacade);
@@ -33,17 +34,17 @@ void main() {
         final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
         final tResponseBody = {'profiles': tFollowsModels.map((model) => model.toJson()).toList()};
         final tResponse = http.Response(json.encode(tResponseBody), 200);
-        when(() => mockApiFacade.get(any(), any())).thenAnswer((_) async => tResponse);
+        when(() => mockApiFacade.get(any())).thenAnswer((_) async => tResponse);
         // act
         final result = await sut.getFollows(tProfile);
         // assert
         expect(result, tFollowsModels);
-        verify(() => mockApiFacade.get(getFollowsEndpoint(tProfile.toEntity().id), {}));
+        verify(() => mockApiFacade.get(getFollowsEndpoint(tProfile.toEntity().id)));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockApiFacade.get(any(), any())),
+      () => when(() => mockApiFacade.get(any())),
       () => sut.getFollows(tProfile),
     );
   });
@@ -54,17 +55,17 @@ void main() {
       () async {
         // arrange
         final responseBody = json.encode(tProfile.toJson());
-        when(() => mockApiFacade.get(any(), any())).thenAnswer((_) async => http.Response(responseBody, 200));
+        when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(responseBody, 200));
         // act
         final result = await sut.getMyProfile();
         // assert
         expect(result, tProfile);
-        verify(() => mockApiFacade.get(getMyProfileEndpoint(), {}));
+        verify(() => mockApiFacade.get(getMyProfileEndpoint()));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockApiFacade.get(any(), any())),
+      () => when(() => mockApiFacade.get(any())),
       () => sut.getMyProfile(),
     );
   });
@@ -74,16 +75,16 @@ void main() {
     test("should call api and return parsed result if the call is successful", () async {
       // arrange
       final responseBody = json.encode(tProfile.toJson());
-      when(() => mockApiFacade.get(any(), any())).thenAnswer((_) async => http.Response(responseBody, 200));
+      when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(responseBody, 200));
       // act
       final result = await sut.getProfile(tId);
       // assert
       expect(result, tProfile);
-      verify(() => mockApiFacade.get(getProfileEndpoint(tId), {}));
+      verify(() => mockApiFacade.get(getProfileEndpoint(tId)));
       verifyNoMoreInteractions(mockApiFacade);
     });
     baseNetworkDataSourceExceptionTests(
-      () => when(() => mockApiFacade.get(any(), any())),
+      () => when(() => mockApiFacade.get(any())),
       () => sut.getProfile(tId),
     );
   });

@@ -58,7 +58,7 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
     return exceptionConverterCall(() async {
       final profileId = profileModel.toEntity().id;
 
-      final response = await _apiFacade.get(getProfilePostsEndpoint(profileId), {});
+      final response = await _apiFacade.get(getProfilePostsEndpoint(profileId));
       checkStatusCode(response);
 
       final postsJson = json.decode(response.body)["posts"];

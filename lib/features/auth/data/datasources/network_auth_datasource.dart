@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:socnet/core/const/endpoints.dart' as endpoints;
+import 'package:socnet/core/const/endpoints.dart';
+import 'package:socnet/core/debug.dart';
 import 'package:socnet/core/error/exceptions.dart';
 import 'package:socnet/core/error/helpers.dart';
 import 'package:socnet/features/auth/data/models/token_model.dart';
@@ -28,32 +29,29 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
 
   @override
   Future<TokenModel> login(String username, String password) async {
-    return _loginOrRegister(username, password, endpoints.loginEndpoint());
+    return _loginOrRegister(username, password, loginEndpoint());
   }
 
   @override
   Future<TokenModel> register(String username, String password) async {
-    return _loginOrRegister(username, password, endpoints.registerEndpoint());
+    return _loginOrRegister(username, password, registerEndpoint());
   }
 
-  Future<TokenModel> _loginOrRegister(String username, String password, String endpoint) async {
+  Future<TokenModel> _loginOrRegister(String username, String password, EndpointQuery eq) async {
     return exceptionConverterCall(() async {
-      final uri = useHTTPS ? Uri.https(_apiHost, endpoint) : Uri.http(_apiHost, endpoint);
+      final url = eq.toURL(_apiHost, useHTTPS);
       final requestBody = {
         'username': username,
         'password': password,
       };
-      final apiResponse = await _httpClient.post(uri,
+      printDebug("POST $url: $requestBody");
+      final apiResponse = await _httpClient.post(url,
           headers: {
             'Accept': 'application/json',
           },
           body: json.encode(requestBody));
-      if (apiResponse.statusCode != 200) {
-        throw NetworkException.fromApiResponse(
-          apiResponse.statusCode,
-          apiResponse.body,
-        );
-      }
+      printResponse(apiResponse);
+      checkStatusCode(apiResponse);
       final jsonResponse = json.decode(apiResponse.body);
       return TokenModel.fromJson(jsonResponse);
     });
