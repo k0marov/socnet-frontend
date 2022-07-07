@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:socnet/logic/core/error/form_failures.dart';
+import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
@@ -70,6 +72,19 @@ void main() {
       await sut.registerPressed();
       // assert
       expect(sut.state, emptyState);
+      verifyZeroInteractions(mockRegister);
+      verifyZeroInteractions(mockAuthGate);
+    });
+    test("should set failure on password repeat and not call anything if passwords don't match", () async {
+      // arrange
+      final tRandomPassRepeat = randomString();
+      arrangeFilledState();
+      sut.passRepeatChanged(tRandomPassRepeat);
+      // act
+      await sut.registerPressed();
+      // assert
+      final wantState = tFilledState.withPassRepeat(FieldValue(tRandomPassRepeat, passwordsDontMatch));
+      expect(sut.state, wantState);
       verifyZeroInteractions(mockRegister);
       verifyZeroInteractions(mockAuthGate);
     });

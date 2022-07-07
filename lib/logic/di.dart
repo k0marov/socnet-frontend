@@ -112,10 +112,10 @@ Future initialize() async {
     apiHost: realApiHost,
   );
 
-  sl.registerLazySingleton(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
   sl.registerLazySingleton(() => PostBlocCreator(usecases.deletePost, usecases.toggleLike));
 
+  sl.registerFactory(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
   sl.registerFactory(() => PostCreationBloc(usecases.createPost));
   sl.registerFactory(() => CommentsBloc(

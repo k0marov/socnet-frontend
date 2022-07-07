@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
@@ -24,6 +25,10 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   Future<void> registerPressed() async {
     if (!state.canBeSubmitted) return;
+    if (state.curPass.value != state.curPassRepeat.value) {
+      emit(state.withPassRepeat(state.curPassRepeat.withFailure(passwordsDontMatch)));
+      return;
+    }
     final result = await _register(RegisterParams(username: state.curUsername.value, password: state.curPass.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),
