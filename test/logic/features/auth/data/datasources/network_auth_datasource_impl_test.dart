@@ -1,0 +1,99 @@
+import 'dart:convert';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
+import 'package:socnet/logic/core/const/endpoints.dart' as endpoints;
+import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
+import 'package:socnet/logic/features/auth/data/models/token_model.dart';
+import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
+
+import '../../../../../shared/fixtures/fixture_reader.dart';
+import '../../../../../shared/helpers/helpers.dart';
+
+class MockHttpClient extends Mock implements http.Client {}
+
+void main() {
+  late MockHttpClient mockHttpClient;
+  late NetworkAuthDataSourceImpl sut;
+
+  const tApiHost = "example.com";
+
+  setUp(() {
+    mockHttpClient = MockHttpClient();
+    sut = NetworkAuthDataSourceImpl(mockHttpClient, tApiHost);
+    registerFallbackValue(Uri());
+  });
+
+  const tUsername = "username";
+  const tPassword = "password";
+
+  final tTokenResponse = fixture('auth_response_token.json');
+  const tToken = TokenModel(Token(token: "424242"));
+
+  void sharedForLoginAndRegister({required bool isLogin}) {
+    test(
+      "should call api and return the token model if everything was successful",
+      () async {
+        // arrange
+        when(() => mockHttpClient.post(any(), headers: any(named: "headers"), body: any(named: "body")))
+            .thenAnswer((_) async => http.Response(tTokenResponse, 200));
+        // act
+        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
+        // assert
+        expect(result, tToken);
+        final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
+        final wantBody = {
+          'username': tUsername,
+          'password': tPassword,
+        };
+        verify(() => mockHttpClient.post(
+              endpoint.toURL(tApiHost, true),
+              body: json.encode(wantBody),
+              headers: {'Accept': 'application/json'},
+            ));
+        verifyNoMoreInteractions(mockHttpClient);
+      },
+    );
+    test(
+      "should throw NetworkException if api returned status code != 200",
+      () async {
+        // arrange
+        const tStatusCode = 403;
+        final tClientError = ClientError(randomString(), randomString());
+        when(() => mockHttpClient.post(
+              any(),
+              headers: any(named: "headers"),
+              body: any(named: "body"),
+            )).thenAnswer((_) async => http.Response(
+              json.encode(tClientError.toJson()),
+              tStatusCode,
+            ));
+        // assert
+        final expectedException = NetworkException(tStatusCode, tClientError);
+        expect(() => sut.login(tUsername, tPassword), throwsA(equals(expectedException)));
+      },
+    );
+    test(
+      "should throw NetworkException if some other error happened",
+      () async {
+        // arrange
+        when(() => mockHttpClient.post(
+              any(),
+              body: any(named: "body"),
+              headers: any(named: "headers"),
+            )).thenThrow(Exception());
+        // assert
+        expect(() => sut.login(tUsername, tPassword), throwsA(const TypeMatcher<NetworkException>()));
+      },
+    );
+  }
+
+  group('login', () {
+    sharedForLoginAndRegister(isLogin: true);
+  });
+  group('register', () {
+    sharedForLoginAndRegister(isLogin: false);
+  });
+}

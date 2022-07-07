@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:socnet/ui/pages/auth_gate.dart';
 
-import 'di.dart' as di;
-import 'features/auth/presentation/auth_gate/auth_gate.dart';
+import 'logic/di.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const AuthGatePage(),
+      home: AuthGatePage(),
     );
   }
 }
