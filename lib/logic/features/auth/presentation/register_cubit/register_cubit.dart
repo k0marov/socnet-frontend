@@ -9,16 +9,19 @@ import '../auth_gate/bloc/auth_gate_bloc.dart';
 part 'register_state.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
+  final PassStrengthGetter _getStrength;
   final RegisterUseCase _register;
   final AuthGateBloc _authGate;
-  RegisterCubit(this._register, this._authGate) : super(RegisterState());
-  void usernameChanged(String username) {} // => emit(state.withUsername(username));
-  void passRepeatChanged(String passRepeat) {} // => emit(state.withPassRepeat(passRepeat));
-  void passChanged(String pass) {
-    throw UnimplementedError();
-  }
+  RegisterCubit(this._getStrength, this._register, this._authGate) : super(RegisterState());
+  void usernameChanged(String username) => emit(state.withUsername(username));
+  void passRepeatChanged(String passRepeat) => emit(state.withPassRepeat(passRepeat));
+  void passChanged(String pass) => emit(state.withPass(pass).withPassStrength(_getStrength(pass)));
 
   Future<void> registerPressed() async {
-    throw UnimplementedError();
+    final result = await _register(RegisterParams(username: state.curUsername, password: state.curPass));
+    result.fold(
+      (failure) => emit(state.withFailure(failure)),
+      (success) => _authGate.add(AuthStateUpdateRequested()),
+    );
   }
 }
