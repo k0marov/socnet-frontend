@@ -23,5 +23,3 @@ class NetworkFailure extends Failure {
 class CacheFailure extends Failure {}
 
 class HashingFailure extends Failure {}
-
-class WeakPassFailure extends Failure {}

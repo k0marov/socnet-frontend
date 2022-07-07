@@ -39,11 +39,28 @@ void main() {
 
   test("should have initial state with empty username and password and no failure", () async {
     expect(sut.state, emptyState);
+    expect(sut.state.canBeSubmitted, false);
   });
 
   void arrangeFilledState() => sut.emit(tFilledState);
 
+  test("should have canBeSubmitted = true if username and password are not empty", () async {
+    // arrange
+    sut.usernameChanged("a");
+    sut.passwordChanged("a");
+    // assert
+    expect(sut.state.canBeSubmitted, true);
+  });
+
   group("loginPressed", () {
+    test("should do nothing if canBeSubmitted = false", () async {
+      // act
+      sut.loginPressed();
+      // assert
+      expect(sut.state, emptyState);
+      verifyZeroInteractions(mockLogin);
+      verifyZeroInteractions(mockAuthGate);
+    });
     test("should call usecase and then auth gate if the call to usecase is successful", () async {
       // arrange
       arrangeFilledState();

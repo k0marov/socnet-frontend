@@ -17,6 +17,7 @@ class LoginCubit extends Cubit<LoginState> {
   void usernameChanged(String username) => emit(state.withUsername(state.curUsername.withValue(username)));
   void passwordChanged(String pass) => emit(state.withPassword(state.curPassword.withValue(pass)));
   Future<void> loginPressed() async {
+    if (!state.canBeSubmitted) return;
     final result = await _login(LoginParams(username: state.curUsername.value, password: state.curPassword.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),

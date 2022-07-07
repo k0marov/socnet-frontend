@@ -3,6 +3,7 @@ part of 'login_cubit.dart';
 class LoginState extends Equatable {
   final FieldValue curUsername;
   final FieldValue curPassword;
+  bool get canBeSubmitted => curUsername.value.isNotEmpty && curPassword.value.isNotEmpty;
   final Failure? failure;
   @override
   List get props => [curUsername, curPassword, failure];
