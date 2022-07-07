@@ -38,8 +38,8 @@ class _LoginFormState extends State<LoginForm> {
                   child: const Text("Login"),
                   onPressed: _username.isNotEmpty && _password.isNotEmpty
                       ? () => context.read<AuthPageBloc>().add(LoginRequested(
-                            username: _username,
-                            password: _password,
+                            curUsername: _username,
+                            curPassword: _password,
                           ))
                       : null),
             ])),

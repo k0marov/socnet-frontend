@@ -11,7 +11,7 @@ Future<Either<Failure, T>> exceptionToFailureCall<T>(Future<T> Function() call) 
   } on CacheException {
     return Left(CacheFailure());
   } on HashingException {
-    return const Left(HashingFailure());
+    return Left(HashingFailure());
   } catch (e) {
     final failure = e is NetworkException ? NetworkFailure(e) : NetworkFailure.unknown;
     return Left(failure);

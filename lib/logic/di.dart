@@ -34,7 +34,6 @@ import 'package:socnet/logic/features/profile/domain/usecases/update_profile.dar
 import 'package:socnet/logic/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
 import 'package:socnet/logic/features/profile/presentation/profile/bloc/profile_bloc.dart';
 
-import './features/auth/presentation/auth/bloc/auth_page_bloc.dart';
 import './features/comments/domain/usecases/delete_comment.dart';
 import './features/comments/domain/usecases/get_post_comments.dart';
 import './features/comments/domain/usecases/toggle_like_on_comment.dart';
@@ -114,7 +113,6 @@ Future initialize() async {
   );
 
   sl.registerLazySingleton(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
-  sl.registerLazySingleton(() => AuthPageBlocCreator(usecases.login, usecases.register));
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
   sl.registerLazySingleton(() => PostBlocCreator(usecases.deletePost, usecases.toggleLike));
 

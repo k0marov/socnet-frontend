@@ -42,8 +42,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   onPressed: _username.isNotEmpty && _password.isNotEmpty && _passwordRepeat.isNotEmpty
                       ? () => _formKey.currentState!.validate()
                           ? context.read<AuthPageBloc>().add(RegistrationRequested(
-                                username: _username,
-                                password: _password,
+                                curUsername: _username,
+                                curPassword: _password,
                               ))
                           : null
                       : null),
