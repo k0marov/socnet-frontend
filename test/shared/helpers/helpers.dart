@@ -4,11 +4,14 @@ import 'package:dartz/dartz.dart';
 import 'package:english_words/english_words.dart' as english_words;
 import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/core/simple_file.dart';
 
 String randomNoun() => english_words.nouns[Random().nextInt(english_words.nouns.length)];
 String randomAdjective() => english_words.adjectives[Random().nextInt(english_words.adjectives.length)];
 String randomString() => randomAdjective() + " " + randomNoun();
+
+FieldValue randomFieldValue() => FieldValue(randomString(), null);
 
 DateTime randomTime() =>
     DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch / 1000000).floor() * 1000000)
