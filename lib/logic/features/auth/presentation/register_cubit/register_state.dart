@@ -1,9 +1,9 @@
 part of 'register_cubit.dart';
 
 class RegisterState extends Equatable {
-  final String curUsername;
-  final String curPass;
-  final String curPassRepeat;
+  final FieldValue curUsername;
+  final FieldValue curPass;
+  final FieldValue curPassRepeat;
   final PassStrength curPassStrength;
   final Failure? curFailure;
 
@@ -11,16 +11,17 @@ class RegisterState extends Equatable {
   List get props => [curUsername, curPass, curPassRepeat, curPassStrength, curFailure];
 
   const RegisterState(
-      [this.curUsername = "",
-      this.curPass = "",
-      this.curPassRepeat = "",
+      [this.curUsername = const FieldValue(),
+      this.curPass = const FieldValue(),
+      this.curPassRepeat = const FieldValue(),
       this.curPassStrength = PassStrength.weak,
       this.curFailure]);
 
-  RegisterState withUsername(String username) =>
+  RegisterState withUsername(FieldValue username) =>
       RegisterState(username, curPass, curPassRepeat, curPassStrength, curFailure);
-  RegisterState withPass(String pass) => RegisterState(curUsername, pass, curPassRepeat, curPassStrength, curFailure);
-  RegisterState withPassRepeat(String passRepeat) =>
+  RegisterState withPass(FieldValue pass) =>
+      RegisterState(curUsername, pass, curPassRepeat, curPassStrength, curFailure);
+  RegisterState withPassRepeat(FieldValue passRepeat) =>
       RegisterState(curUsername, curPass, passRepeat, curPassStrength, curFailure);
   RegisterState withPassStrength(PassStrength passStrength) =>
       RegisterState(curUsername, curPass, curPassRepeat, passStrength, curFailure);

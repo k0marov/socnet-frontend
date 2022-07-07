@@ -8,3 +8,5 @@ class FormFailure extends Equatable {
 }
 
 const invalidCredentials = FormFailure._("invalid-credentials");
+const usernameTaken = FormFailure._("username-taken");
+const usernameInvalid = FormFailure._("username-invalid");

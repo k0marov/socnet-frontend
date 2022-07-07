@@ -14,9 +14,19 @@ class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 
 class MockAuthGateBloc extends Mock implements AuthGateBloc {}
 
+PassStrength randomPassStrength() =>
+    PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
+RegisterState randomRegisterState() => RegisterState(
+    randomFieldValue(),
+    randomFieldValue(),
+    randomFieldValue(),
+    randomPassStrength(),
+    randomFailure());
+
 void main() {
   final tNewPass = randomString();
-  final tNewPassStrength = PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
+  final tNewPassStrength = PassStrength.values
+      .elementAt(Random().nextInt(PassStrength.values.length));
 
   late MockRegisterUseCase mockRegister;
   late MockAuthGateBloc mockAuthGate;
@@ -32,48 +42,34 @@ void main() {
     registerFallbackValue(RegisterParams(username: "", password: ""));
   });
 
+  const emptyState = RegisterState();
+
   test("should have initial state with empty fields", () async {
-    expect(sut.state, const RegisterState("", "", "", PassStrength.weak, null));
+    expect(sut.state, emptyState);
   });
 
-  final tUsername = randomString();
-  final tPass = randomString();
-  final tPassRepeat = tPass;
-  const tPassStrength = PassStrength.normal;
-  final tFailure = randomFailure();
-  final tFilledState = RegisterState(tUsername, tPass, tPassRepeat, tPassStrength, tFailure);
-
-  final tNewUserame = randomString();
-  final tNewPassRepeat = randomString();
-
+  final tFilledState = randomRegisterState();
   void arrangeFilledState() => sut.emit(tFilledState);
 
-  test("should set username when usernameChanged() is invoked", () async {
-    // arrange
-    arrangeFilledState();
-    // act
-    sut.usernameChanged(tNewUserame);
-    // assert
-    expect(sut.state, RegisterState(tNewUserame, tPass, tPassRepeat, tPassStrength, tFailure));
-  });
-  test("should set password repeat when passRepeatChanged() is invoked", () async {
-    // arrange
-    arrangeFilledState();
-    // act
-    sut.passRepeatChanged(tNewPassRepeat);
-    // assert
-    expect(sut.state, RegisterState(tUsername, tPass, tNewPassRepeat, tPassStrength, tFailure));
-  });
-  test("should set password AND password strength when passChanged() is invoked", () async {
+  test(
+      "should set password AND password strength when passChanged() is invoked",
+      () async {
     // arrange
     arrangeFilledState();
     // act
     sut.passChanged(tNewPass);
     // assert
-    expect(sut.state, RegisterState(tUsername, tNewPass, tPassRepeat, tNewPassStrength, tFailure));
+    expect(
+      sut.state,
+      tFilledState
+          .withPass(tFilledState.curPass.withValue(tNewPass))
+          .withPassStrength(tNewPassStrength),
+    );
   });
   group("registerPressed()", () {
-    test("should call usecase and then call auth gate if usecase call was successful", () async {
+    test(
+        "should call usecase and then call auth gate if usecase call was successful",
+        () async {
       // arrange
       arrangeFilledState();
       when(() => mockRegister(any())).thenAnswer((_) async => Right(null));
@@ -84,15 +80,17 @@ void main() {
       verify(() => mockAuthGate.add(AuthStateUpdateRequested()));
       verifyNoMoreInteractions(mockAuthGate);
     });
-    test("should add failure to state if usecase call was unsuccessful", () async {
+    test("should add failure to state if usecase call was unsuccessful",
+        () async {
       // arrange
       arrangeFilledState();
       final tUseCaseFailure = randomFailure();
-      when(() => mockRegister(any())).thenAnswer((_) async => Left(tUseCaseFailure));
+      when(() => mockRegister(any()))
+          .thenAnswer((_) async => Left(tUseCaseFailure));
       // act
       await sut.registerPressed();
       // assert
-      expect(sut.state, RegisterState(tUsername, tPass, tPassRepeat, tPassStrength, tUseCaseFailure));
+      expect(sut.state, tFilledState.withFailure(tUseCaseFailure));
       verifyZeroInteractions(mockAuthGate);
     });
   });
