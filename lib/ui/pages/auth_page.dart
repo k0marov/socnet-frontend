@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/di.dart';
 
-import '../bloc/auth_page_bloc.dart';
+import '../../logic/features/auth/presentation/auth/bloc/auth_page_bloc.dart';
 import '../widgets/login_form.dart';
 import '../widgets/register_form.dart';
 

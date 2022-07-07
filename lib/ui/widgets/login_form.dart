@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 
-import '../bloc/auth_page_bloc.dart';
+import '../../logic/features/auth/presentation/auth/bloc/auth_page_bloc.dart';
 
 class LoginForm extends StatefulWidget {
   final Failure? failure;
   final String? initialUsername;
   final String? initialPassword;
-  const LoginForm(
-      {this.failure, this.initialUsername, this.initialPassword, Key? key})
-      : super(key: key);
+  const LoginForm({this.failure, this.initialUsername, this.initialPassword, Key? key}) : super(key: key);
 
   @override
   State<LoginForm> createState() => _LoginFormState();

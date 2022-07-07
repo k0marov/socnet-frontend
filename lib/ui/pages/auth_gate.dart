@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../logic/di.dart';
-import '../../logic/features/auth/presentation/auth/pages/auth_page.dart';
 import '../../logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'auth_page.dart';
 import 'my_profile_page.dart';
 
 class AuthGatePage extends StatelessWidget {

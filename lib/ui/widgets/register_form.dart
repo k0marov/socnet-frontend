@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/error/failures.dart';
-import '../bloc/auth_page_bloc.dart';
+import '../../logic/core/error/failures.dart';
+import '../../logic/features/auth/presentation/auth/bloc/auth_page_bloc.dart';
 
 class RegisterForm extends StatefulWidget {
   final Failure? failure;
