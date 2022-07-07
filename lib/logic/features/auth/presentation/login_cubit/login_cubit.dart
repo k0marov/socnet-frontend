@@ -8,8 +8,8 @@ import '../../domain/usecases/login_usecase.dart';
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  final AuthGateBloc _authGate;
   final LoginUseCase _login;
+  final AuthGateBloc _authGate;
   LoginCubit(this._login, this._authGate) : super(const LoginState("", ""));
   void usernameChanged(String newUsername) => emit(state.withUsername(newUsername));
   void passwordChanged(String newPassword) => emit(state.withPassword(newPassword));
