@@ -5,6 +5,12 @@ class RegisterState extends Equatable {
   final FieldValue curPass;
   final FieldValue curPassRepeat;
   final PassStrength curPassStrength;
+  bool get canBeSubmitted =>
+      curUsername.value.isNotEmpty &&
+      curPass.value.isNotEmpty &&
+      curPassRepeat.value.isNotEmpty &&
+      curPassStrength != PassStrength.weak;
+
   final Failure? curFailure;
 
   @override

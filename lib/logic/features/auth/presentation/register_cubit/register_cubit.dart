@@ -23,6 +23,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       );
 
   Future<void> registerPressed() async {
+    if (!state.canBeSubmitted) return;
     final result = await _register(RegisterParams(username: state.curUsername.value, password: state.curPass.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,13 +12,14 @@ class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 
 class MockAuthGateBloc extends Mock implements AuthGateBloc {}
 
-PassStrength randomPassStrength() => PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
-RegisterState randomRegisterState() =>
-    RegisterState(randomFieldValue(), randomFieldValue(), randomFieldValue(), randomPassStrength(), randomFailure());
+RegisterState randomRegisterState() {
+  final pass = randomFieldValue();
+  return RegisterState(randomFieldValue(), pass, pass, PassStrength.normal, randomFailure());
+}
 
 void main() {
   final tNewPass = randomString();
-  final tNewPassStrength = PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
+  const tNewPassStrength = PassStrength.normal;
 
   late MockRegisterUseCase mockRegister;
   late MockAuthGateBloc mockAuthGate;
@@ -48,6 +47,7 @@ void main() {
 
   test("should have initial state with empty fields", () async {
     expect(sut.state, emptyState);
+    expect(sut.state.canBeSubmitted, false);
   });
 
   void arrangeFilledState() => sut.emit(tFilledState);
@@ -62,8 +62,17 @@ void main() {
       sut.state,
       tFilledState.withPass(tFilledState.curPass.withValue(tNewPass)).withPassStrength(tNewPassStrength),
     );
+    expect(sut.state.canBeSubmitted, true);
   });
   group("registerPressed()", () {
+    test("should do nothing if canBeSubmitted = false", () async {
+      // act
+      await sut.registerPressed();
+      // assert
+      expect(sut.state, emptyState);
+      verifyZeroInteractions(mockRegister);
+      verifyZeroInteractions(mockAuthGate);
+    });
     test("should call usecase and then call auth gate if usecase call was successful", () async {
       // arrange
       arrangeFilledState();
