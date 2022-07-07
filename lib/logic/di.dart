@@ -6,11 +6,16 @@ import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
+import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
+import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
+import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:socnet/logic/features/comments/domain/usecases/add_comment.dart';
@@ -114,6 +119,9 @@ Future initialize() async {
 
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
   sl.registerLazySingleton(() => PostBlocCreator(usecases.deletePost, usecases.toggleLike));
+  sl.registerLazySingleton(() => LoginCubitCreator(usecases.login, loginFailureHandlerImpl));
+  sl.registerLazySingleton(
+      () => RegisterCubitCreator(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl));
 
   sl.registerFactory(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));

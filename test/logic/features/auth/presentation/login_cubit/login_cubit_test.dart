@@ -27,9 +27,9 @@ void main() {
     mockAuthGate = MockAuthGateBloc();
     mockLogin = MockLogin();
     sut = LoginCubit(
+      mockLogin,
       (state, failure) =>
           state == tFilledState && failure == tLoginFailure ? tStateWithHandledFailure : throw Exception(),
-      mockLogin,
       mockAuthGate,
     );
     registerFallbackValue(LoginParams(username: "", password: ""));

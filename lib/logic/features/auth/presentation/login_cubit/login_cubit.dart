@@ -13,7 +13,7 @@ class LoginCubit extends Cubit<LoginState> {
   final LoginUseCase _login;
   final LoginFailureHandler _handleFailure;
   final AuthGateBloc _authGate;
-  LoginCubit(this._handleFailure, this._login, this._authGate) : super(const LoginState());
+  LoginCubit(this._login, this._handleFailure, this._authGate) : super(const LoginState());
   void usernameChanged(String username) => emit(state.withUsername(state.curUsername.withValue(username)));
   void passwordChanged(String pass) => emit(state.withPassword(state.curPassword.withValue(pass)));
   Future<void> loginPressed() async {
@@ -24,4 +24,11 @@ class LoginCubit extends Cubit<LoginState> {
       (success) => _authGate.add(AuthStateUpdateRequested()),
     );
   }
+}
+
+class LoginCubitCreator {
+  final LoginUseCase _login;
+  final LoginFailureHandler _handleFailure;
+  const LoginCubitCreator(this._login, this._handleFailure);
+  LoginCubit Create(AuthGateBloc authGate) => LoginCubit(_login, _handleFailure, authGate);
 }
