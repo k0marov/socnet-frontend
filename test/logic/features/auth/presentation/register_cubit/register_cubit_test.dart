@@ -14,29 +14,31 @@ class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 
 class MockAuthGateBloc extends Mock implements AuthGateBloc {}
 
-PassStrength randomPassStrength() =>
-    PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
-RegisterState randomRegisterState() => RegisterState(
-    randomFieldValue(),
-    randomFieldValue(),
-    randomFieldValue(),
-    randomPassStrength(),
-    randomFailure());
+PassStrength randomPassStrength() => PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
+RegisterState randomRegisterState() =>
+    RegisterState(randomFieldValue(), randomFieldValue(), randomFieldValue(), randomPassStrength(), randomFailure());
 
 void main() {
   final tNewPass = randomString();
-  final tNewPassStrength = PassStrength.values
-      .elementAt(Random().nextInt(PassStrength.values.length));
+  final tNewPassStrength = PassStrength.values.elementAt(Random().nextInt(PassStrength.values.length));
 
   late MockRegisterUseCase mockRegister;
   late MockAuthGateBloc mockAuthGate;
   late RegisterCubit sut;
+
+  final tFilledState = randomRegisterState();
+
+  final tUseCaseFailure = randomFailure();
+  final tStateWithHandledFailure = randomRegisterState();
+
   setUp(() {
     mockRegister = MockRegisterUseCase();
     mockAuthGate = MockAuthGateBloc();
     sut = RegisterCubit(
       (pass) => pass == tNewPass ? tNewPassStrength : throw Exception(),
       mockRegister,
+      (state, failure) =>
+          state == tFilledState && failure == tUseCaseFailure ? tStateWithHandledFailure : throw Exception(),
       mockAuthGate,
     );
     registerFallbackValue(RegisterParams(username: "", password: ""));
@@ -48,12 +50,9 @@ void main() {
     expect(sut.state, emptyState);
   });
 
-  final tFilledState = randomRegisterState();
   void arrangeFilledState() => sut.emit(tFilledState);
 
-  test(
-      "should set password AND password strength when passChanged() is invoked",
-      () async {
+  test("should set password AND password strength when passChanged() is invoked", () async {
     // arrange
     arrangeFilledState();
     // act
@@ -61,15 +60,11 @@ void main() {
     // assert
     expect(
       sut.state,
-      tFilledState
-          .withPass(tFilledState.curPass.withValue(tNewPass))
-          .withPassStrength(tNewPassStrength),
+      tFilledState.withPass(tFilledState.curPass.withValue(tNewPass)).withPassStrength(tNewPassStrength),
     );
   });
   group("registerPressed()", () {
-    test(
-        "should call usecase and then call auth gate if usecase call was successful",
-        () async {
+    test("should call usecase and then call auth gate if usecase call was successful", () async {
       // arrange
       arrangeFilledState();
       when(() => mockRegister(any())).thenAnswer((_) async => Right(null));
@@ -80,17 +75,14 @@ void main() {
       verify(() => mockAuthGate.add(AuthStateUpdateRequested()));
       verifyNoMoreInteractions(mockAuthGate);
     });
-    test("should add failure to state if usecase call was unsuccessful",
-        () async {
+    test("should add failure to state if usecase call was unsuccessful", () async {
       // arrange
       arrangeFilledState();
-      final tUseCaseFailure = randomFailure();
-      when(() => mockRegister(any()))
-          .thenAnswer((_) async => Left(tUseCaseFailure));
+      when(() => mockRegister(any())).thenAnswer((_) async => Left(tUseCaseFailure));
       // act
       await sut.registerPressed();
       // assert
-      expect(sut.state, tFilledState.withFailure(tUseCaseFailure));
+      expect(sut.state, tStateWithHandledFailure);
       verifyZeroInteractions(mockAuthGate);
     });
   });
