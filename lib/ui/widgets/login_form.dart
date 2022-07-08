@@ -1,49 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 
-import '../../logic/features/auth/presentation/auth/bloc/auth_page_bloc.dart';
+class LoginForm extends StatelessWidget {
+  const LoginForm({Key? key}) : super(key: key);
 
-class LoginForm extends StatefulWidget {
-  final Failure? failure;
-  final String? initialUsername;
-  final String? initialPassword;
-  const LoginForm({this.failure, this.initialUsername, this.initialPassword, Key? key}) : super(key: key);
-
-  @override
-  State<LoginForm> createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>();
-
-  String _username = "";
-  String _password = "";
+  LoginCubit _loginCubit(BuildContext context) => context.read<LoginCubit>();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (widget.failure != null) Text(widget.failure.toString()),
-        Form(
-            key: _formKey,
-            child: Column(children: [
-              TextFormField(
-                onChanged: (value) => setState(() => _username = value),
+    return BlocListener<LoginCubit, LoginState>(
+      listenWhen: (previous, current) => previous.failure != current.failure,
+      listener: (ctx, state) => state.failure != null
+          ? showDialog(
+              context: ctx,
+              builder: (ctx) => AlertDialog(
+                title: Text("failure"),
+                content: Text("Please, try again later."),
+                actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text("OK"))],
               ),
-              TextFormField(
-                onChanged: (value) => setState(() => _password = value),
-              ),
-              TextButton(
-                  child: const Text("Login"),
-                  onPressed: _username.isNotEmpty && _password.isNotEmpty
-                      ? () => context.read<AuthPageBloc>().add(LoginRequested(
-                            curUsername: _username,
-                            curPassword: _password,
-                          ))
-                      : null),
-            ])),
-      ],
+            )
+          : null,
+      child: Column(children: [
+        BlocBuilder<LoginCubit, LoginState>(
+          buildWhen: (previous, current) => previous.curUsername != current.curUsername,
+          builder: (ctx, state) => TextField(
+            onChanged: ctx.read<LoginCubit>().usernameChanged,
+            decoration: InputDecoration(
+              errorText: state.curUsername.failure?.code,
+            ),
+          ),
+        ),
+        BlocBuilder<LoginCubit, LoginState>(
+          buildWhen: (previous, current) => previous.curPassword != current.curPassword,
+          builder: (ctx, state) => TextField(
+            onChanged: ctx.read<LoginCubit>().passwordChanged,
+            obscureText: true,
+            decoration: InputDecoration(
+              errorText: state.curPassword.failure?.code,
+            ),
+          ),
+        ),
+        BlocBuilder<LoginCubit, LoginState>(
+          buildWhen: (previous, current) => previous.canBeSubmitted != current.canBeSubmitted,
+          builder: (ctx, state) => TextButton(
+            onPressed: state.canBeSubmitted ? ctx.read<LoginCubit>().loginPressed : null,
+            child: Text("Login"),
+          ),
+        ),
+      ]),
     );
   }
 }
+// // TextField(
+// //   onChanged: (name) => context.read<LoginCubit>().usernameChanged(name),
+// //   // decoration: InputDecoration(
+// //   //   errorText: state.curUsername.failure?.code,
+// //   // ),
+// // ),
+// // TextField(
+// //   onChanged: (pass) => context.read<LoginCubit>().passwordChanged(pass),
+// //   // obscureText: false,
+// //   // decoration: InputDecoration(
+// //   //   errorText: state.curPassword.failure?.code,
+// //   // ),
+// // ),
+// TextButton(
+// onPressed: () => context.read<LoginCubit>().usernameChanged("username"),
+// child: Text("Username"),
+// ),
+// TextButton(
+// onPressed: state.canBeSubmitted ? _loginCubit(ctx).loginPressed : null,
+// child: Text("Login"),
+// ),
