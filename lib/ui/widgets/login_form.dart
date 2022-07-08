@@ -15,7 +15,7 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FailureListener<LoginCubit, LoginState>(
-      getFailure: (state) => state.failure,
+      getFailure: (state) => state.curFailure,
       child: Column(children: [
         BlocField<LoginCubit, LoginState, FieldValue, Function(String)>(
           getValue: (state) => state.curUsername,
@@ -43,6 +43,7 @@ class LoginForm extends StatelessWidget {
           buildField: (canBeSubmitted, submit) => SubmitButton(
             canBeSubmitted: canBeSubmitted,
             submit: submit,
+            text: "Login",
           ),
         ),
       ]),

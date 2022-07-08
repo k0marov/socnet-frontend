@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:socnet/ui/widgets/failure_listener.dart';
 
 import '../../logic/di.dart';
 import '../../logic/features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
@@ -13,14 +14,14 @@ class AuthGatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-          create: (_) => sl<AuthGateCubit>()..refreshState(),
-          child: BlocBuilder<AuthGateCubit, AuthState>(builder: (context, state) {
-            if (state.isAuthenticated) {
-              return MyProfilePage();
-            } else {
-              return AuthPage();
-            }
-          })),
+        create: (_) => sl<AuthGateCubit>()..refreshState(),
+        child: FailureListener<AuthGateCubit, AuthState>(
+          getFailure: (state) => state.failure,
+          child: BlocBuilder<AuthGateCubit, AuthState>(
+            builder: (context, state) => state.isAuthenticated ? MyProfilePage() : AuthPage(),
+          ),
+        ),
+      ),
     );
   }
 }

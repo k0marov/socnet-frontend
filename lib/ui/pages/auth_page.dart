@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
+import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 import 'package:socnet/ui/widgets/login_form.dart';
 import 'package:socnet/ui/widgets/register_form.dart';
 
@@ -33,7 +34,7 @@ class _AuthPageState extends State<AuthPage> {
           ),
         ]
       : [
-          BlocProvider<LoginCubit>(
+          BlocProvider<RegisterCubit>(
             create: (_) => sl(),
             child: RegisterForm(),
           ),
