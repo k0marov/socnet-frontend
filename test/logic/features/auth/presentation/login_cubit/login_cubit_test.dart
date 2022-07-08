@@ -3,12 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 
-class MockAuthGateBloc extends Mock implements AuthGateBloc {}
+class MockAuthGateBloc extends Mock implements AuthGateCubit {}
 
 class MockLogin extends Mock implements LoginUseCase {}
 

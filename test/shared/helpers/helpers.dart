@@ -17,7 +17,7 @@ DateTime randomTime() =>
     DateTime.fromMicrosecondsSinceEpoch((DateTime.now().millisecondsSinceEpoch / 1000000).floor() * 1000000)
         .toUtc(); // accuracy to seconds
 int randomInt() => Random().nextInt(100);
-bool randomBool() => Random().nextInt(1) > 0.5;
+bool randomBool() => Random().nextDouble() > 0.5;
 
 NetworkException randomNetworkException() => NetworkException(
       400 + Random().nextInt(100),

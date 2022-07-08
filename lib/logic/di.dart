@@ -11,7 +11,7 @@ import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecas
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
@@ -117,7 +117,7 @@ Future initialize() async {
     apiHost: realApiHost,
   );
 
-  sl.registerLazySingleton(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
+  sl.registerLazySingleton(() => AuthGateCubit(usecases.getAuthToken, usecases.logout));
 
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
   sl.registerLazySingleton(() => PostBlocCreator(usecases.deletePost, usecases.toggleLike));

@@ -10,7 +10,7 @@ import 'package:socnet/ui/pages/post_creation_page.dart';
 import 'package:socnet/ui/pages/posts_page.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import '../../logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 
 class MyProfilePage extends StatelessWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -90,7 +90,7 @@ class _InternalPage extends StatelessWidget {
             ),
             TextButton(
               child: const Text("Logout"),
-              onPressed: () => context.read<AuthGateBloc>().add(LoggedOut()),
+              onPressed: () => context.read<AuthGateCubit>().add(LoggedOut()),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).push(

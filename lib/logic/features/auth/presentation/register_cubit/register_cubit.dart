@@ -7,7 +7,7 @@ import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_h
 
 import '../../../../core/error/failures.dart';
 import '../../domain/usecases/register_usecase.dart';
-import '../auth_gate/bloc/auth_gate_bloc.dart';
+import '../auth_gate/auth_gate_cubit.dart';
 
 part 'register_state.dart';
 
@@ -15,7 +15,7 @@ class RegisterCubit extends Cubit<RegisterState> {
   final PassStrengthGetter _getStrength;
   final RegisterUseCase _register;
   final RegisterFailureHandler _handleFailure;
-  final AuthGateBloc _authGate;
+  final AuthGateCubit _authGate;
   RegisterCubit(this._getStrength, this._register, this._handleFailure, this._authGate) : super(RegisterState());
   void usernameChanged(String username) => emit(state.withUsername(state.curUsername.withValue(username)));
   void passRepeatChanged(String passRepeat) => emit(state.withPassRepeat(state.curPassRepeat.withValue(passRepeat)));

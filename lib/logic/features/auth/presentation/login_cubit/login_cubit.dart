@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/logic/core/field_value.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
 
 import '../../../../core/error/failures.dart';
@@ -12,7 +12,7 @@ part 'login_state.dart';
 class LoginCubit extends Cubit<LoginState> {
   final LoginUseCase _login;
   final LoginFailureHandler _handleFailure;
-  final AuthGateBloc _authGate;
+  final AuthGateCubit _authGate;
   LoginCubit(this._login, this._handleFailure, this._authGate) : super(const LoginState());
   void usernameChanged(String username) => emit(state.withUsername(state.curUsername.withValue(username)));
   void passwordChanged(String pass) => emit(state.withPassword(state.curPassword.withValue(pass)));

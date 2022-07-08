@@ -5,14 +5,14 @@ import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/bloc/auth_gate_bloc.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 
 class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 
-class MockAuthGateBloc extends Mock implements AuthGateBloc {}
+class MockAuthGateBloc extends Mock implements AuthGateCubit {}
 
 RegisterState randomRegisterState() {
   final pass = randomFieldValue();
