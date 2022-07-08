@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../logic/di.dart';
-import '../../logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
+import '../../logic/features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 import 'auth_page.dart';
 import 'my_profile_page.dart';
 
@@ -13,16 +13,12 @@ class AuthGatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-          create: (_) => sl<AuthGateCubit>()..add(AuthStateUpdateRequested()),
+          create: (_) => sl<AuthGateCubit>()..refreshState(),
           child: BlocBuilder<AuthGateCubit, AuthState>(builder: (context, state) {
-            print(state);
-            if (state is AuthGateInitial) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is AuthGateUnauthenticated) {
-              return const AuthPage();
+            if (state.isAuthenticated) {
+              return MyProfilePage();
             } else {
-              // authenticated
-              return const MyProfilePage();
+              return AuthPage();
             }
           })),
     );
