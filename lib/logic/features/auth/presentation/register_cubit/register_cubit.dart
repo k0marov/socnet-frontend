@@ -7,7 +7,7 @@ import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_h
 
 import '../../../../core/error/failures.dart';
 import '../../domain/usecases/register_usecase.dart';
-import '../auth_gate/auth_gate_cubit.dart';
+import '../auth_gate_cubit/auth_gate_cubit.dart';
 
 part 'register_state.dart';
 
@@ -32,7 +32,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     final result = await _register(RegisterParams(username: state.curUsername.value, password: state.curPass.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),
-      (success) => _authGate.add(AuthStateUpdateRequested()),
+      (success) => _authGate.refreshState(),
     );
   }
 }

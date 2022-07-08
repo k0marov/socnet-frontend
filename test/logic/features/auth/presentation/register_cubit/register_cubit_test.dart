@@ -5,7 +5,7 @@ import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
@@ -92,11 +92,11 @@ void main() {
       // arrange
       arrangeFilledState();
       when(() => mockRegister(any())).thenAnswer((_) async => Right(null));
-      when(() => mockAuthGate.add(AuthStateUpdateRequested())).thenReturn(null);
+      when(() => mockAuthGate.refreshState()).thenAnswer((_) async {});
       // act
       await sut.registerPressed();
       // assert
-      verify(() => mockAuthGate.add(AuthStateUpdateRequested()));
+      verify(() => mockAuthGate.refreshState());
       verifyNoMoreInteractions(mockAuthGate);
     });
     test("should add failure to state if usecase call was unsuccessful", () async {

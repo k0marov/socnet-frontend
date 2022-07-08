@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/logic/core/field_value.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../domain/usecases/login_usecase.dart';
+import '../auth_gate_cubit/auth_gate_cubit.dart';
 
 part 'login_state.dart';
 
@@ -21,7 +21,7 @@ class LoginCubit extends Cubit<LoginState> {
     final result = await _login(LoginParams(username: state.curUsername.value, password: state.curPassword.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),
-      (success) => _authGate.add(AuthStateUpdateRequested()),
+      (success) => _authGate.refreshState(),
     );
   }
 }

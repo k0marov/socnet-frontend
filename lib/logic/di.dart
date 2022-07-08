@@ -11,7 +11,6 @@ import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecas
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
@@ -42,6 +41,7 @@ import 'package:socnet/logic/features/profile/presentation/profile/bloc/profile_
 import './features/comments/domain/usecases/delete_comment.dart';
 import './features/comments/domain/usecases/get_post_comments.dart';
 import './features/comments/domain/usecases/toggle_like_on_comment.dart';
+import 'features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate/auth_gate_cubit.dart';
+import 'package:socnet/logic/features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
@@ -65,14 +65,14 @@ void main() {
       // arrange
       arrangeFilledState();
       when(() => mockLogin(any())).thenAnswer((_) async => Right(null));
-      when(() => mockAuthGate.add(AuthStateUpdateRequested())).thenReturn(null);
+      when(() => mockAuthGate.refreshState()).thenAnswer((_) async {});
       // act
       await sut.loginPressed();
       // assert
       expect(sut.state, tFilledState);
       verify(() =>
           mockLogin(LoginParams(username: tFilledState.curUsername.value, password: tFilledState.curPassword.value)));
-      verify(() => mockAuthGate.add(AuthStateUpdateRequested()));
+      verify(() => mockAuthGate.refreshState());
       verifyNoMoreInteractions(mockAuthGate);
     });
     test("should add failure to state if the call to usecase is unsuccessful", () async {
