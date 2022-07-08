@@ -38,8 +38,9 @@ void main() {
     sut = RegisterCubit(
       (pass) => pass == tNewPass ? tNewPassStrength : throw Exception(),
       mockRegister,
-      (state, failure) =>
-          state == tFilledState && failure == tUseCaseFailure ? tStateWithHandledFailure : throw Exception(),
+      (state, failure) => state == tFilledState.withoutFailures() && failure == tUseCaseFailure
+          ? tStateWithHandledFailure
+          : throw Exception(),
       mockAuthGate,
     );
     registerFallbackValue(RegisterParams(username: "", password: ""));
@@ -75,7 +76,7 @@ void main() {
       verifyZeroInteractions(mockRegister);
       verifyZeroInteractions(mockAuthGate);
     });
-    test("should set failure on password repeat and not call anything if passwords don't match", () async {
+    test("should replace all failures with specific failure and not call anything if passwords don't match", () async {
       // arrange
       final tRandomPassRepeat = randomString();
       arrangeFilledState();
@@ -83,12 +84,13 @@ void main() {
       // act
       await sut.registerPressed();
       // assert
-      final wantState = tFilledState.withPassRepeat(FieldValue(tRandomPassRepeat, passwordsDontMatch));
+      final wantState =
+          tFilledState.withoutFailures().withPassRepeat(FieldValue(tRandomPassRepeat, passwordsDontMatch));
       expect(sut.state, wantState);
       verifyZeroInteractions(mockRegister);
       verifyZeroInteractions(mockAuthGate);
     });
-    test("should call usecase and then call auth gate if usecase call was successful", () async {
+    test("should call usecase, clear all failures and then call auth gate if usecase call was successful", () async {
       // arrange
       arrangeFilledState();
       when(() => mockRegister(any())).thenAnswer((_) async => Right(null));
@@ -96,10 +98,11 @@ void main() {
       // act
       await sut.registerPressed();
       // assert
+      expect(sut.state, tFilledState.withoutFailures());
       verify(() => mockAuthGate.refreshState());
       verifyNoMoreInteractions(mockAuthGate);
     });
-    test("should add failure to state if usecase call was unsuccessful", () async {
+    test("should replace all failures with the returned failure if usecase call was unsuccessful", () async {
       // arrange
       arrangeFilledState();
       when(() => mockRegister(any())).thenAnswer((_) async => Left(tUseCaseFailure));

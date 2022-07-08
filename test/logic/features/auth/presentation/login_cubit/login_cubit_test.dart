@@ -28,8 +28,9 @@ void main() {
     mockLogin = MockLogin();
     sut = LoginCubit(
       mockLogin,
-      (state, failure) =>
-          state == tFilledState && failure == tLoginFailure ? tStateWithHandledFailure : throw Exception(),
+      (state, failure) => state == tFilledState.withoutFailures() && failure == tLoginFailure
+          ? tStateWithHandledFailure
+          : throw Exception(),
       mockAuthGate,
     );
     registerFallbackValue(LoginParams(username: "", password: ""));
@@ -61,7 +62,9 @@ void main() {
       verifyZeroInteractions(mockLogin);
       verifyZeroInteractions(mockAuthGate);
     });
-    test("should call usecase and then auth gate if the call to usecase is successful", () async {
+    test(
+        "should call usecase, remove all failures from state, and then call auth gate if the call to usecase is successful",
+        () async {
       // arrange
       arrangeFilledState();
       when(() => mockLogin(any())).thenAnswer((_) async => Right(null));
@@ -69,13 +72,13 @@ void main() {
       // act
       await sut.loginPressed();
       // assert
-      expect(sut.state, tFilledState);
+      expect(sut.state, tFilledState.withoutFailures());
       verify(
           () => mockLogin(LoginParams(username: tFilledState.username.value, password: tFilledState.password.value)));
       verify(() => mockAuthGate.refreshState());
       verifyNoMoreInteractions(mockAuthGate);
     });
-    test("should add failure to state if the call to usecase is unsuccessful", () async {
+    test("should replace all failures with the new failure if the call to usecase is unsuccessful", () async {
       // arrange
       arrangeFilledState();
       when(() => mockLogin(any())).thenAnswer((_) async => Left(tLoginFailure));

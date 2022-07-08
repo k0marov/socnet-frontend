@@ -31,4 +31,11 @@ class RegisterState extends Equatable {
   RegisterState withPassStrength(PassStrength newStrength) =>
       RegisterState(username, pass, passRepeat, newStrength, failure);
   RegisterState withFailure(Failure newFailure) => RegisterState(username, pass, passRepeat, passStrength, newFailure);
+  RegisterState withoutFailures() => RegisterState(
+        username.withoutFailure(),
+        pass.withoutFailure(),
+        passRepeat.withoutFailure(),
+        passStrength,
+        null,
+      );
 }

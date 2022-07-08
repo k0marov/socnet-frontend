@@ -26,13 +26,16 @@ class RegisterCubit extends Cubit<RegisterState> {
   Future<void> registerPressed() async {
     if (!state.canBeSubmitted) return;
     if (state.pass.value != state.passRepeat.value) {
-      emit(state.withPassRepeat(state.passRepeat.withFailure(passwordsDontMatch)));
+      emit(state.withoutFailures().withPassRepeat(state.passRepeat.withFailure(passwordsDontMatch)));
       return;
     }
     final result = await _register(RegisterParams(username: state.username.value, password: state.pass.value));
     result.fold(
-      (failure) => emit(_handleFailure(state, failure)),
-      (success) => _authGate.refreshState(),
+      (failure) => emit(_handleFailure(state.withoutFailures(), failure)),
+      (success) {
+        emit(state.withoutFailures());
+        _authGate.refreshState();
+      },
     );
   }
 }

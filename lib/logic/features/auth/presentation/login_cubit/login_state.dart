@@ -12,4 +12,5 @@ class LoginState extends Equatable {
   LoginState withUsername(FieldValue newUsername) => LoginState(newUsername, password, failure);
   LoginState withPassword(FieldValue newPassword) => LoginState(username, newPassword, failure);
   LoginState withFailure(Failure newFailure) => LoginState(username, password, newFailure);
+  LoginState withoutFailures() => LoginState(username.withoutFailure(), password.withoutFailure(), null);
 }

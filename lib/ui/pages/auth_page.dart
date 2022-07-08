@@ -30,7 +30,7 @@ class _AuthPageState extends State<AuthPage> {
           ),
           TextButton(
             onPressed: () => setState(() => _state = _AuthState.Registration),
-            child: Text("Already have an account?"),
+            child: Text("Don't have an account?"),
           ),
         ]
       : [
@@ -40,7 +40,7 @@ class _AuthPageState extends State<AuthPage> {
           ),
           TextButton(
             onPressed: () => setState(() => _state = _AuthState.Login),
-            child: Text("Don't have an account?"),
+            child: Text("Already have an account?"),
           ),
         ];
 

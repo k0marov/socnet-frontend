@@ -20,8 +20,11 @@ class LoginCubit extends Cubit<LoginState> {
     if (!state.canBeSubmitted) return;
     final result = await _login(LoginParams(username: state.username.value, password: state.password.value));
     result.fold(
-      (failure) => emit(_handleFailure(state, failure)),
-      (success) => _authGate.refreshState(),
+      (failure) => emit(_handleFailure(state.withoutFailures(), failure)),
+      (success) {
+        emit(state.withoutFailures());
+        _authGate.refreshState();
+      },
     );
   }
 }
