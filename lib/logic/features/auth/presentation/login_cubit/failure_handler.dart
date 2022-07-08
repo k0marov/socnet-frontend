@@ -6,9 +6,8 @@ import 'login_cubit.dart';
 typedef LoginFailureHandler = LoginState Function(LoginState, Failure);
 
 LoginState loginFailureHandlerImpl(LoginState state, Failure failure) {
-  final withFailure = state.withFailure(failure);
   if (failure is NetworkFailure && failure.exception.clientError?.detailCode == invalidCredentials.code) {
-    return withFailure.withUsername(withFailure.curUsername.withFailure(invalidCredentials));
+    return state.withUsername(state.curUsername.withFailure(invalidCredentials));
   }
-  return withFailure;
+  return state.withFailure(failure);
 }
