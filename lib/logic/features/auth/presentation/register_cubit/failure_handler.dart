@@ -8,9 +8,9 @@ typedef RegisterFailureHandler = RegisterState Function(RegisterState, Failure);
 RegisterState registerFailureHandlerImpl(RegisterState state, Failure failure) {
   final clientError = failure is NetworkFailure ? failure.exception.clientError : null;
   if (clientError?.detailCode == usernameTaken.code) {
-    return state.withUsername(state.curUsername.withFailure(usernameTaken));
+    return state.withUsername(state.username.withFailure(usernameTaken));
   } else if (clientError?.detailCode == usernameInvalid.code) {
-    return state.withUsername(state.curUsername.withFailure(usernameInvalid));
+    return state.withUsername(state.username.withFailure(usernameInvalid));
   }
   return state.withFailure(failure);
 }

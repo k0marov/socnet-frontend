@@ -15,10 +15,10 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FailureListener<LoginCubit, LoginState>(
-      getFailure: (state) => state.curFailure,
+      getFailure: (state) => state.failure,
       child: Column(children: [
         BlocField<LoginCubit, LoginState, FieldValue>(
-          getValue: (state) => state.curUsername,
+          getValue: (state) => state.username,
           buildField: (value, b) => TextField(
               onChanged: b.usernameChanged,
               decoration: InputDecoration(
@@ -26,7 +26,7 @@ class LoginForm extends StatelessWidget {
               )),
         ),
         BlocField<LoginCubit, LoginState, FieldValue>(
-          getValue: (state) => state.curPassword,
+          getValue: (state) => state.password,
           buildField: (value, b) => TextField(
             onChanged: b.passwordChanged,
             obscureText: true,

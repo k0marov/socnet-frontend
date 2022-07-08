@@ -1,36 +1,34 @@
 part of 'register_cubit.dart';
 
 class RegisterState extends Equatable {
-  final FieldValue curUsername;
-  final FieldValue curPass;
-  final FieldValue curPassRepeat;
-  final PassStrength curPassStrength;
+  final FieldValue username;
+  final FieldValue pass;
+  final FieldValue passRepeat;
+  final PassStrength passStrength;
   bool get canBeSubmitted =>
-      curUsername.value.isNotEmpty &&
-      curPass.value.isNotEmpty &&
-      curPassRepeat.value.isNotEmpty &&
-      curPassStrength != PassStrength.weak;
+      username.value.isNotEmpty &&
+      pass.value.isNotEmpty &&
+      passRepeat.value.isNotEmpty &&
+      passStrength != PassStrength.weak;
 
-  final Failure? curFailure;
+  final Failure? failure;
 
   @override
-  List get props => [curUsername, curPass, curPassRepeat, curPassStrength, curFailure];
+  List get props => [username, pass, passRepeat, passStrength, failure];
 
   const RegisterState(
-      [this.curUsername = const FieldValue(),
-      this.curPass = const FieldValue(),
-      this.curPassRepeat = const FieldValue(),
-      this.curPassStrength = PassStrength.weak,
-      this.curFailure]);
+      [this.username = const FieldValue(),
+      this.pass = const FieldValue(),
+      this.passRepeat = const FieldValue(),
+      this.passStrength = PassStrength.weak,
+      this.failure]);
 
-  RegisterState withUsername(FieldValue username) =>
-      RegisterState(username, curPass, curPassRepeat, curPassStrength, curFailure);
-  RegisterState withPass(FieldValue pass) =>
-      RegisterState(curUsername, pass, curPassRepeat, curPassStrength, curFailure);
-  RegisterState withPassRepeat(FieldValue passRepeat) =>
-      RegisterState(curUsername, curPass, passRepeat, curPassStrength, curFailure);
-  RegisterState withPassStrength(PassStrength passStrength) =>
-      RegisterState(curUsername, curPass, curPassRepeat, passStrength, curFailure);
-  RegisterState withFailure(Failure failure) =>
-      RegisterState(curUsername, curPass, curPassRepeat, curPassStrength, failure);
+  RegisterState withUsername(FieldValue newUsername) =>
+      RegisterState(newUsername, pass, passRepeat, passStrength, failure);
+  RegisterState withPass(FieldValue newPass) => RegisterState(username, newPass, passRepeat, passStrength, failure);
+  RegisterState withPassRepeat(FieldValue newPassRepeat) =>
+      RegisterState(username, pass, newPassRepeat, passStrength, failure);
+  RegisterState withPassStrength(PassStrength newStrength) =>
+      RegisterState(username, pass, passRepeat, newStrength, failure);
+  RegisterState withFailure(Failure newFailure) => RegisterState(username, pass, passRepeat, passStrength, newFailure);
 }

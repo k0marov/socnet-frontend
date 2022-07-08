@@ -62,7 +62,7 @@ void main() {
     // assert
     expect(
       sut.state,
-      tFilledState.withPass(tFilledState.curPass.withValue(tNewPass)).withPassStrength(tNewPassStrength),
+      tFilledState.withPass(tFilledState.pass.withValue(tNewPass)).withPassStrength(tNewPassStrength),
     );
     expect(sut.state.canBeSubmitted, true);
   });

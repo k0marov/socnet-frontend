@@ -7,7 +7,7 @@ typedef LoginFailureHandler = LoginState Function(LoginState, Failure);
 
 LoginState loginFailureHandlerImpl(LoginState state, Failure failure) {
   if (failure is NetworkFailure && failure.exception.clientError?.detailCode == invalidCredentials.code) {
-    return state.withUsername(state.curUsername.withFailure(invalidCredentials));
+    return state.withUsername(state.username.withFailure(invalidCredentials));
   }
   return state.withFailure(failure);
 }

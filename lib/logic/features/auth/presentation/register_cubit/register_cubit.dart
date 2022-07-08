@@ -17,19 +17,19 @@ class RegisterCubit extends Cubit<RegisterState> {
   final RegisterFailureHandler _handleFailure;
   final AuthGateCubit _authGate;
   RegisterCubit(this._getStrength, this._register, this._handleFailure, this._authGate) : super(RegisterState());
-  void usernameChanged(String username) => emit(state.withUsername(state.curUsername.withValue(username)));
-  void passRepeatChanged(String passRepeat) => emit(state.withPassRepeat(state.curPassRepeat.withValue(passRepeat)));
+  void usernameChanged(String username) => emit(state.withUsername(state.username.withValue(username)));
+  void passRepeatChanged(String passRepeat) => emit(state.withPassRepeat(state.passRepeat.withValue(passRepeat)));
   void passChanged(String pass) => emit(
-        state.withPass(state.curPass.withValue(pass)).withPassStrength(_getStrength(pass)),
+        state.withPass(state.pass.withValue(pass)).withPassStrength(_getStrength(pass)),
       );
 
   Future<void> registerPressed() async {
     if (!state.canBeSubmitted) return;
-    if (state.curPass.value != state.curPassRepeat.value) {
-      emit(state.withPassRepeat(state.curPassRepeat.withFailure(passwordsDontMatch)));
+    if (state.pass.value != state.passRepeat.value) {
+      emit(state.withPassRepeat(state.passRepeat.withFailure(passwordsDontMatch)));
       return;
     }
-    final result = await _register(RegisterParams(username: state.curUsername.value, password: state.curPass.value));
+    final result = await _register(RegisterParams(username: state.username.value, password: state.pass.value));
     result.fold(
       (failure) => emit(_handleFailure(state, failure)),
       (success) => _authGate.refreshState(),

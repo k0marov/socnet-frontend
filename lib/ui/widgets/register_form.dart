@@ -26,10 +26,10 @@ class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FailureListener<RegisterCubit, RegisterState>(
-      getFailure: (state) => state.curFailure,
+      getFailure: (state) => state.failure,
       child: Column(children: [
         BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.curUsername,
+          getValue: (state) => state.username,
           buildField: (value, b) => TextField(
               onChanged: b.usernameChanged,
               decoration: InputDecoration(
@@ -37,7 +37,7 @@ class RegisterForm extends StatelessWidget {
               )),
         ),
         BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.curPass,
+          getValue: (state) => state.pass,
           buildField: (value, b) => TextField(
             onChanged: b.passChanged,
             obscureText: true,
@@ -47,11 +47,11 @@ class RegisterForm extends StatelessWidget {
           ),
         ),
         BlocField<RegisterCubit, RegisterState, PassStrength>(
-          getValue: (state) => state.curPassStrength,
+          getValue: (state) => state.passStrength,
           buildField: (strength, b) => LinearProgressIndicator(value: getPasswordProgress(strength)),
         ),
         BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.curPassRepeat,
+          getValue: (state) => state.passRepeat,
           buildField: (value, b) => TextField(
             onChanged: b.passRepeatChanged,
             obscureText: true,

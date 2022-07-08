@@ -70,8 +70,8 @@ void main() {
       await sut.loginPressed();
       // assert
       expect(sut.state, tFilledState);
-      verify(() =>
-          mockLogin(LoginParams(username: tFilledState.curUsername.value, password: tFilledState.curPassword.value)));
+      verify(
+          () => mockLogin(LoginParams(username: tFilledState.username.value, password: tFilledState.password.value)));
       verify(() => mockAuthGate.refreshState());
       verifyNoMoreInteractions(mockAuthGate);
     });

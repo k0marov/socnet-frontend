@@ -22,7 +22,7 @@ void main() {
     // act
     final gotState = registerFailureHandlerImpl(tState, tFailure);
     // assert
-    expect(gotState, tState.withUsername(tState.curUsername.withFailure(usernameTaken)));
+    expect(gotState, tState.withUsername(tState.username.withFailure(usernameTaken)));
   });
   test("username invalid", () async {
     // arrange
@@ -30,6 +30,6 @@ void main() {
     // act
     final gotState = registerFailureHandlerImpl(tState, tFailure);
     // assert
-    expect(gotState, tState.withUsername(tState.curUsername.withFailure(usernameInvalid)));
+    expect(gotState, tState.withUsername(tState.username.withFailure(usernameInvalid)));
   });
 }

@@ -23,6 +23,6 @@ void main() {
     // act
     final gotState = loginFailureHandlerImpl(tState, tFailure);
     // assert
-    expect(gotState, tState.withUsername(tState.curUsername.withFailure(invalidCredentials)));
+    expect(gotState, tState.withUsername(tState.username.withFailure(invalidCredentials)));
   });
 }
