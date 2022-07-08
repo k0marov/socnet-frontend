@@ -36,6 +36,7 @@ class LoginForm extends StatelessWidget {
               onChanged: b.passwordChanged,
               value: value,
               label: "Password",
+              obscureText: true,
             ),
           ),
           SizedBox(height: 20),

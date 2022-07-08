@@ -5,13 +5,21 @@ class ZTextField extends StatelessWidget {
   final FieldValue value;
   final Function(String) onChanged;
   final String label;
-  const ZTextField({Key? key, required this.value, required this.onChanged, required this.label}) : super(key: key);
+  final bool obscureText;
+  const ZTextField({
+    Key? key,
+    required this.value,
+    required this.onChanged,
+    required this.label,
+    this.obscureText = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       onChanged: onChanged,
       style: Theme.of(context).textTheme.headline5,
+      obscureText: obscureText,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         labelText: label,
