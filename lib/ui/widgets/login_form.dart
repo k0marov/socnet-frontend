@@ -17,32 +17,29 @@ class LoginForm extends StatelessWidget {
     return FailureListener<LoginCubit, LoginState>(
       getFailure: (state) => state.curFailure,
       child: Column(children: [
-        BlocField<LoginCubit, LoginState, FieldValue, Function(String)>(
+        BlocField<LoginCubit, LoginState, FieldValue>(
           getValue: (state) => state.curUsername,
-          getMethod: (b) => b.usernameChanged,
-          buildField: (value, onChanged) => TextField(
-              onChanged: onChanged,
+          buildField: (value, b) => TextField(
+              onChanged: b.usernameChanged,
               decoration: InputDecoration(
                 errorText: value.failure?.code,
               )),
         ),
-        BlocField<LoginCubit, LoginState, FieldValue, Function(String)>(
+        BlocField<LoginCubit, LoginState, FieldValue>(
           getValue: (state) => state.curPassword,
-          getMethod: (b) => b.passwordChanged,
-          buildField: (value, onChanged) => TextField(
-            onChanged: onChanged,
+          buildField: (value, b) => TextField(
+            onChanged: b.passwordChanged,
             obscureText: true,
             decoration: InputDecoration(
               errorText: value.failure?.code,
             ),
           ),
         ),
-        BlocField<LoginCubit, LoginState, bool, Function()>(
+        BlocField<LoginCubit, LoginState, bool>(
           getValue: (state) => state.canBeSubmitted,
-          getMethod: (b) => b.loginPressed,
-          buildField: (canBeSubmitted, submit) => SubmitButton(
+          buildField: (canBeSubmitted, b) => SubmitButton(
             canBeSubmitted: canBeSubmitted,
-            submit: submit,
+            submit: b.loginPressed,
             text: "Login",
           ),
         ),
