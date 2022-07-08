@@ -25,10 +25,3 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 }
-
-class LoginCubitCreator {
-  final LoginUseCase _login;
-  final LoginFailureHandler _handleFailure;
-  const LoginCubitCreator(this._login, this._handleFailure);
-  LoginCubit Create(AuthGateBloc authGate) => LoginCubit(_login, _handleFailure, authGate);
-}

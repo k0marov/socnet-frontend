@@ -36,11 +36,3 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
   }
 }
-
-class RegisterCubitCreator {
-  final PassStrengthGetter _getStrength;
-  final RegisterUseCase _register;
-  final RegisterFailureHandler _handleFailure;
-  const RegisterCubitCreator(this._getStrength, this._register, this._handleFailure);
-  RegisterCubit Create(AuthGateBloc authGate) => RegisterCubit(_getStrength, _register, _handleFailure, authGate);
-}

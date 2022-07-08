@@ -117,13 +117,13 @@ Future initialize() async {
     apiHost: realApiHost,
   );
 
+  sl.registerLazySingleton(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
+
   sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
   sl.registerLazySingleton(() => PostBlocCreator(usecases.deletePost, usecases.toggleLike));
-  sl.registerLazySingleton(() => LoginCubitCreator(usecases.login, loginFailureHandlerImpl));
-  sl.registerLazySingleton(
-      () => RegisterCubitCreator(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl));
 
-  sl.registerFactory(() => AuthGateBloc(usecases.getAuthToken, usecases.logout));
+  sl.registerFactory(() => LoginCubit(usecases.login, loginFailureHandlerImpl, sl()));
+  sl.registerFactory(() => RegisterCubit(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl, sl()));
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
   sl.registerFactory(() => PostCreationBloc(usecases.createPost));
   sl.registerFactory(() => CommentsBloc(

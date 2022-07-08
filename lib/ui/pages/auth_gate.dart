@@ -12,8 +12,8 @@ class AuthGatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider(
-          create: (context) => sl<AuthGateBloc>()..add(AuthStateUpdateRequested()),
+      body: BlocProvider.value(
+          value: sl<AuthGateBloc>()..add(AuthStateUpdateRequested()),
           child: BlocBuilder<AuthGateBloc, AuthGateState>(builder: (context, state) {
             if (state is AuthGateInitial) {
               return const Center(child: CircularProgressIndicator());
