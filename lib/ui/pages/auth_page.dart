@@ -47,8 +47,8 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(children: [
+      // backgroundColor: Color(0xFF213630),
+      body: ListView(children: [
         ..._getFormBody(),
       ]),
     );

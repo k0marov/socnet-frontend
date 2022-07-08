@@ -9,9 +9,14 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: canBeSubmitted ? submit : null,
-      child: Text(text),
-    );
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: Size.fromHeight(50),
+          textStyle: TextStyle(fontWeight: FontWeight.bold),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        ),
+        onPressed: canBeSubmitted ? submit : null,
+        child: Text(text) //, style: Theme.of(context).textTheme.headline5),
+        );
   }
 }
