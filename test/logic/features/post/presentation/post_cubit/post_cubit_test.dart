@@ -8,8 +8,8 @@ import 'package:socnet/logic/features/posts/domain/usecases/post_params.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/toggle_like.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
 
-import '../../../../shared/helpers/helpers.dart';
-import '../post_helpers.dart';
+import '../../../../../shared/helpers/helpers.dart';
+import '../../post_helpers.dart';
 
 class MockDeletePost extends Mock implements DeletePost {}
 
