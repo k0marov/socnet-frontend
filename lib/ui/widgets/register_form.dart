@@ -10,12 +10,14 @@ import 'bloc_field.dart';
 
 double getPasswordProgress(PassStrength strength) {
   switch (strength) {
-    case PassStrength.weak:
+    case PassStrength.none:
       return 0;
+    case PassStrength.weak:
+      return 0.25;
     case PassStrength.normal:
-      return 0.33;
+      return 0.5;
     case PassStrength.strong:
-      return 0.66;
+      return 0.75;
     case PassStrength.veryStrong:
       return 1;
   }
@@ -23,6 +25,8 @@ double getPasswordProgress(PassStrength strength) {
 
 Color getStrengthColor(PassStrength strength) {
   switch (strength) {
+    case PassStrength.none:
+      return Colors.grey;
     case PassStrength.weak:
       return Colors.red;
     case PassStrength.normal:
@@ -31,6 +35,21 @@ Color getStrengthColor(PassStrength strength) {
       return Colors.lightGreen;
     case PassStrength.veryStrong:
       return Colors.green;
+  }
+}
+
+Color getStrengthBackground(PassStrength strength) {
+  switch (strength) {
+    case PassStrength.none:
+      return Colors.grey.shade200;
+    case PassStrength.weak:
+      return Colors.red.shade200;
+    case PassStrength.normal:
+      return Colors.orange.shade200;
+    case PassStrength.strong:
+      return Colors.lightGreen.shade200;
+    case PassStrength.veryStrong:
+      return Colors.green.shade200;
   }
 }
 
@@ -44,7 +63,6 @@ class RegisterForm extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
         child: Column(children: [
-          SizedBox(height: 300),
           BlocField<RegisterCubit, RegisterState, FieldValue>(
             getValue: (state) => state.username,
             buildField: (value, b) => ZTextField(
@@ -68,16 +86,18 @@ class RegisterForm extends StatelessWidget {
             getValue: (state) => state.passStrength,
             buildField: (strength, b) => Row(
               children: [
-                Text("Strength: ", style: Theme.of(context).textTheme.subtitle1),
-                SizedBox(width: 5),
+                SizedBox(width: 10),
+                // Text("Strength: ", style: Theme.of(context).textTheme.subtitle1),
+                // SizedBox(width: 5),
                 Expanded(
                   child: LinearProgressIndicator(
                     value: getPasswordProgress(strength),
                     color: getStrengthColor(strength),
-                    backgroundColor: HSLColor.fromColor(getStrengthColor(strength)).withSaturation(0.4).toColor(),
+                    backgroundColor: getStrengthBackground(strength),
                     minHeight: 15,
                   ),
                 ),
+                SizedBox(width: 10),
               ],
             ),
           ),

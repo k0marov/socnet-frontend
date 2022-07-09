@@ -9,7 +9,8 @@ class RegisterState extends Equatable {
       username.value.isNotEmpty &&
       pass.value.isNotEmpty &&
       passRepeat.value.isNotEmpty &&
-      passStrength != PassStrength.weak;
+      passStrength != PassStrength.weak &&
+      passStrength != PassStrength.none;
 
   final Failure? failure;
 
@@ -20,7 +21,7 @@ class RegisterState extends Equatable {
       [this.username = const FieldValue(),
       this.pass = const FieldValue(),
       this.passRepeat = const FieldValue(),
-      this.passStrength = PassStrength.weak,
+      this.passStrength = PassStrength.none,
       this.failure]);
 
   RegisterState withUsername(FieldValue newUsername) =>

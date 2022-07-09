@@ -12,14 +12,12 @@ class AuthGatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (_) => sl<AuthGateCubit>()..refreshState(),
-        child: FailureListener<AuthGateCubit, AuthState>(
-          getFailure: (state) => state.failure,
-          child: BlocBuilder<AuthGateCubit, AuthState>(
-            builder: (context, state) => state.isAuthenticated ? MyProfilePage() : AuthPage(),
-          ),
+    return BlocProvider(
+      create: (_) => sl<AuthGateCubit>()..refreshState(),
+      child: FailureListener<AuthGateCubit, AuthState>(
+        getFailure: (state) => state.failure,
+        child: BlocBuilder<AuthGateCubit, AuthState>(
+          builder: (context, state) => state.isAuthenticated ? MyProfilePage() : AuthPage(),
         ),
       ),
     );

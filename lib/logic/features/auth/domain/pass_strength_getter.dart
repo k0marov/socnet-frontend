@@ -1,4 +1,5 @@
 enum PassStrength {
+  none,
   weak,
   normal,
   strong,
@@ -8,6 +9,7 @@ enum PassStrength {
 typedef PassStrengthGetter = PassStrength Function(String);
 
 PassStrength passStrengthGetterImpl(String pass) {
+  if (pass.isEmpty) return PassStrength.none;
   final hasLetters = pass.contains(RegExp("[a-zA-Z]"));
   if (pass.length < 8 || !hasLetters) {
     return PassStrength.weak;

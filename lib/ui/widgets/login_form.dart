@@ -20,7 +20,6 @@ class LoginForm extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 50),
         child: Column(children: [
-          SizedBox(height: 300),
           BlocField<LoginCubit, LoginState, FieldValue>(
             getValue: (state) => state.username,
             buildField: (value, b) => ZTextField(

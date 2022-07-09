@@ -9,7 +9,7 @@ class TestCase {
 
 void main() {
   const testCases = [
-    TestCase("", PassStrength.weak),
+    TestCase("", PassStrength.none),
     TestCase("abcd", PassStrength.weak),
     TestCase("abcdefgh", PassStrength.normal),
     TestCase("abcdefgh123", PassStrength.strong),

@@ -26,7 +26,6 @@ class ZTextField extends StatelessWidget {
         floatingLabelBehavior: FloatingLabelBehavior.never,
         border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(10))),
         filled: true,
-        // fillColor: Color(0xFF324B4F),
         errorText: value.failure?.code,
       ),
     );
