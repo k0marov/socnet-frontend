@@ -19,7 +19,7 @@ PassStrength passStrengthGetterImpl(String pass) {
   if (hasLetters && !hasDigits && !hasSpecial) {
     return PassStrength.normal;
   }
-  if (hasDigits && !hasSpecial) {
+  if (hasDigits && !hasSpecial || hasSpecial && !hasDigits) {
     return PassStrength.strong;
   } else {
     return PassStrength.veryStrong;

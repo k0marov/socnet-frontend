@@ -13,6 +13,7 @@ void main() {
     TestCase("abcd", PassStrength.weak),
     TestCase("abcdefgh", PassStrength.normal),
     TestCase("abcdefgh123", PassStrength.strong),
+    TestCase("abcdefgh#", PassStrength.strong),
     TestCase("abcdefgh123#", PassStrength.veryStrong),
   ];
 
