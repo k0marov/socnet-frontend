@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socnet/logic/core/simple_file.dart';
-import 'package:socnet/logic/features/posts/presentation/post_creation_bloc/post_creation_bloc.dart';
+import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/post_creation_cubit.dart';
 
 import '../../logic/di.dart';
 
@@ -13,8 +13,8 @@ class PostCreationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PostCreationBloc>(
-      create: (_) => sl<PostCreationBloc>(),
+    return BlocProvider<PostCreationCubit>(
+      create: (_) => sl<PostCreationCubitFactory>()(),
       child: const _InternalPage(),
     );
   }
@@ -28,45 +28,28 @@ class _InternalPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: BlocBuilder(
-            bloc: context.read<PostCreationBloc>(),
-            builder: (BuildContext context, PostCreationState state) {
-              if (state is DefaultCreationState) {
-                return ListView(children: [
-                  TextFormField(initialValue: state.currentSavedText),
+        child: BlocBuilder<PostCreationCubit, PostCreationState>(
+            builder: (BuildContext context, PostCreationState state) => ListView(children: [
+                  TextField(onChanged: context.read<PostCreationCubit>().textChanged),
                   for (final img in state.images)
                     GestureDetector(
-                      onTap: () {
-                        context.read<PostCreationBloc>().add(ImageDeleted(deletedImage: img));
-                      },
+                      onTap: () => context.read<PostCreationCubit>().imageDeleted(img),
                       child: Image.file(File(img.path)),
                     ),
                   TextButton(
                     onPressed: () async {
                       final imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                       if (imageFile != null) {
-                        context.read<PostCreationBloc>().add(
-                              ImageAdded(
-                                newImage: SimpleFile(imageFile.path),
-                              ),
-                            );
+                        context.read<PostCreationCubit>().imageAdded(SimpleFile(imageFile.path));
                       }
                     },
                     child: const Text("Add image"),
                   ),
                   TextButton(
-                    onPressed: () {
-                      context.read<PostCreationBloc>().add(const PostButtonPressed(finalText: "abracadabra"));
-                    },
+                    onPressed: context.read<PostCreationCubit>().submitPressed,
                     child: const Text("Post"),
                   )
-                ]);
-              } else if (state is CreationFailed) {
-                return Text(state.failure.toString());
-              } else {
-                return const Text("Successfully created");
-              }
-            }),
+                ])),
       ),
     );
   }

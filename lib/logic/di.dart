@@ -25,7 +25,8 @@ import 'package:socnet/logic/features/posts/domain/usecases/create_post.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/delete_post.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/toggle_like.dart';
-import 'package:socnet/logic/features/posts/presentation/post_creation_bloc/post_creation_bloc.dart';
+import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/failure_handler.dart';
+import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/post_creation_cubit.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
@@ -126,9 +127,9 @@ Future initialize() async {
         usecases.deleteComment,
         usecases.toggleLikeOnComment,
       ));
+  sl.registerLazySingleton(() => postCreationCubitFactoryImpl(usecases.createPost, postCreationFailureHandlerImpl));
 
   sl.registerFactory(() => LoginCubit(usecases.login, loginFailureHandlerImpl, sl()));
   sl.registerFactory(() => RegisterCubit(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl, sl()));
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
-  sl.registerFactory(() => PostCreationBloc(usecases.createPost));
 }
