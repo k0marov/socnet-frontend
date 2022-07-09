@@ -18,7 +18,7 @@ import 'package:socnet/logic/features/auth/presentation/register_cubit/register_
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:socnet/logic/features/comments/domain/usecases/add_comment.dart';
-import 'package:socnet/logic/features/comments/presentation/comments_bloc/comments_bloc.dart';
+import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/create_post.dart';
@@ -126,10 +126,9 @@ Future initialize() async {
   sl.registerFactory(() => RegisterCubit(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl, sl()));
   sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
   sl.registerFactory(() => PostCreationBloc(usecases.createPost));
-  sl.registerFactory(() => CommentsBloc(
+  sl.registerFactory(() => commentsCubitFactoryImpl(
         usecases.addComment,
         usecases.deleteComment,
-        usecases.getPostComments,
         usecases.toggleLikeOnComment,
       ));
 }
