@@ -86,7 +86,6 @@ class RegisterForm extends StatelessWidget {
             getValue: (state) => state.passStrength,
             buildField: (strength, b) => Row(
               children: [
-                SizedBox(width: 10),
                 // Text("Strength: ", style: Theme.of(context).textTheme.subtitle1),
                 // SizedBox(width: 5),
                 Expanded(
@@ -94,10 +93,9 @@ class RegisterForm extends StatelessWidget {
                     value: getPasswordProgress(strength),
                     color: getStrengthColor(strength),
                     backgroundColor: getStrengthBackground(strength),
-                    minHeight: 15,
+                    minHeight: 10,
                   ),
                 ),
-                SizedBox(width: 10),
               ],
             ),
           ),

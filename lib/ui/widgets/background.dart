@@ -8,6 +8,7 @@ class Background extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
+      child,
       Positioned(
         top: -75,
         left: -125,
@@ -33,7 +34,6 @@ class Background extends StatelessWidget {
         right: -75,
         child: _Circle(size: 100, color: customPink),
       ),
-      child,
     ]);
   }
 }

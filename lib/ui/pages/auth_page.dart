@@ -48,10 +48,9 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Background(
-        child: ListView(children: [
+    return Background(
+      child: Scaffold(
+        body: ListView(children: [
           SizedBox(height: 150),
           SizedBox(
             width: 150,
