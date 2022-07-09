@@ -11,12 +11,12 @@ class Background extends StatelessWidget {
       Positioned(
         top: -75,
         left: -125,
-        child: _Circle(size: 200, color: customRed),
+        child: _Circle(size: 200, color: customBlue),
       ),
       Positioned(
         bottom: 100,
         left: -100,
-        child: _Circle(size: 150, color: customGreen),
+        child: _Circle(size: 150, color: customRed),
       ),
       Positioned(
         bottom: -25,
@@ -26,7 +26,7 @@ class Background extends StatelessWidget {
       Positioned(
         bottom: 50,
         right: -50,
-        child: _Circle(size: 125, color: customBlue),
+        child: _Circle(size: 125, color: customGreen),
       ),
       Positioned(
         top: 100,
