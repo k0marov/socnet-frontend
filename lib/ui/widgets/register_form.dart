@@ -60,66 +60,63 @@ class RegisterForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return FailureListener<RegisterCubit, RegisterState>(
       getFailure: (state) => state.failure,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
-        child: Column(children: [
-          BlocField<RegisterCubit, RegisterState, FieldValue>(
-            getValue: (state) => state.username,
-            buildField: (value, b) => ZTextField(
-              onChanged: b.usernameChanged,
-              value: value,
-              label: "Username",
-            ),
+      child: Column(children: [
+        BlocField<RegisterCubit, RegisterState, FieldValue>(
+          getValue: (state) => state.username,
+          buildField: (value, b) => ZTextField(
+            onChanged: b.usernameChanged,
+            value: value,
+            label: "Username",
           ),
-          SizedBox(height: 15),
-          BlocField<RegisterCubit, RegisterState, FieldValue>(
-            getValue: (state) => state.pass,
-            buildField: (value, b) => ZTextField(
-              onChanged: b.passChanged,
-              obscureText: true,
-              value: value,
-              label: "Password",
-            ),
+        ),
+        SizedBox(height: 15),
+        BlocField<RegisterCubit, RegisterState, FieldValue>(
+          getValue: (state) => state.pass,
+          buildField: (value, b) => ZTextField(
+            onChanged: b.passChanged,
+            obscureText: true,
+            value: value,
+            label: "Password",
           ),
-          SizedBox(height: 5),
-          BlocField<RegisterCubit, RegisterState, PassStrength>(
-            getValue: (state) => state.passStrength,
-            buildField: (strength, b) => Row(
-              children: [
-                // Text("Strength: ", style: Theme.of(context).textTheme.subtitle1),
-                // SizedBox(width: 5),
-                Expanded(
-                  child: LinearProgressIndicator(
-                    value: getPasswordProgress(strength),
-                    color: getStrengthColor(strength),
-                    backgroundColor: getStrengthBackground(strength),
-                    minHeight: 10,
-                  ),
+        ),
+        SizedBox(height: 5),
+        BlocField<RegisterCubit, RegisterState, PassStrength>(
+          getValue: (state) => state.passStrength,
+          buildField: (strength, b) => Row(
+            children: [
+              // Text("Strength: ", style: Theme.of(context).textTheme.subtitle1),
+              // SizedBox(width: 5),
+              Expanded(
+                child: LinearProgressIndicator(
+                  value: getPasswordProgress(strength),
+                  color: getStrengthColor(strength),
+                  backgroundColor: getStrengthBackground(strength),
+                  minHeight: 10,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          SizedBox(height: 15),
-          BlocField<RegisterCubit, RegisterState, FieldValue>(
-            getValue: (state) => state.passRepeat,
-            buildField: (value, b) => ZTextField(
-              onChanged: b.passRepeatChanged,
-              obscureText: true,
-              value: value,
-              label: "Repeat Password",
-            ),
+        ),
+        SizedBox(height: 15),
+        BlocField<RegisterCubit, RegisterState, FieldValue>(
+          getValue: (state) => state.passRepeat,
+          buildField: (value, b) => ZTextField(
+            onChanged: b.passRepeatChanged,
+            obscureText: true,
+            value: value,
+            label: "Repeat Password",
           ),
-          SizedBox(height: 20),
-          BlocField<RegisterCubit, RegisterState, bool>(
-            getValue: (state) => state.canBeSubmitted,
-            buildField: (canBeSubmitted, b) => SubmitButton(
-              canBeSubmitted: canBeSubmitted,
-              submit: b.registerPressed,
-              text: "Register",
-            ),
+        ),
+        SizedBox(height: 20),
+        BlocField<RegisterCubit, RegisterState, bool>(
+          getValue: (state) => state.canBeSubmitted,
+          buildField: (canBeSubmitted, b) => SubmitButton(
+            canBeSubmitted: canBeSubmitted,
+            submit: b.registerPressed,
+            text: "Register",
           ),
-        ]),
-      ),
+        ),
+      ]),
     );
   }
 }

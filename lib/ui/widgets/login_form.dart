@@ -17,38 +17,35 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return FailureListener<LoginCubit, LoginState>(
       getFailure: (state) => state.failure,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 50),
-        child: Column(children: [
-          BlocField<LoginCubit, LoginState, FieldValue>(
-            getValue: (state) => state.username,
-            buildField: (value, b) => ZTextField(
-              onChanged: b.usernameChanged,
-              value: value,
-              label: "Username",
-            ),
+      child: Column(children: [
+        BlocField<LoginCubit, LoginState, FieldValue>(
+          getValue: (state) => state.username,
+          buildField: (value, b) => ZTextField(
+            onChanged: b.usernameChanged,
+            value: value,
+            label: "Username",
           ),
-          SizedBox(height: 15),
-          BlocField<LoginCubit, LoginState, FieldValue>(
-            getValue: (state) => state.password,
-            buildField: (value, b) => ZTextField(
-              onChanged: b.passwordChanged,
-              value: value,
-              label: "Password",
-              obscureText: true,
-            ),
+        ),
+        SizedBox(height: 15),
+        BlocField<LoginCubit, LoginState, FieldValue>(
+          getValue: (state) => state.password,
+          buildField: (value, b) => ZTextField(
+            onChanged: b.passwordChanged,
+            value: value,
+            label: "Password",
+            obscureText: true,
           ),
-          SizedBox(height: 20),
-          BlocField<LoginCubit, LoginState, bool>(
-            getValue: (state) => state.canBeSubmitted,
-            buildField: (canBeSubmitted, b) => SubmitButton(
-              canBeSubmitted: canBeSubmitted,
-              submit: b.loginPressed,
-              text: "LOGIN",
-            ),
+        ),
+        SizedBox(height: 20),
+        BlocField<LoginCubit, LoginState, bool>(
+          getValue: (state) => state.canBeSubmitted,
+          buildField: (canBeSubmitted, b) => SubmitButton(
+            canBeSubmitted: canBeSubmitted,
+            submit: b.loginPressed,
+            text: "LOGIN",
           ),
-        ]),
-      ),
+        ),
+      ]),
     );
   }
 }

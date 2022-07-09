@@ -50,16 +50,19 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Background(
       child: Scaffold(
-        body: ListView(children: [
-          SizedBox(height: 150),
-          SizedBox(
-            width: 150,
-            height: 150,
-            child: LogoWidget(),
-          ),
-          SizedBox(height: 30),
-          ..._getFormBody(),
-        ]),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: ListView(children: [
+            SizedBox(height: 150),
+            SizedBox(
+              width: 150,
+              height: 150,
+              child: LogoWidget(),
+            ),
+            SizedBox(height: 30),
+            ..._getFormBody(),
+          ]),
+        ),
       ),
     );
   }
