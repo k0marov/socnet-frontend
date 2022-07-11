@@ -1,51 +1,46 @@
-import 'dart:convert';
+import 'dart:async';
 
+import 'package:dartz/dartz.dart';
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:socnet/logic/core/error/exceptions.dart';
-import 'package:socnet/logic/features/auth/data/models/token_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LocalTokenDataSource {
   /// Stores the token in the cache, replacing the previous one if it existed
   /// Throws [CacheException] if there was some error
-  Future<void> storeToken(TokenModel token);
+  Future<void> storeToken(String token);
 
   /// Returns the currently stored token in the local cache
   /// Throws [NoTokenException] if there is no token in the cache (user is not logged in)
   /// Throws [CacheException] if there was some other error
-  Future<TokenModel> getToken();
+  Future<String> getToken();
 
   /// Deletes the currently stored token in the local cache
   /// Throws [CacheException] if there was some error
   Future<void> deleteToken();
+
+  /// A stream of tokens that are stored in the local cache
+  Stream<Either<CacheException, String?>> getTokenStream();
 }
 
-const tokenCacheKey = "AUTH_TOKEN";
-
 class LocalTokenDataSourceImpl implements LocalTokenDataSource {
-  final SharedPreferences _sharedPreferences;
+  static const _tokenCacheKey = "AUTH_TOKEN";
+  final RxSharedPreferences _sharedPrefs;
 
-  LocalTokenDataSourceImpl(this._sharedPreferences);
+  LocalTokenDataSourceImpl(this._sharedPrefs);
 
   @override
-  Future<TokenModel> getToken() async {
-    try {
-      final storedJsonStr = _sharedPreferences.getString(tokenCacheKey);
-      if (storedJsonStr == null) throw NoTokenException();
-      final jsonToken = json.decode(storedJsonStr);
-      return TokenModel.fromJson(jsonToken);
-    } catch (e) {
-      if (e is NoTokenException) rethrow;
-      throw CacheException();
-    }
+  Future<String> getToken() async {
+    final tokenEither = await getTokenStream().first;
+    return tokenEither.fold(
+      (exception) => throw exception,
+      (token) => token != null ? token : throw NoTokenException(),
+    );
   }
 
   @override
-  Future<void> storeToken(TokenModel token) async {
+  Future<void> storeToken(String token) async {
     try {
-      final jsonStr = json.encode(token.toJson());
-      final cacheSuccessful =
-          await _sharedPreferences.setString(tokenCacheKey, jsonStr);
-      if (!cacheSuccessful) throw CacheException();
+      await _sharedPrefs.setString(_tokenCacheKey, token);
     } catch (e) {
       throw CacheException();
     }
@@ -54,11 +49,19 @@ class LocalTokenDataSourceImpl implements LocalTokenDataSource {
   @override
   Future<void> deleteToken() async {
     try {
-      final isSuccessful = await _sharedPreferences.remove(tokenCacheKey);
-      if (!isSuccessful) throw CacheException();
+      await _sharedPrefs.remove(_tokenCacheKey);
     } catch (e) {
-      if (e is CacheException) rethrow;
       throw CacheException();
     }
+  }
+
+  @override
+  Stream<Either<CacheException, String?>> getTokenStream() {
+    return _sharedPrefs.getStringStream(_tokenCacheKey).transform(
+          StreamTransformer.fromHandlers(
+            handleData: (token, sink) => sink.add(Right(token)),
+            handleError: (error, _, sink) => sink.add(Left(CacheException())),
+          ),
+        );
   }
 }

@@ -1,136 +1,42 @@
-import 'dart:convert';
-
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
-import 'package:socnet/logic/features/auth/data/models/token_model.dart';
-import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
-import '../../../../../shared/fixtures/fixture_reader.dart';
-
-class MockSharedPreferences extends Mock implements SharedPreferences {}
+import '../../../../../shared/helpers/helpers.dart';
 
 void main() {
-  late MockSharedPreferences mockSharedPreferences;
-  late LocalTokenDataSourceImpl sut;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  test("property based test", () async {
+    SharedPreferences.setMockInitialValues({});
+    final sharedPrefs = RxSharedPreferences.getInstance();
+    final sut = LocalTokenDataSourceImpl(sharedPrefs);
 
-  setUp(() {
-    mockSharedPreferences = MockSharedPreferences();
-    sut = LocalTokenDataSourceImpl(mockSharedPreferences);
-  });
+    expect(() => sut.getToken(), throwsA(isA<NoTokenException>()));
 
-  group('getToken', () {
-    const tTokenModel = TokenModel(Token(token: "424242"));
-    test(
-      "should get json from shared preferences and return the model",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.getString(tokenCacheKey))
-            .thenAnswer((_) => fixture('auth_response_token.json'));
-        // act
-        final result = await sut.getToken();
-        // assert
-        expect(result, tTokenModel);
-        verify(() => mockSharedPreferences.getString(tokenCacheKey));
-        verifyNoMoreInteractions(mockSharedPreferences);
-      },
-    );
-    test(
-      "should throw NoTokenException if nothing is stored in the cache",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.getString(tokenCacheKey)).thenReturn(null);
-        // assert
-        expect(() => sut.getToken(), throwsA(const TypeMatcher<NoTokenException>()));
-      },
-    );
-    test(
-      "should throw CacheException if shared preferences throws",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.getString(tokenCacheKey)).thenThrow(Exception());
-        // assert
-        expect(() => sut.getToken(), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
-    test(
-      "should throw CacheException if some other error happens",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.getString(tokenCacheKey)).thenReturn("not-a-valid-token-json");
-        // assert
-        expect(() => sut.getToken(), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
-  });
+    final firstToken = randomString();
+    await sut.storeToken(firstToken);
+    expect(await sut.getToken(), firstToken);
 
-  group('storeToken', () {
-    const tToken = TokenModel(Token(token: "42"));
-    const tJson = {"token": "42"};
-    test(
-      "should store the token json representation using shared preferences",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.setString(tokenCacheKey, json.encode(tJson))).thenAnswer((_) async => true);
-        // act
-        await sut.storeToken(tToken);
-        // assert
-        verify(() => mockSharedPreferences.setString(tokenCacheKey, json.encode(tJson)));
-        verifyNoMoreInteractions(mockSharedPreferences);
-      },
-    );
-    test(
-      "should throw CacheException if shared preferences returns false",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.setString(tokenCacheKey, json.encode(tJson))).thenAnswer((_) async => false);
-        // assert
-        expect(() => sut.storeToken(tToken), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
-    test(
-      "should throw CacheException is some other error happens",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.setString(tokenCacheKey, json.encode(tJson))).thenThrow(Exception());
-        // assert
-        expect(() => sut.storeToken(tToken), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
-  });
+    final secondToken = randomString();
+    await sut.storeToken(secondToken);
+    expect(await sut.getToken(), secondToken);
 
-  group('deleteToken', () {
-    test(
-      "should remove the token using shared preferences",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.remove(tokenCacheKey)).thenAnswer((_) async => true);
-        // act
-        await sut.deleteToken();
-        // assert
-        verify(() => mockSharedPreferences.remove(tokenCacheKey));
-        verifyNoMoreInteractions(mockSharedPreferences);
-      },
-    );
-    test(
-      "should throw CacheException if something fails",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.remove(tokenCacheKey)).thenThrow(Exception());
-        // assert
-        expect(() => sut.deleteToken(), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
-    test(
-      "should throw CacheException if shared preferences call returns false",
-      () async {
-        // arrange
-        when(() => mockSharedPreferences.remove(tokenCacheKey)).thenAnswer((_) async => false);
-        // assert
-        expect(() => sut.deleteToken(), throwsA(const TypeMatcher<CacheException>()));
-      },
-    );
+    await sut.deleteToken();
+    expect(() => sut.getToken(), throwsA(isA<NoTokenException>()));
+
+    // stream test
+    final initialToken = randomString();
+    await sut.storeToken(initialToken);
+
+    final tokens = [randomString(), randomString(), randomString(), randomString()];
+
+    final wantEvents = ([initialToken] + tokens).map((token) => Right(token));
+    expect(sut.getTokenStream(), emitsInOrder(wantEvents));
+
+    for (final token in tokens) {
+      await sut.storeToken(token);
+    }
   });
 }
