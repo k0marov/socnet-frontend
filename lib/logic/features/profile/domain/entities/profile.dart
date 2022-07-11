@@ -25,20 +25,27 @@ class Profile extends Equatable {
     required this.isFollowed,
   });
 
-  // Profile copyWith(
-  //         {String? id,
-  //         String? username,
-  //         String? about,
-  //         String? avatarUrl,
-  //         int? followers,
-  //         int? follows,
-  //         bool? isMine,
-  //         bool? isFollowed}) =>
-  //     Profile(
-  //       id: id ?? this.id,
-  //       username: username ?? this.username,
-  //       about: about ?? this.about,
-  //       avatar: avatarUrl ?? this.avatarUrl,
-  //
-  //     );
+  Profile withAbout(String about) => _copyWith(about: about);
+  Profile withIsFollowed(bool isFollowed) => _copyWith(isFollowed: isFollowed);
+  Profile withAvatarUrl(Option<String> avatarUrl) => _copyWith(avatarUrl: avatarUrl);
+
+  Profile _copyWith(
+          {String? id,
+          String? username,
+          String? about,
+          Option<String>? avatarUrl,
+          int? followers,
+          int? follows,
+          bool? isMine,
+          bool? isFollowed}) =>
+      Profile(
+        id: id ?? this.id,
+        username: username ?? this.username,
+        about: about ?? this.about,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+        followers: followers ?? this.followers,
+        follows: follows ?? this.follows,
+        isMine: isMine ?? this.isMine,
+        isFollowed: isFollowed ?? this.isFollowed,
+      );
 }
