@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 import 'package:socnet/logic/features/posts/domain/entities/post.dart';
@@ -22,7 +23,7 @@ void main() {
     author: const Profile(
       id: "42",
       username: "some-username",
-      avatarUrl: "static.example.com/media/user_1/avatar1234blablabla.png",
+      avatarUrl: Some("static.example.com/media/user_1/avatar1234blablabla.png"),
       followers: 42,
       follows: 21,
       about: "A Test Profile",

@@ -34,13 +34,13 @@ class _InternalPage extends StatelessWidget {
                   return CircularProgressIndicator();
                 } else if (state is MyProfileLoaded) {
                   return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: CircleAvatar(
-                        foregroundImage: NetworkImage("https://" + state.profile.avatarUrl!),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: 200,
+                    //   height: 200,
+                    //   child: CircleAvatar(
+                    //     foregroundImage: NetworkImage("https://" + state.profile.avatarUrl!),
+                    //   ),
+                    // ),
                     TextFormField(
                       initialValue: state.profile.about,
                     )
