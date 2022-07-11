@@ -6,8 +6,8 @@ import 'package:socnet/logic/features/profile/domain/usecases/profile_params.dar
 import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow.dart';
 import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile_cubit.dart';
 
-import '../../../../../../shared/helpers/helpers.dart';
-import '../../../shared.dart';
+import '../../../../../shared/helpers/helpers.dart';
+import '../../shared.dart';
 
 class MockToggleFollow extends Mock implements ToggleFollow {}
 

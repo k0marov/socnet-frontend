@@ -1,11 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
+import '../values/avatar.dart';
+
 class Profile extends Equatable {
   final String id;
   final String username;
   final String about;
-  final Option<String> avatarUrl;
+  final Option<AvatarURL> avatarUrl;
   final int followers;
   final int follows;
   final bool isMine;

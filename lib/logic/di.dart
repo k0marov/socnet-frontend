@@ -36,7 +36,7 @@ import 'package:socnet/logic/features/profile/domain/usecases/get_profile.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/update_profile.dart';
-import 'package:socnet/logic/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
+import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile_cubit.dart';
 
 import './features/comments/domain/usecases/delete_comment.dart';
@@ -121,6 +121,7 @@ Future initialize() async {
   sl.registerLazySingleton(() => AuthGateCubit(usecases.getAuthToken, usecases.logout));
 
   sl.registerLazySingleton(() => profileCubitFactoryImpl(usecases.toggleFollow));
+  sl.registerLazySingleton(() => myProfileCubitFactoryImpl(usecases.updateProfile, usecases.updateAvatar));
   sl.registerLazySingleton(() => postCubitFactoryImpl(usecases.toggleLike, usecases.deletePost));
   sl.registerLazySingleton(() => commentsCubitFactoryImpl(
         usecases.addComment,
@@ -131,5 +132,4 @@ Future initialize() async {
 
   sl.registerFactory(() => LoginCubit(usecases.login, loginFailureHandlerImpl, sl()));
   sl.registerFactory(() => RegisterCubit(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl, sl()));
-  sl.registerFactory(() => MyProfileBloc(usecases.getMyProfile, usecases.updateProfile, usecases.updateAvatar));
 }
