@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
@@ -45,7 +46,7 @@ class MyProfileBloc extends Bloc<MyProfileEvent, MyProfileState> {
               id: currentProfile.id,
               username: currentProfile.username,
               about: currentProfile.about,
-              avatarUrl: newURL,
+              avatarUrl: Some(newURL),
               followers: currentProfile.followers,
               follows: currentProfile.follows,
               isMine: currentProfile.isMine,

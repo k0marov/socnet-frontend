@@ -37,7 +37,7 @@ import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow.dart
 import 'package:socnet/logic/features/profile/domain/usecases/update_avatar.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile/bloc/my_profile_bloc.dart';
-import 'package:socnet/logic/features/profile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile_cubit.dart';
 
 import './features/comments/domain/usecases/delete_comment.dart';
 import './features/comments/domain/usecases/get_post_comments.dart';
@@ -120,7 +120,7 @@ Future initialize() async {
 
   sl.registerLazySingleton(() => AuthGateCubit(usecases.getAuthToken, usecases.logout));
 
-  sl.registerLazySingleton(() => ProfileBlocCreator(usecases.toggleFollow));
+  sl.registerLazySingleton(() => profileCubitFactoryImpl(usecases.toggleFollow));
   sl.registerLazySingleton(() => postCubitFactoryImpl(usecases.toggleLike, usecases.deletePost));
   sl.registerLazySingleton(() => commentsCubitFactoryImpl(
         usecases.addComment,

@@ -155,7 +155,7 @@ void main() {
       id: tProfile.id,
       username: tProfile.username,
       about: tProfile.about,
-      avatarUrl: tUrl,
+      avatarUrl: Some(tUrl),
       followers: tProfile.followers,
       follows: tProfile.follows,
       isMine: tProfile.isMine,
