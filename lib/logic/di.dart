@@ -121,6 +121,9 @@ Future initialize() async {
     apiHost: realApiHost,
   );
 
+  sl.registerLazySingleton(() => usecases.getMyProfile);
+  sl.registerLazySingleton(() => usecases.logout);
+
   sl.registerLazySingleton(() => profileCubitFactoryImpl(usecases.toggleFollow));
   sl.registerLazySingleton(() => myProfileCubitFactoryImpl(usecases.updateProfile, usecases.updateAvatar));
   sl.registerLazySingleton(() => postCubitFactoryImpl(usecases.toggleLike, usecases.deletePost));
