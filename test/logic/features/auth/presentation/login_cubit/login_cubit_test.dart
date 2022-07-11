@@ -3,12 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/field_value.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
-
-class MockAuthGateBloc extends Mock implements AuthGateCubit {}
 
 class MockLogin extends Mock implements LoginUseCase {}
 
@@ -16,7 +13,6 @@ LoginState randomLoginState() => LoginState(randomFieldValue(), randomFieldValue
 
 void main() {
   late MockLogin mockLogin;
-  late MockAuthGateBloc mockAuthGate;
   late LoginCubit sut;
 
   final tFilledState = randomLoginState();
@@ -24,14 +20,12 @@ void main() {
   final tStateWithHandledFailure = randomLoginState();
 
   setUp(() {
-    mockAuthGate = MockAuthGateBloc();
     mockLogin = MockLogin();
     sut = LoginCubit(
       mockLogin,
       (state, failure) => state == tFilledState.withoutFailures() && failure == tLoginFailure
           ? tStateWithHandledFailure
           : throw Exception(),
-      mockAuthGate,
     );
     registerFallbackValue(LoginParams(username: "", password: ""));
   });
@@ -56,11 +50,10 @@ void main() {
   group("loginPressed", () {
     test("should do nothing if canBeSubmitted = false", () async {
       // act
-      sut.loginPressed();
+      await sut.loginPressed();
       // assert
       expect(sut.state, emptyState);
       verifyZeroInteractions(mockLogin);
-      verifyZeroInteractions(mockAuthGate);
     });
     test(
         "should call usecase, remove all failures from state, and then call auth gate if the call to usecase is successful",
@@ -68,15 +61,12 @@ void main() {
       // arrange
       arrangeFilledState();
       when(() => mockLogin(any())).thenAnswer((_) async => Right(null));
-      when(() => mockAuthGate.refreshState()).thenAnswer((_) async {});
       // act
       await sut.loginPressed();
       // assert
       expect(sut.state, tFilledState.withoutFailures());
       verify(
           () => mockLogin(LoginParams(username: tFilledState.username.value, password: tFilledState.password.value)));
-      verify(() => mockAuthGate.refreshState());
-      verifyNoMoreInteractions(mockAuthGate);
     });
     test("should replace all failures with the new failure if the call to usecase is unsuccessful", () async {
       // arrange
