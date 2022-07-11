@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 
@@ -15,7 +16,7 @@ class ProfileModel extends Equatable {
           Profile(
             id: json['id'],
             username: json['username'],
-            avatarUrl: json['avatar_url'],
+            avatarUrl: json['avatar_url'] != null ? Some(json['avatar_url']) : const None(),
             about: json['about'],
             followers: json['followers'],
             follows: json['follows'],
@@ -27,7 +28,7 @@ class ProfileModel extends Equatable {
         'id': _entity.id,
         'username': _entity.username,
         'about': _entity.about,
-        'avatar_url': _entity.avatarUrl,
+        'avatar_url': _entity.avatarUrl.toNullable(),
         'followers': _entity.followers,
         'follows': _entity.follows,
         'is_mine': _entity.isMine,

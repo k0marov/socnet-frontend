@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
@@ -16,7 +17,7 @@ void main() {
       id: "42",
       username: "some-username",
       about: "A Test Profile",
-      avatarUrl: "static.example.com/42/avatar.jpeg",
+      avatarUrl: Some("static.example.com/42/avatar.jpeg"),
       followers: 42,
       follows: 21,
       isMine: true,
