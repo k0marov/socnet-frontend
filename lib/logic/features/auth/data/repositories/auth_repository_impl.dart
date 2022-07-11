@@ -18,8 +18,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, Token>> getToken() async {
     try {
-      final cacheResponse = await _localDataSource.getToken();
-      return Right(cacheResponse.toEntity());
+      final token = await _localDataSource.getToken();
+      return Right(Token(token: token));
     } on CacheException {
       return Left(CacheFailure());
     } on NoTokenException {
@@ -50,7 +50,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, void>> _sharedLoginAndRegister(Future<TokenModel> Function() networkLoginOrRegister) async {
     return exceptionToFailureCall(() async {
       final authToken = await networkLoginOrRegister();
-      _localDataSource.storeToken(authToken);
+      _localDataSource.storeToken(authToken.toEntity().token);
     });
   }
 
@@ -63,4 +63,12 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(CacheFailure());
     }
   }
+
+  @override
+  Stream<Either<CacheFailure, Option<Token>>> getTokenStream() => _localDataSource.getTokenStream().map(
+        (event) => event.fold(
+          (failure) => Left(CacheFailure()),
+          (token) => Right(token != null ? Some(Token(token: token)) : const None()),
+        ),
+      );
 }

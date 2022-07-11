@@ -30,17 +30,43 @@ void main() {
     registerFallbackValue(const TokenModel(Token(token: "")));
   });
 
+  group("getTokenStream()", () {
+    test("should transform the local datasource stream", () async {
+      // arrange
+      final emitted = <Either<CacheException, String?>>[
+        Right("abc"),
+        Right(null),
+        Right("asdf"),
+        Right("cba"),
+        Left(CacheException())
+      ];
+      final stream = Stream.fromIterable(emitted);
+      when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => stream);
+      // act
+      final gotStream = sut.getTokenStream();
+      // assert
+      final wantTransformed = [
+        Right(Some(Token(token: "abc"))),
+        Right(None()),
+        Right(Some(Token(token: "asdf"))),
+        Right(Some(Token(token: "cba"))),
+        Left(CacheFailure()),
+      ];
+      expect(gotStream, emitsInOrder(wantTransformed));
+    });
+  });
+
   group('getToken', () {
     test(
       "should call local datasource and return the result if the call succeded",
       () async {
         // arrange
-        const tToken = TokenModel(Token(token: "42"));
+        final tToken = randomString();
         when(() => mockLocalTokenDataSource.getToken()).thenAnswer((_) async => tToken);
         // act
         final result = await sut.getToken();
         // assert
-        expect(result, Right(tToken.toEntity()));
+        expect(result, Right(Token(token: tToken)));
         verify(() => mockLocalTokenDataSource.getToken());
         verifyNoMoreInteractions(mockLocalTokenDataSource);
         verifyZeroInteractions(mockNetworkAuthDataSource);
@@ -93,7 +119,7 @@ void main() {
         } else {
           verify(() => mockNetworkAuthDataSource.register(tUsername, tPassword));
         }
-        verify(() => mockLocalTokenDataSource.storeToken(tTokenModel));
+        verify(() => mockLocalTokenDataSource.storeToken(tTokenModel.toEntity().token));
         verifyNoMoreInteractions(mockNetworkAuthDataSource);
         verifyNoMoreInteractions(mockLocalTokenDataSource);
       },
@@ -141,31 +167,31 @@ void main() {
     sharedLoginAndRegister(isLogin: false);
   });
 
-  group('logout', () {
-    test(
-      "should call local datasource and return void if everything was successful",
-      () async {
-        // arrange
-        when(() => mockLocalTokenDataSource.deleteToken()).thenAnswer((_) async {});
-        // act
-        final result = await sut.logout();
-        // assert
-        expect(result, const Right(null));
-        verify(() => mockLocalTokenDataSource.deleteToken());
-        verifyNoMoreInteractions(mockLocalTokenDataSource);
-        verifyZeroInteractions(mockNetworkAuthDataSource);
-      },
-    );
-    test(
-      "should return CacheFailure if local datasource throws CacheException",
-      () async {
-        // arrange
-        when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheException());
-        // act
-        final result = await sut.logout();
-        // assert
-        expect(result, Left(CacheFailure()));
-      },
-    );
-  });
+  // group('logout', () {
+  //   test(
+  //     "should call local datasource and return void if everything was successful",
+  //     () async {
+  //       // arrange
+  //       when(() => mockLocalTokenDataSource.deleteToken()).thenAnswer((_) async {});
+  //       // act
+  //       final result = await sut.logout();
+  //       // assert
+  //       expect(result, const Right(null));
+  //       verify(() => mockLocalTokenDataSource.deleteToken());
+  //       verifyNoMoreInteractions(mockLocalTokenDataSource);
+  //       verifyZeroInteractions(mockNetworkAuthDataSource);
+  //     },
+  //   );
+  //   test(
+  //     "should return CacheFailure if local datasource throws CacheException",
+  //     () async {
+  //       // arrange
+  //       when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheException());
+  //       // act
+  //       final result = await sut.logout();
+  //       // assert
+  //       expect(result, Left(CacheFailure()));
+  //     },
+  //   );
+  // });
 }

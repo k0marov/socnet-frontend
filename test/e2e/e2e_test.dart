@@ -2,9 +2,10 @@
 
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socnet/logic/core/debug.dart';
 import 'package:socnet/logic/core/usecase.dart';
@@ -44,8 +45,9 @@ void main() {
   setUp(() async {
     backend = Backend();
     await backend.setUp();
+    SharedPreferences.setMockInitialValues({});
     usecases = di.UseCases(
-      sharedPrefs: await _getSharedPrefs(),
+      sharedPrefs: RxSharedPreferences.getInstance(),
       httpClient: http.Client(),
       apiHost: apiHost,
       useHTTPS: false,

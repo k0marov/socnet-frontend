@@ -15,4 +15,6 @@ abstract class AuthRepository {
 
   /// failures: [CacheFailure]
   Future<Either<Failure, void>> logout();
+
+  Stream<Either<CacheFailure, Option<Token>>> getTokenStream();
 }

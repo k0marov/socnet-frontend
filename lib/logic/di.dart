@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
@@ -8,6 +8,7 @@ import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasou
 import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
+import 'package:socnet/logic/features/auth/domain/usecases/get_token_stream_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
@@ -46,6 +47,7 @@ import 'features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
+  late final GetTokenStreamUseCase getTokenStream;
   late final LoginUseCase login;
   late final LogoutUsecase logout;
   late final RegisterUseCase register;
@@ -68,7 +70,7 @@ class UseCases {
   late final ToggleLikeOnComment toggleLikeOnComment;
 
   UseCases({
-    required SharedPreferences sharedPrefs,
+    required RxSharedPreferences sharedPrefs,
     required http.Client httpClient,
     required String apiHost,
     bool useHTTPS = true,
@@ -78,6 +80,7 @@ class UseCases {
     final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost, useHTTPS: useHTTPS);
     final authRepo = AuthRepositoryImpl(localAuthDS, netAuthDS);
     getAuthToken = GetAuthTokenUseCase(authRepo);
+    getTokenStream = GetTokenStreamUseCase(authRepo);
     login = LoginUseCase(authRepo);
     logout = LogoutUsecase(authRepo);
     register = RegisterUseCase(authRepo);
@@ -113,7 +116,7 @@ final sl = GetIt.instance;
 
 Future initialize() async {
   final usecases = UseCases(
-    sharedPrefs: await SharedPreferences.getInstance(),
+    sharedPrefs: RxSharedPreferences.getInstance(),
     httpClient: http.Client(),
     apiHost: realApiHost,
   );
