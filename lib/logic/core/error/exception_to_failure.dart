@@ -10,8 +10,8 @@ Future<Either<Failure, T>> exceptionToFailureCall<T>(Future<T> Function() call) 
     return Left(NoTokenFailure());
   } on CacheException {
     return Left(CacheFailure());
-  } on HashingException {
-    return Left(HashingFailure());
+  } on MappingException {
+    return Left(MappingFailure());
   } catch (e) {
     final failure = e is NetworkException ? NetworkFailure(e) : NetworkFailure.unknown;
     return Left(failure);

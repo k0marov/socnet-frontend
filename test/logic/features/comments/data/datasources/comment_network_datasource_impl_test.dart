@@ -6,23 +6,28 @@ import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
-import 'package:socnet/logic/features/comments/data/models/comment_model.dart';
+import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
+import '../../../../../shared/helpers/base_tests.dart';
 import '../../../posts/post_helpers.dart';
 import '../../comment_helpers.dart';
+
+class MockCommentMapper extends Mock implements CommentMapper {}
 
 class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}
 
 void main() {
   late CommentNetworkDataSourceImpl sut;
   late MockAuthenticatedAPIFacade mockAPIFacade;
+  late MockCommentMapper mockCommentMapper;
 
   setUpAll(() => registerFallbackValue(const EndpointQuery("")));
 
   setUp(() {
     mockAPIFacade = MockAuthenticatedAPIFacade();
-    sut = CommentNetworkDataSourceImpl(mockAPIFacade);
+    mockCommentMapper = MockCommentMapper();
+    sut = CommentNetworkDataSourceImpl(mockCommentMapper, mockAPIFacade);
   });
 
   group('deleteComment', () {
@@ -33,7 +38,7 @@ void main() {
         // arrange
         when(() => mockAPIFacade.delete(any())).thenAnswer((_) async => http.Response("", 200));
         // act
-        await sut.deleteComment(CommentModel(tComment));
+        await sut.deleteComment(tComment);
         // assert
         verify(() => mockAPIFacade.delete(deleteCommentEndpoint(tComment.id)));
         verifyNoMoreInteractions(mockAPIFacade);
@@ -41,21 +46,22 @@ void main() {
     );
     baseNetworkDataSourceExceptionTests(
       () => when(() => mockAPIFacade.delete(any())),
-      () => sut.deleteComment(CommentModel(tComment)),
+      () => sut.deleteComment(tComment),
     );
   });
 
   group('addPostComment', () {
     final tPost = createTestPost();
     final tNewComment = createTestNewComment();
-    final tCreatedComment = CommentModel(createTestComment());
-    final tCreatedJson = tCreatedComment.toJson();
+    final tCreatedComment = createTestComment();
+    final tCreatedJson = {"y": "x"};
     test(
       "should call api and return the parsed result if result status code = 200",
       () async {
         // arrange
         when(() => mockAPIFacade.post(any(), any()))
             .thenAnswer((_) async => http.Response(json.encode(tCreatedJson), 200));
+        when(() => mockCommentMapper.fromJson(tCreatedJson)).thenReturn(tCreatedComment);
         // act
         final result = await sut.addPostComment(PostModel(tPost), tNewComment);
         // assert
@@ -76,20 +82,23 @@ void main() {
   group('getPostComments', () {
     final tPost = createTestPost();
     final tComments = [createTestComment(), createTestComment()];
-    final tCommentModels = [
-      CommentModel(tComments[0]),
-      CommentModel(tComments[1]),
-    ];
-    final tCommentsJson = {'comments': tCommentModels.map((model) => model.toJson()).toList()};
+    final tCommentsJson = {
+      'comments': [
+        {"x": "y"},
+        {"y": "z"}
+      ]
+    };
     test(
       "should call api and return the parsed result if result status code = 200",
       () async {
         // arrange
         when(() => mockAPIFacade.get(any())).thenAnswer((_) async => http.Response(json.encode(tCommentsJson), 200));
+        when(() => mockCommentMapper.fromJson(tCommentsJson['comments']![0])).thenReturn(tComments[0]);
+        when(() => mockCommentMapper.fromJson(tCommentsJson['comments']![1])).thenReturn(tComments[1]);
         // act
         final result = await sut.getPostComments(PostModel(tPost));
         // assert
-        expect(result, tCommentModels);
+        expect(result, tComments);
         verify(() => mockAPIFacade.get(getPostCommentsEndpoint(tPost.id)));
         verifyNoMoreInteractions(mockAPIFacade);
       },
@@ -102,14 +111,13 @@ void main() {
 
   group('toggleLikeOnComment', () {
     final tComment = createTestComment();
-    final tCommentModel = CommentModel(tComment);
     test(
       "should call api and return void if result status code is not 200",
       () async {
         // arrange
         when(() => mockAPIFacade.post(any(), any())).thenAnswer((_) async => http.Response("", 200));
         // act
-        await sut.toggleLikeOnComment(tCommentModel);
+        await sut.toggleLikeOnComment(tComment);
         // assert
         verify(() => mockAPIFacade.post(toggleLikeOnCommentEndpoint(tComment.id), {}));
         verifyNoMoreInteractions(mockAPIFacade);
@@ -117,10 +125,7 @@ void main() {
     );
     baseNetworkDataSourceExceptionTests(
       () => when(() => mockAPIFacade.post(any(), any())),
-      () => sut.toggleLikeOnComment(tCommentModel),
+      () => sut.toggleLikeOnComment(tComment),
     );
   });
 }
-
-void baseNetworkDataSourceExceptionTests(
-    When<Future<http.Response>> Function() param0, Future<void> Function() param1) {}

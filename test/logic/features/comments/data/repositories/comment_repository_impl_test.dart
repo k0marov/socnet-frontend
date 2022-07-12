@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
-import 'package:socnet/logic/features/comments/data/models/comment_model.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
@@ -28,7 +27,7 @@ void main() {
     baseRepositoryTests(
       () => sut.addPostComment(tPost, tNewComment),
       () => mockDataSource.addPostComment(PostModel(tPost), tNewComment),
-      CommentModel(tCreatedComment),
+      tCreatedComment,
       (result) => result == tCreatedComment,
       () => mockDataSource,
     );
@@ -37,7 +36,7 @@ void main() {
     final tComment = createTestComment();
     baseRepositoryTests(
       () => sut.deleteComment(tComment),
-      () => mockDataSource.deleteComment(CommentModel(tComment)),
+      () => mockDataSource.deleteComment(tComment),
       null,
       (result) => result == null,
       () => mockDataSource,
@@ -47,14 +46,10 @@ void main() {
   group('getPostComments', () {
     final tPost = createTestPost();
     final tComments = [createTestComment(), createTestComment()];
-    final tCommentModels = [
-      CommentModel(tComments[0]),
-      CommentModel(tComments[1]),
-    ];
     baseRepositoryTests(
       () => sut.getPostComments(tPost),
       () => mockDataSource.getPostComments(PostModel(tPost)),
-      tCommentModels,
+      tComments,
       (result) => listEquals(result, tComments),
       () => mockDataSource,
     );
@@ -65,7 +60,7 @@ void main() {
     final tExpectedComment = tComment.withLikeToggled();
     baseRepositoryTests(
       () => sut.toggleLikeOnComment(tComment),
-      () => mockDataSource.toggleLikeOnComment(CommentModel(tComment)),
+      () => mockDataSource.toggleLikeOnComment(tComment),
       null,
       (result) => result == tExpectedComment,
       () => mockDataSource,

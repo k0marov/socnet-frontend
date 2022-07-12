@@ -18,6 +18,7 @@ import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
+import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:socnet/logic/features/comments/domain/usecases/add_comment_usecase.dart';
 import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
@@ -104,7 +105,7 @@ class UseCases {
     getProfilePosts = newGetProfilePostsUseCase(postRepo);
     toggleLike = newToggleLikeOnPostUseCase(postRepo);
     // comments
-    final netCommentDS = CommentNetworkDataSourceImpl(apiFacade);
+    final netCommentDS = CommentNetworkDataSourceImpl(CommentMapperImpl(), apiFacade);
     final commentRepo = CommentRepositoryImpl(netCommentDS);
     addComment = newAddCommentUseCase(commentRepo);
     deleteComment = newDeleteCommentUseCase(commentRepo);

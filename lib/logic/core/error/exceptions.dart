@@ -12,11 +12,6 @@ class CacheException extends Equatable implements Exception {
   List<Object?> get props => [];
 }
 
-class HashingException extends Equatable implements Exception {
-  @override
-  List<Object?> get props => [];
-}
-
 class MappingException extends Equatable implements Exception {
   @override
   List get props => [];

@@ -9,6 +9,8 @@ import 'package:socnet/logic/core/error/failures.dart';
 
 import 'helpers.dart';
 
+// TODO: testing rethrowing the MappingException
+
 void baseNetworkDataSourceExceptionTests(
   When Function() whenAPICall,
   Future Function() call,

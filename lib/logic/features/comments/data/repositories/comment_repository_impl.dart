@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:socnet/logic/core/error/exception_to_failure.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
-import 'package:socnet/logic/features/comments/data/models/comment_model.dart';
 import 'package:socnet/logic/features/comments/domain/entities/comment.dart';
 import 'package:socnet/logic/features/comments/domain/repositories/comment_repository.dart';
 import 'package:socnet/logic/features/comments/domain/values/new_comment_value.dart';
@@ -17,14 +16,14 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<Either<Failure, Comment>> addPostComment(Post post, NewCommentValue newComment) async {
     return exceptionToFailureCall(() async {
       final result = await _dataSource.addPostComment(PostModel(post), newComment);
-      return result.toEntity();
+      return result;
     });
   }
 
   @override
   Future<Either<Failure, void>> deleteComment(Comment comment) async {
     return exceptionToFailureCall(() async {
-      await _dataSource.deleteComment(CommentModel(comment));
+      await _dataSource.deleteComment(comment);
     });
   }
 
@@ -32,15 +31,14 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<Either<Failure, List<Comment>>> getPostComments(Post post) async {
     return exceptionToFailureCall(() async {
       final result = await _dataSource.getPostComments(PostModel(post));
-      final comments = result.map((commentModel) => commentModel.toEntity()).toList();
-      return comments;
+      return result.map((commentModel) => commentModel).toList();
     });
   }
 
   @override
   Future<Either<Failure, Comment>> toggleLikeOnComment(Comment comment) async {
     return exceptionToFailureCall(() async {
-      await _dataSource.toggleLikeOnComment(CommentModel(comment));
+      await _dataSource.toggleLikeOnComment(comment);
       return comment.withLikeToggled();
     });
   }
