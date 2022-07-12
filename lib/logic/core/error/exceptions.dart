@@ -17,6 +17,11 @@ class HashingException extends Equatable implements Exception {
   List<Object?> get props => [];
 }
 
+class MappingException extends Equatable implements Exception {
+  @override
+  List get props => [];
+}
+
 /// statusCode == -1 means "Unknown, probably no internet connection"
 class NetworkException extends Equatable implements Exception {
   final int statusCode;

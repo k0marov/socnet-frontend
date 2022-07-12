@@ -10,6 +10,7 @@ Future<T> exceptionConverterCall<T>(Future<T> Function() call) async {
   } catch (e) {
     if (e is NoTokenException) rethrow;
     if (e is NetworkException) rethrow;
+    if (e is MappingException) rethrow;
     throw const NetworkException.unknown();
   }
 }

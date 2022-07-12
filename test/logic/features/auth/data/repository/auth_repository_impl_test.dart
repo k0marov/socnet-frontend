@@ -5,7 +5,6 @@ import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
-import 'package:socnet/logic/features/auth/data/models/token_model.dart';
 import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
@@ -27,7 +26,6 @@ void main() {
       mockLocalTokenDataSource,
       mockNetworkAuthDataSource,
     );
-    registerFallbackValue(const TokenModel(Token(token: "")));
   });
 
   group("getTokenStream()", () {
@@ -99,15 +97,15 @@ void main() {
   void sharedLoginAndRegister({required bool isLogin}) {
     const tUsername = "username";
     const tPassword = "password";
-    const tTokenModel = TokenModel(Token(token: "42"));
+    const tToken = Token(token: "42");
     test(
       "should call the network datasource, then store token in cache and return it, if everything is successful",
       () async {
         // arrange
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tToken);
         } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tToken);
         }
         when(() => mockLocalTokenDataSource.storeToken(any())).thenAnswer((_) async {});
         // act
@@ -119,7 +117,7 @@ void main() {
         } else {
           verify(() => mockNetworkAuthDataSource.register(tUsername, tPassword));
         }
-        verify(() => mockLocalTokenDataSource.storeToken(tTokenModel.toEntity().token));
+        verify(() => mockLocalTokenDataSource.storeToken(tToken.token));
         verifyNoMoreInteractions(mockNetworkAuthDataSource);
         verifyNoMoreInteractions(mockLocalTokenDataSource);
       },
@@ -146,9 +144,9 @@ void main() {
       () async {
         // arrange
         if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tToken);
         } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tTokenModel);
+          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tToken);
         }
         when(() => mockLocalTokenDataSource.storeToken(any())).thenThrow(CacheException());
         // act
@@ -167,31 +165,31 @@ void main() {
     sharedLoginAndRegister(isLogin: false);
   });
 
-  // group('logout', () {
-  //   test(
-  //     "should call local datasource and return void if everything was successful",
-  //     () async {
-  //       // arrange
-  //       when(() => mockLocalTokenDataSource.deleteToken()).thenAnswer((_) async {});
-  //       // act
-  //       final result = await sut.logout();
-  //       // assert
-  //       expect(result, const Right(null));
-  //       verify(() => mockLocalTokenDataSource.deleteToken());
-  //       verifyNoMoreInteractions(mockLocalTokenDataSource);
-  //       verifyZeroInteractions(mockNetworkAuthDataSource);
-  //     },
-  //   );
-  //   test(
-  //     "should return CacheFailure if local datasource throws CacheException",
-  //     () async {
-  //       // arrange
-  //       when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheException());
-  //       // act
-  //       final result = await sut.logout();
-  //       // assert
-  //       expect(result, Left(CacheFailure()));
-  //     },
-  //   );
-  // });
+  group('logout', () {
+    test(
+      "should call local datasource and return void if everything was successful",
+      () async {
+        // arrange
+        when(() => mockLocalTokenDataSource.deleteToken()).thenAnswer((_) async {});
+        // act
+        final result = await sut.logout();
+        // assert
+        expect(result, const Right(null));
+        verify(() => mockLocalTokenDataSource.deleteToken());
+        verifyNoMoreInteractions(mockLocalTokenDataSource);
+        verifyZeroInteractions(mockNetworkAuthDataSource);
+      },
+    );
+    test(
+      "should return CacheFailure if local datasource throws CacheException",
+      () async {
+        // arrange
+        when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheException());
+        // act
+        final result = await sut.logout();
+        // assert
+        expect(result, Left(CacheFailure()));
+      },
+    );
+  });
 }

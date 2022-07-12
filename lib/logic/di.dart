@@ -5,6 +5,7 @@ import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
+import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
@@ -77,7 +78,7 @@ class UseCases {
   }) {
     // auth
     final localAuthDS = LocalTokenDataSourceImpl(sharedPrefs);
-    final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost, useHTTPS: useHTTPS);
+    final netAuthDS = NetworkAuthDataSourceImpl(TokenMapperImpl(), httpClient, apiHost, useHTTPS: useHTTPS);
     final authRepo = AuthRepositoryImpl(localAuthDS, netAuthDS);
     getAuthToken = newGetAuthTokenUseCase(authRepo);
     getTokenStream = newGetTokenStreamUseCase(authRepo);

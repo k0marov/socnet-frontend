@@ -7,7 +7,6 @@ import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/local_token_datasource.dart';
-import '../models/token_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final LocalTokenDataSource _localDataSource;
@@ -47,10 +46,10 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  Future<Either<Failure, void>> _sharedLoginAndRegister(Future<TokenModel> Function() networkLoginOrRegister) async {
+  Future<Either<Failure, void>> _sharedLoginAndRegister(Future<Token> Function() networkLoginOrRegister) async {
     return exceptionToFailureCall(() async {
       final authToken = await networkLoginOrRegister();
-      _localDataSource.storeToken(authToken.toEntity().token);
+      _localDataSource.storeToken(authToken.token);
     });
   }
 

@@ -6,44 +6,49 @@ import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/const/endpoints.dart' as endpoints;
 import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
-import 'package:socnet/logic/features/auth/data/models/token_model.dart';
+import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
-import '../../../../../shared/fixtures/fixture_reader.dart';
 import '../../../../../shared/helpers/helpers.dart';
+
+class MockTokenMapper extends Mock implements TokenMapper {}
 
 class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
+  late MockTokenMapper mockTokenMapper;
   late MockHttpClient mockHttpClient;
   late NetworkAuthDataSourceImpl sut;
 
   const tApiHost = "example.com";
 
   setUp(() {
+    mockTokenMapper = MockTokenMapper();
     mockHttpClient = MockHttpClient();
-    sut = NetworkAuthDataSourceImpl(mockHttpClient, tApiHost);
+    sut = NetworkAuthDataSourceImpl(mockTokenMapper, mockHttpClient, tApiHost);
     registerFallbackValue(Uri());
   });
 
   const tUsername = "username";
   const tPassword = "password";
 
-  final tTokenResponse = fixture('auth_response_token.json');
-  const tToken = TokenModel(Token(token: "424242"));
+  const tToken = Token(token: "asdf");
+  const tTokenJson = {"xyz": "dyx", "adfas": "sdkfjlas"};
 
   void sharedForLoginAndRegister({required bool isLogin}) {
+    final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
+    Future<Token> act() => isLogin ? sut.login(tUsername, tPassword) : sut.register(tUsername, tPassword);
     test(
       "should call api and return the token model if everything was successful",
       () async {
         // arrange
         when(() => mockHttpClient.post(any(), headers: any(named: "headers"), body: any(named: "body")))
-            .thenAnswer((_) async => http.Response(tTokenResponse, 200));
+            .thenAnswer((_) async => http.Response(json.encode(tTokenJson), 200));
+        when(() => mockTokenMapper.fromJson(tTokenJson)).thenReturn(tToken);
         // act
-        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
+        final result = await act();
         // assert
         expect(result, tToken);
-        final endpoint = isLogin ? endpoints.loginEndpoint() : endpoints.registerEndpoint();
         final wantBody = {
           'username': tUsername,
           'password': tPassword,
@@ -72,9 +77,17 @@ void main() {
             ));
         // assert
         final expectedException = NetworkException(tStatusCode, tClientError);
-        expect(() => sut.login(tUsername, tPassword), throwsA(equals(expectedException)));
+        expect(act, throwsA(equals(expectedException)));
       },
     );
+    test("should rethrow MappingException", () async {
+      // arrange
+      when(() => mockHttpClient.post(any(), headers: any(named: "headers"), body: any(named: "body")))
+          .thenAnswer((_) async => http.Response(json.encode(tTokenJson), 200));
+      when(() => mockTokenMapper.fromJson(any())).thenThrow(MappingException());
+      // assert
+      expect(act, throwsA(isA<MappingException>()));
+    });
     test(
       "should throw NetworkException if some other error happened",
       () async {
@@ -85,7 +98,7 @@ void main() {
               headers: any(named: "headers"),
             )).thenThrow(Exception());
         // assert
-        expect(() => sut.login(tUsername, tPassword), throwsA(const TypeMatcher<NetworkException>()));
+        expect(act, throwsA(const TypeMatcher<NetworkException>()));
       },
     );
   }
