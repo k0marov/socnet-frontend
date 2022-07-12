@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:socnet/logic/core/likeable.dart';
 
 import '../values/avatar.dart';
 
@@ -8,27 +9,31 @@ class Profile extends Equatable {
   final String username;
   final String about;
   final Option<AvatarURL> avatarUrl;
-  final int followers;
   final int follows;
   final bool isMine;
-  final bool isFollowed;
+  final Likeable _likeable;
+
+  int get followers => _likeable.likes;
+  bool get isFollowed => _likeable.isLiked;
 
   @override
   List get props => [id, username, about, avatarUrl, followers, follows, isMine, isFollowed];
 
-  const Profile({
+  Profile({
     required this.id,
     required this.username,
     required this.about,
     required this.avatarUrl,
-    required this.followers,
     required this.follows,
     required this.isMine,
-    required this.isFollowed,
-  });
+    required int followers,
+    required bool isFollowed,
+  }) : _likeable = Likeable(likes: followers, isLiked: isFollowed);
 
+  const Profile._(this.id, this.username, this.about, this.avatarUrl, this.follows, this.isMine, this._likeable);
+
+  Profile withLikeToggled() => _copyWith(likeable: _likeable.withLikeToggled());
   Profile withAbout(String about) => _copyWith(about: about);
-  Profile withIsFollowed(bool isFollowed) => _copyWith(isFollowed: isFollowed);
   Profile withAvatarUrl(Option<String> avatarUrl) => _copyWith(avatarUrl: avatarUrl);
 
   Profile _copyWith(
@@ -36,18 +41,16 @@ class Profile extends Equatable {
           String? username,
           String? about,
           Option<String>? avatarUrl,
-          int? followers,
           int? follows,
           bool? isMine,
-          bool? isFollowed}) =>
-      Profile(
-        id: id ?? this.id,
-        username: username ?? this.username,
-        about: about ?? this.about,
-        avatarUrl: avatarUrl ?? this.avatarUrl,
-        followers: followers ?? this.followers,
-        follows: follows ?? this.follows,
-        isMine: isMine ?? this.isMine,
-        isFollowed: isFollowed ?? this.isFollowed,
+          Likeable? likeable}) =>
+      Profile._(
+        id ?? this.id,
+        username ?? this.username,
+        about ?? this.about,
+        avatarUrl ?? this.avatarUrl,
+        follows ?? this.follows,
+        isMine ?? this.isMine,
+        likeable ?? _likeable,
       );
 }
