@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/models/comment_model.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
-import 'package:socnet/logic/features/comments/domain/entities/comment.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
@@ -63,16 +62,7 @@ void main() {
 
   group('toggleLikeOnComment', () {
     final tComment = createTestComment();
-    final newLikes = tComment.isLiked ? tComment.likes - 1 : tComment.likes + 1;
-    final tExpectedComment = Comment(
-      id: tComment.id,
-      author: tComment.author,
-      createdAt: tComment.createdAt,
-      text: tComment.text,
-      likes: newLikes,
-      isMine: tComment.isMine,
-      isLiked: !tComment.isLiked,
-    );
+    final tExpectedComment = tComment.withLikeToggled();
     baseRepositoryTests(
       () => sut.toggleLikeOnComment(tComment),
       () => mockDataSource.toggleLikeOnComment(CommentModel(tComment)),

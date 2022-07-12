@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
-import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
@@ -61,17 +60,7 @@ void main() {
 
   group('toggleLike', () {
     final tPost = createTestPost();
-    final newLikes = tPost.isLiked ? tPost.likes - 1 : tPost.likes + 1;
-    final tLikedPost = Post(
-      id: tPost.id,
-      author: tPost.author,
-      createdAt: tPost.createdAt,
-      images: tPost.images,
-      text: tPost.text,
-      likes: newLikes,
-      isLiked: !tPost.isLiked,
-      isMine: tPost.isMine,
-    );
+    final tLikedPost = tPost.withLikeToggled();
     baseRepositoryTests(
       () => sut.toggleLike(tPost),
       () => mockDataSource.toggleLike(PostModel(tPost)),

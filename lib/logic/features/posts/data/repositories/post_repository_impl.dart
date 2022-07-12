@@ -41,19 +41,7 @@ class PostRepositoryImpl implements PostRepository {
   Future<Either<Failure, Post>> toggleLike(Post post) async {
     return exceptionToFailureCall(() async {
       await _dataSource.toggleLike(PostModel(post));
-      final newLikes = post.isLiked ? post.likes - 1 : post.likes + 1;
-      // TODO: move boilerplate to the entity
-      final likedPost = Post(
-        id: post.id,
-        author: post.author,
-        images: post.images,
-        text: post.text,
-        createdAt: post.createdAt,
-        likes: newLikes,
-        isLiked: !post.isLiked,
-        isMine: post.isMine,
-      );
-      return likedPost;
+      return post.withLikeToggled();
     });
   }
 }

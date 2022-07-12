@@ -41,18 +41,7 @@ class CommentRepositoryImpl implements CommentRepository {
   Future<Either<Failure, Comment>> toggleLikeOnComment(Comment comment) async {
     return exceptionToFailureCall(() async {
       await _dataSource.toggleLikeOnComment(CommentModel(comment));
-      final newLikes = comment.isLiked ? comment.likes - 1 : comment.likes + 1;
-      // TODO: move this boilerplate to the Comment entity
-      final changedComment = Comment(
-        id: comment.id,
-        author: comment.author,
-        createdAt: comment.createdAt,
-        text: comment.text,
-        likes: newLikes,
-        isMine: comment.isMine,
-        isLiked: !comment.isLiked,
-      );
-      return changedComment;
+      return comment.withLikeToggled();
     });
   }
 }

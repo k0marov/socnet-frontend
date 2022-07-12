@@ -12,7 +12,7 @@ void main() {
   late CommentModel tCommentModel;
   final tComment = Comment(
     id: "123",
-    author: const Profile(
+    author: Profile(
       id: "42",
       username: "some-username",
       avatarUrl: Some("static.example.com/media/user_1/avatar1234blablabla.png"),

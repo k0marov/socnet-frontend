@@ -13,7 +13,7 @@ void main() {
   late ProfileModel profileModel;
 
   setUp(() {
-    profile = const Profile(
+    profile = Profile(
       id: "42",
       username: "some-username",
       about: "A Test Profile",
