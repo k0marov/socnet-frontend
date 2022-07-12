@@ -9,7 +9,7 @@ abstract class ProfileRepository {
   Future<Either<Failure, Profile>> getMyProfile();
   Future<Either<Failure, Profile>> getProfile(String id);
   Future<Either<Failure, List<Profile>>> getFollows(Profile profile);
-  Future<Either<Failure, void>> toggleFollow(Profile profile);
+  Future<Either<Failure, Profile>> toggleFollow(Profile profile);
   Future<Either<Failure, Profile>> updateProfile(ProfileUpdate update);
   Future<Either<Failure, AvatarURL>> updateAvatar(AvatarFile newAvatar);
 }

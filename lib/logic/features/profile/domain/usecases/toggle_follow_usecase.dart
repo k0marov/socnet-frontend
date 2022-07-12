@@ -3,6 +3,6 @@ import 'package:socnet/logic/features/profile/domain/repositories/profile_reposi
 
 import '../entities/profile.dart';
 
-typedef ToggleFollowUseCase = UseCaseReturn<void> Function(Profile profile);
+typedef ToggleFollowUseCase = UseCaseReturn<Profile> Function(Profile profile);
 
 ToggleFollowUseCase newToggleFollowUseCase(ProfileRepository repo) => (profile) => repo.toggleFollow(profile);

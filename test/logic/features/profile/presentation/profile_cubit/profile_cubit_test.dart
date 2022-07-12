@@ -10,7 +10,7 @@ import '../../../../../shared/helpers/helpers.dart';
 import '../../shared.dart';
 
 abstract class ToggleFollow {
-  UseCaseReturn<void> call(Profile _);
+  UseCaseReturn<Profile> call(Profile _);
 }
 
 class MockToggleFollow extends Mock implements ToggleFollow {}
@@ -33,14 +33,14 @@ void main() {
   });
 
   group("FollowToggled", () {
-    Future setUpUseCaseAndAct(Either<Failure, void> useCaseReturn) async {
+    Future setUpUseCaseAndAct(Either<Failure, Profile> useCaseReturn) async {
       when(() => mockToggleFollow(tProfile)).thenAnswer((_) async => useCaseReturn);
       await sut.followToggled();
     }
 
     test("should change the profile and remove failure from state if usecase call is successful", () async {
-      final wantUpdProfile = tProfile.withIsFollowed(!tProfile.isFollowed);
-      await setUpUseCaseAndAct(const Right(null));
+      final wantUpdProfile = createTestProfile();
+      await setUpUseCaseAndAct(Right(wantUpdProfile));
       expect(sut.state, initialState.withoutFailure().withProfile(wantUpdProfile));
     });
     test("should add failure to state if usecase throws", () async {
