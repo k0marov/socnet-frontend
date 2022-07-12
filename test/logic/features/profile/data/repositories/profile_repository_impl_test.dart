@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
-import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
@@ -23,11 +22,10 @@ void main() {
   group('getFollows', () {
     final tProfile = createTestProfile();
     final tFollows = [createTestProfile(), createTestProfile(), createTestProfile()];
-    final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
     baseRepositoryTests(
       () => sut.getFollows(tProfile),
-      () => mockDataSource.getFollows(ProfileModel(tProfile)),
-      tFollowsModels,
+      () => mockDataSource.getFollows(tProfile),
+      tFollows,
       (result) => listEquals(result, tFollows),
       () => mockDataSource,
     );
@@ -35,23 +33,21 @@ void main() {
 
   group('getMyProfile', () {
     final tProfile = createTestProfile();
-    final tProfileModel = ProfileModel(tProfile);
     baseRepositoryTests(
       () => sut.getMyProfile(),
       () => mockDataSource.getMyProfile(),
-      tProfileModel,
+      tProfile,
       (result) => result == tProfile,
       () => mockDataSource,
     );
   });
   group('getProfile', () {
     final tProfile = createTestProfile();
-    final tProfileModel = ProfileModel(tProfile);
     final tId = randomString();
     baseRepositoryTests(
       () => sut.getProfile(tId),
       () => mockDataSource.getProfile(tId),
-      tProfileModel,
+      tProfile,
       (result) => result == tProfile,
       () => mockDataSource,
     );
@@ -63,7 +59,7 @@ void main() {
     baseRepositoryTests(
       () => sut.updateProfile(profileUpdate),
       () => mockDataSource.updateProfile(profileUpdate),
-      ProfileModel(updatedProfile),
+      updatedProfile,
       (result) => result == updatedProfile,
       () => mockDataSource,
     );
@@ -85,7 +81,7 @@ void main() {
     final targetProfile = createTestProfile();
     baseRepositoryTests(
       () => sut.toggleFollow(targetProfile),
-      () => mockDataSource.toggleFollow(ProfileModel(targetProfile)),
+      () => mockDataSource.toggleFollow(targetProfile),
       null,
       (result) => result == targetProfile.withLikeToggled(),
       () => mockDataSource,

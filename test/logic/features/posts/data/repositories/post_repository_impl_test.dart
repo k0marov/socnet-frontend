@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
-import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../profile/shared.dart';
@@ -48,7 +47,7 @@ void main() {
     final tPosts = [createTestPost(), createTestPost()];
     baseRepositoryTests(
       () => sut.getProfilePosts(tProfile),
-      () => mockDataSource.getProfilePosts(ProfileModel(tProfile)),
+      () => mockDataSource.getProfilePosts(tProfile),
       tPosts,
       (posts) => listEquals(posts, tPosts),
       () => mockDataSource,

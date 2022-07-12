@@ -7,7 +7,6 @@ import 'package:socnet/logic/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 
 import '../../../../core/error/exception_to_failure.dart';
-import '../../../profile/data/models/profile_model.dart';
 
 class PostRepositoryImpl implements PostRepository {
   final NetworkPostDataSource _dataSource;
@@ -30,7 +29,7 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<Either<Failure, List<Post>>> getProfilePosts(Profile profile) async {
     return exceptionToFailureCall(() async {
-      return await _dataSource.getProfilePosts(ProfileModel(profile));
+      return await _dataSource.getProfilePosts(profile);
     });
   }
 

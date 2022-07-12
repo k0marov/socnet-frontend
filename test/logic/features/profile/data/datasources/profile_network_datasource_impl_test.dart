@@ -6,40 +6,49 @@ import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
-import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
+import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';
 import '../../shared.dart';
 
+class MockProfileMapper extends Mock implements ProfileMapper {}
+
 class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}
 
 void main() {
   late ProfileNetworkDataSourceImpl sut;
+  late MockProfileMapper mockProfileMapper;
   late MockAuthenticatedAPIFacade mockApiFacade;
 
   setUpAll(() => registerFallbackValue(const EndpointQuery("")));
   setUp(() {
+    mockProfileMapper = MockProfileMapper();
     mockApiFacade = MockAuthenticatedAPIFacade();
-    sut = ProfileNetworkDataSourceImpl(mockApiFacade);
+    sut = ProfileNetworkDataSourceImpl(mockProfileMapper, mockApiFacade);
   });
 
-  final tProfile = ProfileModel(createTestProfile());
+  final tProfile = createTestProfile();
   group('getFollows', () {
     test(
       "should call api with proper args and return the result if the call is successful",
       () async {
         // arrange
         final tFollows = [createTestProfile(), createTestProfile()];
-        final tFollowsModels = tFollows.map((profile) => ProfileModel(profile)).toList();
-        final tResponseBody = {'profiles': tFollowsModels.map((model) => model.toJson()).toList()};
+        final tFollow1Json = {"x": "y"};
+        final tFollow2Json = {"f": "e"};
+        final tResponseBody = {
+          'profiles': [tFollow1Json, tFollow2Json]
+        };
         final tResponse = http.Response(json.encode(tResponseBody), 200);
         when(() => mockApiFacade.get(any())).thenAnswer((_) async => tResponse);
+        when(() => mockProfileMapper.fromJson(tFollow1Json)).thenReturn(tFollows[0]);
+        when(() => mockProfileMapper.fromJson(tFollow2Json)).thenReturn(tFollows[1]);
         // act
         final result = await sut.getFollows(tProfile);
         // assert
-        expect(result, tFollowsModels);
-        verify(() => mockApiFacade.get(getFollowsEndpoint(tProfile.toEntity().id)));
+        expect(result, tFollows);
+        verify(() => mockApiFacade.get(getFollowsEndpoint(tProfile.id)));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );
@@ -54,8 +63,9 @@ void main() {
       "should call api and return parsed result if the call is successful",
       () async {
         // arrange
-        final responseBody = json.encode(tProfile.toJson());
-        when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(responseBody, 200));
+        final tJson = {"asdf": "dfa"};
+        when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(json.encode(tJson), 200));
+        when(() => mockProfileMapper.fromJson(tJson)).thenReturn(tProfile);
         // act
         final result = await sut.getMyProfile();
         // assert
@@ -74,8 +84,9 @@ void main() {
     final tId = randomString();
     test("should call api and return parsed result if the call is successful", () async {
       // arrange
-      final responseBody = json.encode(tProfile.toJson());
-      when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(responseBody, 200));
+      final tJson = {"asdf": "dfasf"};
+      when(() => mockApiFacade.get(any())).thenAnswer((_) async => http.Response(json.encode(tJson), 200));
+      when(() => mockProfileMapper.fromJson(tJson)).thenReturn(tProfile);
       // act
       final result = await sut.getProfile(tId);
       // assert
@@ -91,13 +102,14 @@ void main() {
 
   group('updateProfile', () {
     final tProfileUpdate = createTestProfileUpdate();
-    final tProfileJson = json.encode(tProfile.toJson());
+    final tJson = {"asdf": "jdfklasd;f"};
 
     test(
       "should call api and return the result if it was successful",
       () async {
         // arrange
-        when(() => mockApiFacade.put(any(), any())).thenAnswer((_) async => http.Response(tProfileJson, 200));
+        when(() => mockApiFacade.put(any(), any())).thenAnswer((_) async => http.Response(json.encode(tJson), 200));
+        when(() => mockProfileMapper.fromJson(tJson)).thenReturn(tProfile);
         // act
         final result = await sut.updateProfile(tProfileUpdate);
         // assert
@@ -141,7 +153,7 @@ void main() {
         // act
         await sut.toggleFollow(tProfile);
         // assert
-        verify(() => mockApiFacade.post(toggleFollowEndpoint(tProfile.toEntity().id), {}));
+        verify(() => mockApiFacade.post(toggleFollowEndpoint(tProfile.id), {}));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );

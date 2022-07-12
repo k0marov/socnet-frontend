@@ -9,7 +9,6 @@ import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/values/new_post_value.dart';
-import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 
 import '../../../../../shared/fixtures/fixture_reader.dart';
 import '../../../../../shared/helpers/base_tests.dart';
@@ -88,7 +87,7 @@ void main() {
     );
   });
   group('getProfilePosts', () {
-    final tProfile = ProfileModel(createTestProfile());
+    final tProfile = createTestProfile();
     test(
       "should call api and return parsed result if status code = 200",
       () async {
@@ -106,7 +105,7 @@ void main() {
         final result = await sut.getProfilePosts(tProfile);
         // assert
         expect(listEquals(result, tPosts), true);
-        verify(() => mockApiFacade.get(getProfilePostsEndpoint(tProfile.toEntity().id)));
+        verify(() => mockApiFacade.get(getProfilePostsEndpoint(tProfile.id)));
         verifyNoMoreInteractions(mockApiFacade);
       },
     );

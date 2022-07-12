@@ -7,8 +7,8 @@ import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/core/simple_file.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/values/new_post_value.dart';
-import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 
+import '../../../profile/domain/entities/profile.dart';
 import '../../domain/entities/post.dart';
 
 abstract class NetworkPostDataSource {
@@ -19,7 +19,7 @@ abstract class NetworkPostDataSource {
   Future<void> deletePost(Post postModel);
 
   /// Throws [NetworkException] and [NoTokenException]
-  Future<List<Post>> getProfilePosts(ProfileModel profileModel);
+  Future<List<Post>> getProfilePosts(Profile profileModel);
 
   /// Throws [NetworkException] and [NoTokenException]
   Future<void> toggleLike(Post postModel);
@@ -57,9 +57,9 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
   }
 
   @override
-  Future<List<Post>> getProfilePosts(ProfileModel profileModel) async {
+  Future<List<Post>> getProfilePosts(Profile profileModel) async {
     return exceptionConverterCall(() async {
-      final profileId = profileModel.toEntity().id;
+      final profileId = profileModel.id;
 
       final response = await _apiFacade.get(getProfilePostsEndpoint(profileId));
       checkStatusCode(response);

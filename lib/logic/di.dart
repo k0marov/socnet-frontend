@@ -33,6 +33,7 @@ import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/fai
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/post_creation_cubit.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
+import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
 import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_follows_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
@@ -90,7 +91,7 @@ class UseCases {
     // api facade
     final apiFacade = AuthenticatedAPIFacade(getAuthToken, httpClient, apiHost, useHTTPS: useHTTPS);
     // profiles
-    final netProfileDS = ProfileNetworkDataSourceImpl(apiFacade);
+    final netProfileDS = ProfileNetworkDataSourceImpl(ProfileMapperImpl(), apiFacade);
     final profileRepo = ProfileRepositoryImpl(netProfileDS);
     getFollows = newGetFollowsUseCase(profileRepo);
     getMyProfile = newGetMyProfileUseCase(profileRepo);
