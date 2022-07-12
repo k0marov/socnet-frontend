@@ -12,7 +12,6 @@ import 'package:socnet/logic/features/auth/domain/usecases/get_token_stream_usec
 import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
-import 'package:socnet/logic/features/auth/presentation/auth_gate_stream/auth_gate_stream.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
@@ -44,6 +43,7 @@ import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile
 import './features/comments/domain/usecases/delete_comment.dart';
 import './features/comments/domain/usecases/get_post_comments.dart';
 import './features/comments/domain/usecases/toggle_like_on_comment.dart';
+import 'features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
@@ -134,7 +134,7 @@ Future initialize() async {
       ));
   sl.registerLazySingleton(() => postCreationCubitFactoryImpl(usecases.createPost, postCreationFailureHandlerImpl));
 
-  sl.registerFactory(() => AuthGateStreamFactory(usecases.getTokenStream));
+  sl.registerFactory(() => AuthGateCubit(usecases.getTokenStream));
   sl.registerFactory(() => LoginCubit(usecases.login, loginFailureHandlerImpl));
   sl.registerFactory(() => RegisterCubit(passStrengthGetterImpl, usecases.register, registerFailureHandlerImpl));
 }
