@@ -14,8 +14,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<Failure, List<Profile>>> getFollows(Profile profile) async {
-    return exceptionToFailureCall(
-        () => _dataSource.getFollows(ProfileModel(profile)).then((modelList) => modelList.map((model) => model.toEntity()).toList()));
+    return exceptionToFailureCall(() => _dataSource
+        .getFollows(ProfileModel(profile))
+        .then((modelList) => modelList.map((model) => model.toEntity()).toList()));
   }
 
   @override
@@ -31,8 +32,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, void>> toggleFollow(Profile profile) async {
-    return exceptionToFailureCall(() => _dataSource.toggleFollow(ProfileModel(profile)));
+  Future<Either<Failure, Profile>> toggleFollow(Profile profile) async {
+    return exceptionToFailureCall(
+        () => _dataSource.toggleFollow(ProfileModel(profile)).then((_) => profile.withLikeToggled()));
   }
 
   @override

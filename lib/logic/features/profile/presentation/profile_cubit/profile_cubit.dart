@@ -15,7 +15,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     final result = await _toggleFollow(state.profile);
     result.fold(
       (failure) => emit(state.withFailure(failure)),
-      (success) => emit(state.withoutFailure().withProfile(state.profile.withIsFollowed(!state.profile.isFollowed))),
+      (liked) => emit(state.withoutFailure().withProfile(liked)),
     );
   }
 }
