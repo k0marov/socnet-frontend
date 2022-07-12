@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
-import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
 
@@ -27,7 +26,7 @@ void main() {
     baseRepositoryTests(
       () => sut.createPost(tNewPost),
       () => mockDataSource.createPost(tNewPost),
-      PostModel(tPost),
+      tPost,
       (result) => result == null,
       () => mockDataSource,
     );
@@ -35,10 +34,9 @@ void main() {
 
   group('deletePost', () {
     final tPost = createTestPost();
-    final tPostModel = PostModel(tPost);
     baseRepositoryTests(
       () => sut.deletePost(tPost),
-      () => mockDataSource.deletePost(tPostModel),
+      () => mockDataSource.deletePost(tPost),
       null,
       (res) => true,
       () => mockDataSource,
@@ -48,11 +46,10 @@ void main() {
   group('getProfilePosts', () {
     final tProfile = createTestProfile();
     final tPosts = [createTestPost(), createTestPost()];
-    final tPostsModels = tPosts.map<PostModel>((post) => PostModel(post)).toList();
     baseRepositoryTests(
       () => sut.getProfilePosts(tProfile),
       () => mockDataSource.getProfilePosts(ProfileModel(tProfile)),
-      tPostsModels,
+      tPosts,
       (posts) => listEquals(posts, tPosts),
       () => mockDataSource,
     );
@@ -63,7 +60,7 @@ void main() {
     final tLikedPost = tPost.withLikeToggled();
     baseRepositoryTests(
       () => sut.toggleLike(tPost),
-      () => mockDataSource.toggleLike(PostModel(tPost)),
+      () => mockDataSource.toggleLike(tPost),
       null,
       (result) => result == tLikedPost,
       () => mockDataSource,

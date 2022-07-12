@@ -23,6 +23,7 @@ import 'package:socnet/logic/features/comments/data/repositories/comment_reposit
 import 'package:socnet/logic/features/comments/domain/usecases/add_comment_usecase.dart';
 import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
+import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/create_post_usecase.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/delete_post_usecase.dart';
@@ -98,7 +99,7 @@ class UseCases {
     updateAvatar = newUpdateAvatarUseCase(profileRepo);
     toggleFollow = newToggleFollowUseCase(profileRepo);
     // posts
-    final netPostDS = NetworkPostDataSourceImpl(apiFacade);
+    final netPostDS = NetworkPostDataSourceImpl(PostMapperImpl(), apiFacade);
     final postRepo = PostRepositoryImpl(netPostDS);
     createPost = newCreatePostUseCase(postRepo);
     deletePost = newDeletePostUseCase(postRepo);

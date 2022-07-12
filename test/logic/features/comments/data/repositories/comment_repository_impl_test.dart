@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
-import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../posts/post_helpers.dart';
@@ -26,7 +25,7 @@ void main() {
     final tCreatedComment = createTestComment();
     baseRepositoryTests(
       () => sut.addPostComment(tPost, tNewComment),
-      () => mockDataSource.addPostComment(PostModel(tPost), tNewComment),
+      () => mockDataSource.addPostComment(tPost, tNewComment),
       tCreatedComment,
       (result) => result == tCreatedComment,
       () => mockDataSource,
@@ -48,7 +47,7 @@ void main() {
     final tComments = [createTestComment(), createTestComment()];
     baseRepositoryTests(
       () => sut.getPostComments(tPost),
-      () => mockDataSource.getPostComments(PostModel(tPost)),
+      () => mockDataSource.getPostComments(tPost),
       tComments,
       (result) => listEquals(result, tComments),
       () => mockDataSource,

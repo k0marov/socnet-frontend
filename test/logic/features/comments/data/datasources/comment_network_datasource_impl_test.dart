@@ -7,7 +7,6 @@ import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
-import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../posts/post_helpers.dart';
@@ -63,7 +62,7 @@ void main() {
             .thenAnswer((_) async => http.Response(json.encode(tCreatedJson), 200));
         when(() => mockCommentMapper.fromJson(tCreatedJson)).thenReturn(tCreatedComment);
         // act
-        final result = await sut.addPostComment(PostModel(tPost), tNewComment);
+        final result = await sut.addPostComment(tPost, tNewComment);
         // assert
         expect(result, tCreatedComment);
         verify(() => mockAPIFacade.post(
@@ -75,7 +74,7 @@ void main() {
     );
     baseNetworkDataSourceExceptionTests(
       () => when(() => mockAPIFacade.post(any(), any())),
-      () => sut.addPostComment(PostModel(tPost), tNewComment),
+      () => sut.addPostComment(tPost, tNewComment),
     );
   });
 
@@ -96,7 +95,7 @@ void main() {
         when(() => mockCommentMapper.fromJson(tCommentsJson['comments']![0])).thenReturn(tComments[0]);
         when(() => mockCommentMapper.fromJson(tCommentsJson['comments']![1])).thenReturn(tComments[1]);
         // act
-        final result = await sut.getPostComments(PostModel(tPost));
+        final result = await sut.getPostComments(tPost);
         // assert
         expect(result, tComments);
         verify(() => mockAPIFacade.get(getPostCommentsEndpoint(tPost.id)));
@@ -105,7 +104,7 @@ void main() {
     );
     baseNetworkDataSourceExceptionTests(
       () => when(() => mockAPIFacade.get(any())),
-      () => sut.getPostComments(PostModel(tPost)),
+      () => sut.getPostComments(tPost),
     );
   });
 

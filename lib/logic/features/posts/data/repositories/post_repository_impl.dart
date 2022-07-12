@@ -8,7 +8,6 @@ import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 
 import '../../../../core/error/exception_to_failure.dart';
 import '../../../profile/data/models/profile_model.dart';
-import '../models/post_model.dart';
 
 class PostRepositoryImpl implements PostRepository {
   final NetworkPostDataSource _dataSource;
@@ -24,23 +23,21 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<Either<Failure, void>> deletePost(Post post) async {
     return exceptionToFailureCall(() async {
-      await _dataSource.deletePost(PostModel(post));
+      await _dataSource.deletePost(post);
     });
   }
 
   @override
   Future<Either<Failure, List<Post>>> getProfilePosts(Profile profile) async {
     return exceptionToFailureCall(() async {
-      final result = await _dataSource.getProfilePosts(ProfileModel(profile));
-      final entities = result.map((post) => post.toEntity()).toList();
-      return entities;
+      return await _dataSource.getProfilePosts(ProfileModel(profile));
     });
   }
 
   @override
   Future<Either<Failure, Post>> toggleLike(Post post) async {
     return exceptionToFailureCall(() async {
-      await _dataSource.toggleLike(PostModel(post));
+      await _dataSource.toggleLike(post);
       return post.withLikeToggled();
     });
   }

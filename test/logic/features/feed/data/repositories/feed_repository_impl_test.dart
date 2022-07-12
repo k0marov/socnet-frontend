@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/features/feed/data/datasources/feed_network_datasource.dart';
 import 'package:socnet/logic/features/feed/data/repositories/feed_repository_impl.dart';
-import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';
@@ -26,7 +25,7 @@ void main() {
     baseRepositoryTests(
       () => sut.getNextPosts(tAmount),
       () => mockDataSource.getNextPosts(tAmount),
-      tPosts.map((post) => PostModel(post)).toList(),
+      tPosts,
       (result) => listEquals(result, tPosts),
       () => mockDataSource,
     );

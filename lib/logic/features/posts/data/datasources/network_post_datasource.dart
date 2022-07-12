@@ -5,27 +5,30 @@ import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/core/simple_file.dart';
-import 'package:socnet/logic/features/posts/data/models/post_model.dart';
+import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/values/new_post_value.dart';
 import 'package:socnet/logic/features/profile/data/models/profile_model.dart';
+
+import '../../domain/entities/post.dart';
 
 abstract class NetworkPostDataSource {
   /// Throws [NetworkException] and [NoTokenException]
   Future<void> createPost(NewPostValue newPost);
 
   /// Throws [NetworkException] and [NoTokenException]
-  Future<void> deletePost(PostModel postModel);
+  Future<void> deletePost(Post postModel);
 
   /// Throws [NetworkException] and [NoTokenException]
-  Future<List<PostModel>> getProfilePosts(ProfileModel profileModel);
+  Future<List<Post>> getProfilePosts(ProfileModel profileModel);
 
   /// Throws [NetworkException] and [NoTokenException]
-  Future<void> toggleLike(PostModel postModel);
+  Future<void> toggleLike(Post postModel);
 }
 
 class NetworkPostDataSourceImpl implements NetworkPostDataSource {
+  final PostMapper _mapper;
   final AuthenticatedAPIFacade _apiFacade;
-  NetworkPostDataSourceImpl(this._apiFacade);
+  NetworkPostDataSourceImpl(this._mapper, this._apiFacade);
 
   @override
   Future<void> createPost(NewPostValue newPost) async {
@@ -44,9 +47,9 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
   }
 
   @override
-  Future<void> deletePost(PostModel postModel) async {
+  Future<void> deletePost(Post postModel) async {
     return exceptionConverterCall(() async {
-      final postId = postModel.toEntity().id;
+      final postId = postModel.id;
 
       final response = await _apiFacade.delete(deletePostEndpoint(postId));
       checkStatusCode(response);
@@ -54,7 +57,7 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
   }
 
   @override
-  Future<List<PostModel>> getProfilePosts(ProfileModel profileModel) async {
+  Future<List<Post>> getProfilePosts(ProfileModel profileModel) async {
     return exceptionConverterCall(() async {
       final profileId = profileModel.toEntity().id;
 
@@ -62,14 +65,14 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
       checkStatusCode(response);
 
       final postsJson = json.decode(response.body)["posts"];
-      return (postsJson as List).map((postJson) => PostModel.fromJson(postJson)).toList();
+      return (postsJson as List).map((postJson) => _mapper.fromJson(postJson)).toList();
     });
   }
 
   @override
-  Future<void> toggleLike(PostModel postModel) async {
+  Future<void> toggleLike(Post postModel) async {
     return exceptionConverterCall(() async {
-      final postId = postModel.toEntity().id;
+      final postId = postModel.id;
       final response = await _apiFacade.post(toggleLikeOnPostEndpoint(postId), {});
       checkStatusCode(response);
     });
