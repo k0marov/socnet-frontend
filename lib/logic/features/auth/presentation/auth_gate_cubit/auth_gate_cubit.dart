@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_token_stream_usecase.dart';
 
-import '../../../../core/usecase.dart';
-
 enum AuthState {
   loading,
   authenticated,
@@ -19,7 +17,7 @@ class AuthGateCubit extends Cubit<AuthState> {
 
   void renewStream() {
     _subscription?.cancel();
-    _subscription = _getTokenStream(NoParams()).listen(
+    _subscription = _getTokenStream().listen(
       (event) => event.fold(
         (failure) => emit(AuthState.failure),
         (tokenOpt) => tokenOpt.fold(

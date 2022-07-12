@@ -2,12 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/failures.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/profile_params.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow.dart';
+import 'package:socnet/logic/core/usecase.dart';
+import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 import '../../shared.dart';
+
+abstract class ToggleFollow {
+  UseCaseReturn<void> call(Profile _);
+}
 
 class MockToggleFollow extends Mock implements ToggleFollow {}
 
@@ -30,7 +34,7 @@ void main() {
 
   group("FollowToggled", () {
     Future setUpUseCaseAndAct(Either<Failure, void> useCaseReturn) async {
-      when(() => mockToggleFollow(ProfileParams(profile: tProfile))).thenAnswer((_) async => useCaseReturn);
+      when(() => mockToggleFollow(tProfile)).thenAnswer((_) async => useCaseReturn);
       await sut.followToggled();
     }
 

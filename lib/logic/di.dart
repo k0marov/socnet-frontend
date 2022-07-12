@@ -18,56 +18,56 @@ import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_h
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
 import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
-import 'package:socnet/logic/features/comments/domain/usecases/add_comment.dart';
+import 'package:socnet/logic/features/comments/domain/usecases/add_comment_usecase.dart';
 import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
 import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
 import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
-import 'package:socnet/logic/features/posts/domain/usecases/create_post.dart';
-import 'package:socnet/logic/features/posts/domain/usecases/delete_post.dart';
-import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts.dart';
-import 'package:socnet/logic/features/posts/domain/usecases/toggle_like.dart';
+import 'package:socnet/logic/features/posts/domain/usecases/create_post_usecase.dart';
+import 'package:socnet/logic/features/posts/domain/usecases/delete_post_usecase.dart';
+import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts_usecase.dart';
+import 'package:socnet/logic/features/posts/domain/usecases/toggle_like_on_post_usecase.dart';
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/post_creation_cubit.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/get_follows.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/get_profile.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/update_avatar.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/update_profile.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/get_follows_usecase.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/toggle_follow_usecase.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/update_avatar_usecase.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/update_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile_cubit.dart';
 
-import './features/comments/domain/usecases/delete_comment.dart';
-import './features/comments/domain/usecases/get_post_comments.dart';
-import './features/comments/domain/usecases/toggle_like_on_comment.dart';
+import './features/comments/domain/usecases/delete_comment_usecase.dart';
+import './features/comments/domain/usecases/get_post_comments_usecase.dart';
+import './features/comments/domain/usecases/toggle_like_on_comment_usecase.dart';
 import 'features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
   late final GetTokenStreamUseCase getTokenStream;
   late final LoginUseCase login;
-  late final LogoutUsecase logout;
+  late final LogoutUseCase logout;
   late final RegisterUseCase register;
 
-  late final GetFollows getFollows;
-  late final GetMyProfile getMyProfile;
-  late final GetProfile getProfile;
-  late final UpdateProfile updateProfile;
-  late final UpdateAvatar updateAvatar;
-  late final ToggleFollow toggleFollow;
+  late final GetFollowsUseCase getFollows;
+  late final GetMyProfileUseCase getMyProfile;
+  late final GetProfileUseCase getProfile;
+  late final UpdateProfileUseCase updateProfile;
+  late final UpdateAvatarUseCase updateAvatar;
+  late final ToggleFollowUseCase toggleFollow;
 
-  late final CreatePost createPost;
-  late final DeletePost deletePost;
-  late final GetProfilePosts getProfilePosts;
-  late final ToggleLike toggleLike;
+  late final CreatePostUseCase createPost;
+  late final DeletePostUseCase deletePost;
+  late final GetProfilePostsUseCase getProfilePosts;
+  late final ToggleLikeOnPostUseCase toggleLike;
 
-  late final AddComment addComment;
-  late final DeleteComment deleteComment;
-  late final GetPostComments getPostComments;
-  late final ToggleLikeOnComment toggleLikeOnComment;
+  late final AddCommentUseCase addComment;
+  late final DeleteCommentUseCase deleteComment;
+  late final GetPostCommentsUseCase getPostComments;
+  late final ToggleLikeOnCommentUseCase toggleLikeOnComment;
 
   UseCases({
     required RxSharedPreferences sharedPrefs,
@@ -79,36 +79,36 @@ class UseCases {
     final localAuthDS = LocalTokenDataSourceImpl(sharedPrefs);
     final netAuthDS = NetworkAuthDataSourceImpl(httpClient, apiHost, useHTTPS: useHTTPS);
     final authRepo = AuthRepositoryImpl(localAuthDS, netAuthDS);
-    getAuthToken = GetAuthTokenUseCase(authRepo);
-    getTokenStream = GetTokenStreamUseCase(authRepo);
-    login = LoginUseCase(authRepo);
-    logout = LogoutUsecase(authRepo);
-    register = RegisterUseCase(authRepo);
+    getAuthToken = newGetAuthTokenUseCase(authRepo);
+    getTokenStream = newGetTokenStreamUseCase(authRepo);
+    login = newLoginUseCase(authRepo);
+    logout = newLogoutUseCase(authRepo);
+    register = newRegisterUseCase(authRepo);
     // api facade
     final apiFacade = AuthenticatedAPIFacade(getAuthToken, httpClient, apiHost, useHTTPS: useHTTPS);
     // profiles
     final netProfileDS = ProfileNetworkDataSourceImpl(apiFacade);
     final profileRepo = ProfileRepositoryImpl(netProfileDS);
-    getFollows = GetFollows(profileRepo);
-    getMyProfile = GetMyProfile(profileRepo);
-    getProfile = GetProfile(profileRepo);
-    updateProfile = UpdateProfile(profileRepo);
-    updateAvatar = UpdateAvatar(profileRepo);
-    toggleFollow = ToggleFollow(profileRepo);
+    getFollows = newGetFollowsUseCase(profileRepo);
+    getMyProfile = newGetMyProfileUseCase(profileRepo);
+    getProfile = newGetProfileUseCase(profileRepo);
+    updateProfile = newUpdateProfileUseCase(profileRepo);
+    updateAvatar = newUpdateAvatarUseCase(profileRepo);
+    toggleFollow = newToggleFollowUseCase(profileRepo);
     // posts
     final netPostDS = NetworkPostDataSourceImpl(apiFacade);
     final postRepo = PostRepositoryImpl(netPostDS);
-    createPost = CreatePost(postRepo);
-    deletePost = DeletePost(postRepo);
-    getProfilePosts = GetProfilePosts(postRepo);
-    toggleLike = ToggleLike(postRepo);
+    createPost = newCreatePostUseCase(postRepo);
+    deletePost = newDeletePostUseCase(postRepo);
+    getProfilePosts = newGetProfilePostsUseCase(postRepo);
+    toggleLike = newToggleLikeOnPostUseCase(postRepo);
     // comments
     final netCommentDS = CommentNetworkDataSourceImpl(apiFacade);
     final commentRepo = CommentRepositoryImpl(netCommentDS);
-    addComment = AddComment(commentRepo);
-    deleteComment = DeleteComment(commentRepo);
-    getPostComments = GetPostComments(commentRepo);
-    toggleLikeOnComment = ToggleLikeOnComment(commentRepo);
+    addComment = newAddCommentUseCase(commentRepo);
+    deleteComment = newDeleteCommentUseCase(commentRepo);
+    getPostComments = newGetPostCommentsUseCase(commentRepo);
+    toggleLikeOnComment = newToggleLikeOnCommentUseCase(commentRepo);
   }
 }
 

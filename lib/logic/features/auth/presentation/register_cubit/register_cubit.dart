@@ -31,7 +31,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       emit(state.withoutFailures().withPassRepeat(state.passRepeat.withFailure(passwordsDontMatch)));
       return;
     }
-    final result = await _register(RegisterParams(username: state.username.value, password: state.pass.value));
+    final result = await _register(state.username.value, state.pass.value);
     result.fold(
       (failure) => emit(_handleFailure(state.withoutFailures(), failure)),
       (success) => emit(state.withoutFailures()),

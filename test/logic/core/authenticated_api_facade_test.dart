@@ -11,14 +11,17 @@ import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
-import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
 import '../../shared/fixtures/fixture_reader.dart';
 import '../../shared/helpers/helpers.dart';
 
+abstract class GetAuthToken {
+  UseCaseReturn<Token> call();
+}
+
 class MockHttpClient extends Mock implements http.Client {}
 
-class MockGetAuthToken extends Mock implements GetAuthTokenUseCase {}
+class MockGetAuthToken extends Mock implements GetAuthToken {}
 
 void main() {
   late MockHttpClient mockHttpClient;
@@ -49,7 +52,7 @@ void main() {
       "should throw NoTokenException if called when token is null",
       () async {
         // arrange
-        when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => Left(CacheFailure()));
+        when(() => mockGetAuthToken()).thenAnswer((_) async => Left(CacheFailure()));
         // assert
         expect(act, throwsA(NoTokenException()));
       },
@@ -57,7 +60,7 @@ void main() {
   }
 
   void arrangeToken() {
-    when(() => mockGetAuthToken(NoParams())).thenAnswer((_) async => const Right(tToken));
+    when(() => mockGetAuthToken()).thenAnswer((_) async => const Right(tToken));
   }
 
   group('get', () {

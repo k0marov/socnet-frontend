@@ -2,28 +2,38 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/comments/domain/entities/comment.dart';
-import 'package:socnet/logic/features/comments/domain/usecases/add_comment.dart';
-import 'package:socnet/logic/features/comments/domain/usecases/comment_params.dart';
-import 'package:socnet/logic/features/comments/domain/usecases/delete_comment.dart';
-import 'package:socnet/logic/features/comments/domain/usecases/toggle_like_on_comment.dart';
 import 'package:socnet/logic/features/comments/domain/values/new_comment_value.dart';
 import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
+import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
-import '../../../post/post_helpers.dart';
+import '../../../posts/post_helpers.dart';
 import '../../comment_helpers.dart';
+
+abstract class DeleteComment {
+  UseCaseReturn<void> call(Comment _);
+}
+
+abstract class AddComment {
+  UseCaseReturn<Comment> call(Post _, NewCommentValue __);
+}
+
+abstract class ToggleLikeOnComment {
+  UseCaseReturn<Comment> call(Comment _);
+}
 
 class MockDeleteComment extends Mock implements DeleteComment {}
 
 class MockAddComment extends Mock implements AddComment {}
 
-class MockToggleLikeOnComments extends Mock implements ToggleLikeOnComment {}
+class MockToggleLikeOnComment extends Mock implements ToggleLikeOnComment {}
 
 void main() {
   late MockDeleteComment mockDeleteComment;
   late MockAddComment mockAddComment;
-  late MockToggleLikeOnComments mockToggleLike;
+  late MockToggleLikeOnComment mockToggleLike;
   late CommentsCubit sut;
 
   final tPost = createTestPost();
@@ -32,7 +42,7 @@ void main() {
   setUp(() {
     mockDeleteComment = MockDeleteComment();
     mockAddComment = MockAddComment();
-    mockToggleLike = MockToggleLikeOnComments();
+    mockToggleLike = MockToggleLikeOnComment();
     sut = commentsCubitFactoryImpl(mockAddComment, mockDeleteComment, mockToggleLike)(tPost, tComments);
   });
 
@@ -57,8 +67,7 @@ void main() {
     final tAddedComment = createTestComment();
 
     Future act() => sut.addComment(tText);
-    Future<Either<Failure, Comment>> useCaseCall() =>
-        mockAddComment(AddCommentParams(post: tPost, newComment: tNewComment));
+    Future<Either<Failure, Comment>> useCaseCall() => mockAddComment(tPost, tNewComment);
 
     test(
       "should call usecase, remove failure and add new comment to state if usecase call is successful",
@@ -80,7 +89,7 @@ void main() {
   group('CommentDeleted', () {
     final deletedComment = tComments[1];
 
-    Future<Either<Failure, void>> useCaseCall() => mockDeleteComment(CommentParams(comment: deletedComment));
+    Future<Either<Failure, void>> useCaseCall() => mockDeleteComment(deletedComment);
     Future act() => sut.deleteComment(deletedComment);
     test(
       "should clear failures and delete comment from state if usecase call is successful",
@@ -108,7 +117,7 @@ void main() {
     final tTarget = tComments[2];
     final tLiked = createTestComment();
 
-    Future<Either<Failure, Comment>> useCaseCall() => mockToggleLike(CommentParams(comment: tTarget));
+    Future<Either<Failure, Comment>> useCaseCall() => mockToggleLike(tTarget);
     Future act() => sut.likePressed(tTarget);
 
     test(

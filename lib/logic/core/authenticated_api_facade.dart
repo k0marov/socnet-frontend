@@ -6,7 +6,6 @@ import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/core/debug.dart';
 import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/simple_file.dart';
-import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
 
@@ -107,7 +106,7 @@ class AuthenticatedAPIFacade {
 
   Future<Token> _obtainTokenOrThrow() async {
     late final Token token;
-    final tokenEither = await _getToken(NoParams());
+    final tokenEither = await _getToken();
     tokenEither.fold(
       (failure) => throw NoTokenException(),
       (gotToken) => token = gotToken,

@@ -3,13 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/core/field_value.dart';
+import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
-import 'package:socnet/logic/features/auth/domain/usecases/register_usecase.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 
-class MockRegisterUseCase extends Mock implements RegisterUseCase {}
+abstract class Register {
+  UseCaseReturn<void> call(String username, String password);
+}
+
+class MockRegisterUseCase extends Mock implements Register {}
 
 RegisterState randomRegisterState() {
   final pass = randomFieldValue();
@@ -37,7 +41,6 @@ void main() {
           ? tStateWithHandledFailure
           : throw Exception(),
     );
-    registerFallbackValue(RegisterParams(username: "", password: ""));
   });
 
   const emptyState = RegisterState();
@@ -85,7 +88,8 @@ void main() {
     test("should call usecase, clear all failures and then call auth gate if usecase call was successful", () async {
       // arrange
       arrangeFilledState();
-      when(() => mockRegister(any())).thenAnswer((_) async => Right(null));
+      when(() => mockRegister(tFilledState.username.value, tFilledState.pass.value))
+          .thenAnswer((_) async => Right(null));
       // act
       await sut.registerPressed();
       // assert
@@ -94,7 +98,7 @@ void main() {
     test("should replace all failures with the returned failure if usecase call was unsuccessful", () async {
       // arrange
       arrangeFilledState();
-      when(() => mockRegister(any())).thenAnswer((_) async => Left(tUseCaseFailure));
+      when(() => mockRegister(any(), any())).thenAnswer((_) async => Left(tUseCaseFailure));
       // act
       await sut.registerPressed();
       // assert

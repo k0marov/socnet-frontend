@@ -9,25 +9,6 @@ import 'package:socnet/logic/core/error/failures.dart';
 
 import 'helpers.dart';
 
-Future baseUseCaseTest<T>(
-  Future<Either<Failure, T>> Function() useCaseCall,
-  Future<Either<Failure, T>> Function() mockRepositoryCall,
-  dynamic mockRepository,
-) async {
-  // arrange
-  final tFailure = randomFailure();
-  when(mockRepositoryCall).thenAnswer((_) async => Left(tFailure));
-  // act
-  final result = await useCaseCall();
-  // assert
-  result.fold(
-    (failure) => expect(identical(failure, tFailure), true),
-    (success) => throw AssertionError(),
-  );
-  verify(mockRepositoryCall);
-  verifyNoMoreInteractions(mockRepository);
-}
-
 void baseNetworkDataSourceExceptionTests(
   When Function() whenAPICall,
   Future Function() call,

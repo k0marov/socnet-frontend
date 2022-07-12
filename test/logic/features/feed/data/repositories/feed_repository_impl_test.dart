@@ -7,7 +7,7 @@ import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';
-import '../../../post/post_helpers.dart';
+import '../../../posts/post_helpers.dart';
 
 class MockFeedNetworkDataSource extends Mock implements FeedNetworkDataSource {}
 

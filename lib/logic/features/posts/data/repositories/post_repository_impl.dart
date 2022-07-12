@@ -42,6 +42,7 @@ class PostRepositoryImpl implements PostRepository {
     return exceptionToFailureCall(() async {
       await _dataSource.toggleLike(PostModel(post));
       final newLikes = post.isLiked ? post.likes - 1 : post.likes + 1;
+      // TODO: move boilerplate to the entity
       final likedPost = Post(
         id: post.id,
         author: post.author,

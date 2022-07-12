@@ -1,13 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
-import 'package:socnet/logic/core/error/failures.dart';
 
-abstract class UseCase<ReturnType, Params> {
-  const UseCase();
-  Future<Either<Failure, ReturnType>> call(Params params);
-}
+import 'error/failures.dart';
 
-class NoParams extends Equatable {
-  @override
-  List get props => [];
-}
+typedef UseCaseReturn<T> = Future<Either<Failure, T>>;

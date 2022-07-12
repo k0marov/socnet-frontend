@@ -9,7 +9,7 @@ import 'package:socnet/logic/features/comments/data/datasources/comment_network_
 import 'package:socnet/logic/features/comments/data/models/comment_model.dart';
 import 'package:socnet/logic/features/posts/data/models/post_model.dart';
 
-import '../../../post/post_helpers.dart';
+import '../../../posts/post_helpers.dart';
 import '../../comment_helpers.dart';
 
 class MockAuthenticatedAPIFacade extends Mock implements AuthenticatedAPIFacade {}

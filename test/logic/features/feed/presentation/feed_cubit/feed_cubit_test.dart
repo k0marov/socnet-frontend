@@ -2,12 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/failures.dart';
-import 'package:socnet/logic/features/feed/domain/usecases/get_next_feed_posts.dart';
+import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/feed/presentation/feed_cubit/feed_cubit.dart';
 import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
-import '../../../post/post_helpers.dart';
+import '../../../posts/post_helpers.dart';
+
+abstract class GetNextFeedPosts {
+  UseCaseReturn<List<Post>> call(int _);
+}
 
 class MockGetNextFeedPosts extends Mock implements GetNextFeedPosts {}
 
@@ -38,7 +42,7 @@ void main() {
   final filledState = initialState.withPosts(tPosts).withFailure(randomFailure());
 
   group('scrolledToBottom()', () {
-    Future<Either<Failure, List<Post>>> useCaseCall() => mockGetPosts(FeedParams(amount: tLoadAmount));
+    Future<Either<Failure, List<Post>>> useCaseCall() => mockGetPosts(tLoadAmount);
     Future<void> setUpUseCaseAndAct(Either<Failure, List<Post>> result) async {
       when(useCaseCall).thenAnswer((_) async => result);
       await sut.scrolledToBottom();

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile.dart';
+import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 import 'package:socnet/ui/widgets/z_future_builder.dart';
 
@@ -18,7 +17,7 @@ class MyProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: ZFutureBuilder<Profile>(
-        future: sl<GetMyProfile>()(NoParams()),
+        future: sl<GetMyProfileUseCase>()(),
         loading: Center(child: CircularProgressIndicator()),
         loadedBuilder: (profile) => BlocProvider(
           create: (_) => sl<MyProfileCubitFactory>()(profile),
@@ -73,7 +72,7 @@ class _Internal extends StatelessWidget {
                 SizedBox(height: 15),
                 Text(state.profile.about),
                 TextButton(
-                  onPressed: () => sl<LogoutUsecase>()(NoParams()),
+                  onPressed: () => sl<LogoutUseCase>()(),
                   child: Text("Logout"),
                 )
               ]);

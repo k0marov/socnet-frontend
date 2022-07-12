@@ -2,12 +2,16 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/field_value.dart';
-import 'package:socnet/logic/features/auth/domain/usecases/login_usecase.dart';
+import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 
-class MockLogin extends Mock implements LoginUseCase {}
+abstract class Login {
+  UseCaseReturn<void> call(String username, String password);
+}
+
+class MockLogin extends Mock implements Login {}
 
 LoginState randomLoginState() => LoginState(randomFieldValue(), randomFieldValue(), randomFailure());
 
@@ -27,7 +31,6 @@ void main() {
           ? tStateWithHandledFailure
           : throw Exception(),
     );
-    registerFallbackValue(LoginParams(username: "", password: ""));
   });
 
   const emptyState = LoginState(FieldValue(""), FieldValue(""));
@@ -55,23 +58,20 @@ void main() {
       expect(sut.state, emptyState);
       verifyZeroInteractions(mockLogin);
     });
-    test(
-        "should call usecase, remove all failures from state, and then call auth gate if the call to usecase is successful",
-        () async {
+    test("should call usecase, remove all failures from state if the call to usecase is successful", () async {
       // arrange
       arrangeFilledState();
-      when(() => mockLogin(any())).thenAnswer((_) async => Right(null));
+      when(() => mockLogin(tFilledState.username.value, tFilledState.password.value))
+          .thenAnswer((_) async => Right(null));
       // act
       await sut.loginPressed();
       // assert
       expect(sut.state, tFilledState.withoutFailures());
-      verify(
-          () => mockLogin(LoginParams(username: tFilledState.username.value, password: tFilledState.password.value)));
     });
     test("should replace all failures with the new failure if the call to usecase is unsuccessful", () async {
       // arrange
       arrangeFilledState();
-      when(() => mockLogin(any())).thenAnswer((_) async => Left(tLoginFailure));
+      when(() => mockLogin(any(), any())).thenAnswer((_) async => Left(tLoginFailure));
       // act
       await sut.loginPressed();
       // assert

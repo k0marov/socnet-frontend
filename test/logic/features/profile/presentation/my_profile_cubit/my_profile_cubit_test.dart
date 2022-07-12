@@ -2,14 +2,22 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/update_avatar.dart';
-import 'package:socnet/logic/features/profile/domain/usecases/update_profile.dart';
 import 'package:socnet/logic/features/profile/domain/values/avatar.dart';
+import 'package:socnet/logic/features/profile/domain/values/profile_update.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 import '../../shared.dart';
+
+abstract class UpdateProfile {
+  UseCaseReturn<Profile> call(ProfileUpdate upd);
+}
+
+abstract class UpdateAvatar {
+  UseCaseReturn<AvatarURL> call(AvatarFile avatar);
+}
 
 class MockUpdateProfile extends Mock implements UpdateProfile {}
 
@@ -46,7 +54,7 @@ void main() {
   group('ProfileUpdateRequested', () {
     final tUpd = createTestProfileUpdate();
     Future setUpUseCaseAndAct(Either<Failure, Profile> result) async {
-      when(() => mockUpdProfile(ProfileUpdateParams(newInfo: tUpd))).thenAnswer((_) async => result);
+      when(() => mockUpdProfile(tUpd)).thenAnswer((_) async => result);
       await sut.updateProfile(tUpd);
     }
 
@@ -73,7 +81,7 @@ void main() {
     final updatedProfile = tProfile.withAvatarUrl(Some(tUrl));
 
     Future setUpUseCaseAndAct(Either<Failure, AvatarURL> result) {
-      when(() => mockUpdateAvatar(AvatarParams(newAvatar: tAvatar))).thenAnswer((_) async => result);
+      when(() => mockUpdateAvatar(tAvatar)).thenAnswer((_) async => result);
       return sut.updateAvatar(tAvatar);
     }
 
