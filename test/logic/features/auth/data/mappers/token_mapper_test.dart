@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
@@ -22,7 +22,7 @@ void main() {
     );
     test("should throw MappingException otherwise", () async {
       // assert
-      expect(() => TokenMapperImpl().fromJson({}), throwsA(isA<MappingException>()));
+      expect(() => TokenMapperImpl().fromJson({}), throwsA(MappingFailure()));
     });
   });
 }

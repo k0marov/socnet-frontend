@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/failure_handler.dart';
@@ -15,12 +14,12 @@ void main() {
     expect(gotState, tState.withFailure(tFailure));
   });
   test("should set failure on text if failure contains empty-text client error", () async {
-    final tFailure = NetworkFailure(NetworkException(400, ClientError(emptyText.code, "blablabla")));
+    final tFailure = NetworkFailure(400, ClientError(emptyText.code, "blablabla"));
     final gotState = postCreationFailureHandlerImpl(tState, tFailure);
     expect(gotState, tState.withText(tState.text.withFailure(emptyText)));
   });
   test("should set failure on text if failure contains long-text client error", () async {
-    final tFailure = NetworkFailure(NetworkException(400, ClientError(textTooLong.code, "blablabla")));
+    final tFailure = NetworkFailure(400, ClientError(textTooLong.code, "blablabla"));
     final gotState = postCreationFailureHandlerImpl(tState, tFailure);
     expect(gotState, tState.withText(tState.text.withFailure(textTooLong)));
   });

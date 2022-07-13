@@ -83,7 +83,7 @@ void main() {
       () => sut.toggleFollow(targetProfile),
       () => mockDataSource.toggleFollow(targetProfile),
       null,
-      (result) => result == targetProfile.withLikeToggled(),
+      (result) => result == targetProfile.withFollowToggled(),
       () => mockDataSource,
     );
   });

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 
@@ -31,7 +31,7 @@ void main() {
       },
     );
     test("should throw MappingException otherwise", () async {
-      expect(() => ProfileMapperImpl().fromJson({"x": "y", "z": "d"}), throwsA(MappingException()));
+      expect(() => ProfileMapperImpl().fromJson({"x": "y", "z": "d"}), throwsA(MappingFailure()));
     });
   });
 }

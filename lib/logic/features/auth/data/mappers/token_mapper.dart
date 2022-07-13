@@ -1,4 +1,4 @@
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
@@ -10,7 +10,7 @@ class TokenMapperImpl implements TokenMapper {
     try {
       return Token(token: json['token']);
     } catch (e) {
-      throw MappingException();
+      throw MappingFailure();
     }
   }
 }

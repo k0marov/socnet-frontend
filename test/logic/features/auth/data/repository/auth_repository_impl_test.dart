@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
@@ -31,12 +30,12 @@ void main() {
   group("getTokenStream()", () {
     test("should transform the local datasource stream", () async {
       // arrange
-      final emitted = <Either<CacheException, String?>>[
+      final emitted = <Either<CacheFailure, String?>>[
         Right("abc"),
         Right(null),
         Right("asdf"),
         Right("cba"),
-        Left(CacheException())
+        Left(CacheFailure()),
       ];
       final stream = Stream.fromIterable(emitted);
       when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => stream);
@@ -56,25 +55,23 @@ void main() {
 
   group('getToken', () {
     test(
-      "should call local datasource and return the result if the call succeded",
+      "should call local datasource and return the result if stream returns a token",
       () async {
         // arrange
         final tToken = randomString();
-        when(() => mockLocalTokenDataSource.getToken()).thenAnswer((_) async => tToken);
+        when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => Stream.fromIterable([Right(tToken)]));
         // act
         final result = await sut.getToken();
         // assert
         expect(result, Right(Token(token: tToken)));
-        verify(() => mockLocalTokenDataSource.getToken());
-        verifyNoMoreInteractions(mockLocalTokenDataSource);
-        verifyZeroInteractions(mockNetworkAuthDataSource);
       },
     );
     test(
-      "should return CacheFailure if call threw CacheException",
+      "should return CacheFailure if call first event of a stream was a failure",
       () async {
         // arrange
-        when(() => mockLocalTokenDataSource.getToken()).thenThrow(CacheException());
+        when(() => mockLocalTokenDataSource.getTokenStream())
+            .thenAnswer((_) => Stream.fromIterable([Left(CacheFailure())]));
         // act
         final result = await sut.getToken();
         // assert
@@ -82,10 +79,10 @@ void main() {
       },
     );
     test(
-      "should return NoTokenFailure if call threw NoCallException",
+      "should return NoTokenFailure if first event was null",
       () async {
         // arrange
-        when(() => mockLocalTokenDataSource.getToken()).thenThrow(NoTokenException());
+        when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => Stream.fromIterable([Right(null)]));
         // act
         final result = await sut.getToken();
         // assert
@@ -98,44 +95,40 @@ void main() {
     const tUsername = "username";
     const tPassword = "password";
     const tToken = Token(token: "42");
+
+    Future<Token> callNetwork() => isLogin
+        ? mockNetworkAuthDataSource.login(tUsername, tPassword)
+        : mockNetworkAuthDataSource.register(tUsername, tPassword);
+    Future<void> callLocal() => mockLocalTokenDataSource.storeToken(tToken.token);
+    Future<Either<Failure, void>> act() =>
+        isLogin ? sut.login(tUsername, tPassword) : sut.register(tUsername, tPassword);
+
     test(
       "should call the network datasource, then store token in cache and return it, if everything is successful",
       () async {
         // arrange
-        if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tToken);
-        } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tToken);
-        }
-        when(() => mockLocalTokenDataSource.storeToken(any())).thenAnswer((_) async {});
+        when(callNetwork).thenAnswer((_) async => tToken);
+        when(callLocal).thenAnswer((_) async {});
         // act
-        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
+        final result = await act();
         // assert
         expect(result, const Right(null));
-        if (isLogin) {
-          verify(() => mockNetworkAuthDataSource.login(tUsername, tPassword));
-        } else {
-          verify(() => mockNetworkAuthDataSource.register(tUsername, tPassword));
-        }
-        verify(() => mockLocalTokenDataSource.storeToken(tToken.token));
+        verify(callNetwork);
+        verify(callLocal);
         verifyNoMoreInteractions(mockNetworkAuthDataSource);
         verifyNoMoreInteractions(mockLocalTokenDataSource);
       },
     );
     test(
-      "should return NetworkFailure if network datasource throws NetworkException",
+      "should return NetworkFailure if network datasource throws",
       () async {
         // arrange
-        final tException = randomNetworkException();
-        if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any())).thenThrow(tException);
-        } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any())).thenThrow(tException);
-        }
+        final tFailure = randomNetworkFailure();
+        when(callNetwork).thenThrow(tFailure);
         // act
-        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
+        final result = await act();
         // assert
-        expect(result, Left(NetworkFailure(tException)));
+        expect(result, Left(tFailure));
       },
     );
 
@@ -143,14 +136,10 @@ void main() {
       "should return CacheFailure if local datasource throws CacheException",
       () async {
         // arrange
-        if (isLogin) {
-          when(() => mockNetworkAuthDataSource.login(any(), any())).thenAnswer((_) async => tToken);
-        } else {
-          when(() => mockNetworkAuthDataSource.register(any(), any())).thenAnswer((_) async => tToken);
-        }
-        when(() => mockLocalTokenDataSource.storeToken(any())).thenThrow(CacheException());
+        when(callNetwork).thenAnswer((_) async => tToken);
+        when(callLocal).thenThrow(CacheFailure());
         // act
-        final result = isLogin ? await sut.login(tUsername, tPassword) : await sut.register(tUsername, tPassword);
+        final result = await act();
         // assert
         expect(result, Left(CacheFailure()));
       },
@@ -181,10 +170,10 @@ void main() {
       },
     );
     test(
-      "should return CacheFailure if local datasource throws CacheException",
+      "should return CacheFailure if local datasource throws",
       () async {
         // arrange
-        when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheException());
+        when(() => mockLocalTokenDataSource.deleteToken()).thenThrow(CacheFailure());
         // act
         final result = await sut.logout();
         // assert

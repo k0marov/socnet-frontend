@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:socnet/logic/core/error/exception_to_failure.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
@@ -16,14 +15,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Token>> getToken() async {
-    try {
-      final token = await _localDataSource.getToken();
-      return Right(Token(token: token));
-    } on CacheException {
-      return Left(CacheFailure());
-    } on NoTokenException {
-      return Left(NoTokenFailure());
-    }
+    final firstEvent = await _localDataSource.getTokenStream().first;
+    return firstEvent.fold(
+      (failure) => Left(failure),
+      (token) => token != null ? Right(Token(token: token)) : Left(NoTokenFailure()),
+    );
   }
 
   @override
@@ -47,7 +43,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   Future<Either<Failure, void>> _sharedLoginAndRegister(Future<Token> Function() networkLoginOrRegister) async {
-    return exceptionToFailureCall(() async {
+    return failureToLeft(() async {
       final authToken = await networkLoginOrRegister();
       _localDataSource.storeToken(authToken.token);
     });
@@ -55,18 +51,12 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, void>> logout() async {
-    try {
-      _localDataSource.deleteToken();
-      return const Right(null);
-    } on CacheException {
-      return Left(CacheFailure());
-    }
+    return failureToLeft(_localDataSource.deleteToken);
   }
 
   @override
   Stream<Either<CacheFailure, Option<Token>>> getTokenStream() => _localDataSource.getTokenStream().map(
-        (event) => event.fold(
-          (failure) => Left(CacheFailure()),
+        (event) => event.flatMap(
           (token) => Right(token != null ? Some(Token(token: token)) : const None()),
         ),
       );

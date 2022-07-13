@@ -1,4 +1,4 @@
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 
 import '../../../../core/mapper.dart';
 import '../../../profile/data/mappers/profile_mapper.dart';
@@ -20,7 +20,7 @@ class CommentMapperImpl implements CommentMapper {
         isLiked: json['is_liked'],
       );
     } catch (e) {
-      throw MappingException();
+      throw MappingFailure();
     }
   }
 }

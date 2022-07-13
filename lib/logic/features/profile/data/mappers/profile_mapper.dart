@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 
 import '../../../../core/mapper.dart';
@@ -21,7 +21,7 @@ class ProfileMapperImpl implements ProfileMapper {
         isFollowed: json['is_followed'],
       );
     } catch (e) {
-      throw MappingException();
+      throw MappingFailure();
     }
   }
 }

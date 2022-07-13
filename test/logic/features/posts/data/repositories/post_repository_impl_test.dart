@@ -26,7 +26,7 @@ void main() {
       () => sut.createPost(tNewPost),
       () => mockDataSource.createPost(tNewPost),
       tPost,
-      (result) => result == null,
+      (result) => true,
       () => mockDataSource,
     );
   });

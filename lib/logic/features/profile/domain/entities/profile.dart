@@ -32,7 +32,7 @@ class Profile extends Equatable {
 
   const Profile._(this.id, this.username, this.about, this.avatarUrl, this.follows, this.isMine, this._likeable);
 
-  Profile withLikeToggled() => _copyWith(likeable: _likeable.withLikeToggled());
+  Profile withFollowToggled() => _copyWith(likeable: _likeable.withLikeToggled());
   Profile withAbout(String about) => _copyWith(about: about);
   Profile withAvatarUrl(Option<String> avatarUrl) => _copyWith(avatarUrl: avatarUrl);
 

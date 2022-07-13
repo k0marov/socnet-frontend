@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/core/simple_file.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
@@ -12,16 +11,16 @@ import '../../../profile/domain/entities/profile.dart';
 import '../../domain/entities/post.dart';
 
 abstract class NetworkPostDataSource {
-  /// Throws [NetworkException] and [NoTokenException]
+  /// Throws [NetworkFailure] and [NoTokenFailure]
   Future<void> createPost(NewPostValue newPost);
 
-  /// Throws [NetworkException] and [NoTokenException]
+  /// Throws [NetworkFailure] and [NoTokenFailure]
   Future<void> deletePost(Post postModel);
 
-  /// Throws [NetworkException] and [NoTokenException]
+  /// Throws [NetworkFailure] and [NoTokenFailure]
   Future<List<Post>> getProfilePosts(Profile profileModel);
 
-  /// Throws [NetworkException] and [NoTokenException]
+  /// Throws [NetworkFailure] and [NoTokenFailure]
   Future<void> toggleLike(Post postModel);
 }
 
@@ -32,49 +31,36 @@ class NetworkPostDataSourceImpl implements NetworkPostDataSource {
 
   @override
   Future<void> createPost(NewPostValue newPost) async {
-    return exceptionConverterCall(() async {
-      final files = <String, SimpleFile>{};
-      for (int i = 0; i < newPost.images.length; ++i) {
-        files['image_${i + 1}'] = newPost.images[i];
-      }
-      final data = {
-        'text': newPost.text,
-      };
+    final files = <String, SimpleFile>{};
+    for (int i = 0; i < newPost.images.length; ++i) {
+      files['image_${i + 1}'] = newPost.images[i];
+    }
+    final data = {
+      'text': newPost.text,
+    };
 
-      final response = await _apiFacade.sendFiles("POST", createPostEndpoint(), files, data);
-      checkStatusCode(response);
-    });
+    final response = await _apiFacade.sendFiles("POST", createPostEndpoint(), files, data);
+    checkStatusCode(response);
   }
 
   @override
-  Future<void> deletePost(Post postModel) async {
-    return exceptionConverterCall(() async {
-      final postId = postModel.id;
-
-      final response = await _apiFacade.delete(deletePostEndpoint(postId));
-      checkStatusCode(response);
-    });
+  Future<void> deletePost(Post post) async {
+    final response = await _apiFacade.delete(deletePostEndpoint(post.id));
+    checkStatusCode(response);
   }
 
   @override
-  Future<List<Post>> getProfilePosts(Profile profileModel) async {
-    return exceptionConverterCall(() async {
-      final profileId = profileModel.id;
+  Future<List<Post>> getProfilePosts(Profile profile) async {
+    final response = await _apiFacade.get(getProfilePostsEndpoint(profile.id));
+    checkStatusCode(response);
 
-      final response = await _apiFacade.get(getProfilePostsEndpoint(profileId));
-      checkStatusCode(response);
-
-      final postsJson = json.decode(response.body)["posts"];
-      return (postsJson as List).map((postJson) => _mapper.fromJson(postJson)).toList();
-    });
+    final postsJson = json.decode(response.body)["posts"] as List;
+    return postsJson.map((postJson) => _mapper.fromJson(postJson)).toList();
   }
 
   @override
-  Future<void> toggleLike(Post postModel) async {
-    return exceptionConverterCall(() async {
-      final postId = postModel.id;
-      final response = await _apiFacade.post(toggleLikeOnPostEndpoint(postId), {});
-      checkStatusCode(response);
-    });
+  Future<void> toggleLike(Post post) async {
+    final response = await _apiFacade.post(toggleLikeOnPostEndpoint(post.id), {});
+    checkStatusCode(response);
   }
 }

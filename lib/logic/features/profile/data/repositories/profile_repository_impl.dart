@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:socnet/logic/core/error/exception_to_failure.dart';
 import 'package:socnet/logic/core/error/failures.dart';
+import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
 import 'package:socnet/logic/features/profile/domain/repositories/profile_repository.dart';
@@ -13,31 +13,31 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<Either<Failure, List<Profile>>> getFollows(Profile profile) async {
-    return exceptionToFailureCall(() => _dataSource.getFollows(profile));
+    return failureToLeft(() => _dataSource.getFollows(profile));
   }
 
   @override
   Future<Either<Failure, Profile>> getMyProfile() async {
-    return exceptionToFailureCall(() => _dataSource.getMyProfile());
+    return failureToLeft(() => _dataSource.getMyProfile());
   }
 
   @override
   Future<Either<Failure, Profile>> updateProfile(ProfileUpdate update) async {
-    return exceptionToFailureCall(() => _dataSource.updateProfile(update));
+    return failureToLeft(() => _dataSource.updateProfile(update));
   }
 
   @override
   Future<Either<Failure, Profile>> toggleFollow(Profile profile) async {
-    return exceptionToFailureCall(() => _dataSource.toggleFollow(profile).then((_) => profile.withLikeToggled()));
+    return failureToLeft(() => _dataSource.toggleFollow(profile).then((_) => profile.withFollowToggled()));
   }
 
   @override
   Future<Either<Failure, AvatarURL>> updateAvatar(AvatarFile newAvatar) async {
-    return exceptionToFailureCall(() => _dataSource.updateAvatar(newAvatar));
+    return failureToLeft(() => _dataSource.updateAvatar(newAvatar));
   }
 
   @override
   Future<Either<Failure, Profile>> getProfile(String id) async {
-    return exceptionToFailureCall(() => _dataSource.getProfile(id));
+    return failureToLeft(() => _dataSource.getProfile(id));
   }
 }

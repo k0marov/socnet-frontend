@@ -1,4 +1,4 @@
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
 
@@ -23,7 +23,7 @@ class PostMapperImpl implements PostMapper {
         isMine: json['is_mine'],
       );
     } catch (e) {
-      throw MappingException();
+      throw MappingFailure();
     }
   }
 }

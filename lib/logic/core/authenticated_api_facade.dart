@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/core/debug.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/simple_file.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
@@ -108,7 +108,7 @@ class AuthenticatedAPIFacade {
     late final Token token;
     final tokenEither = await _getToken();
     tokenEither.fold(
-      (failure) => throw NoTokenException(),
+      (failure) => throw NoTokenFailure(),
       (gotToken) => token = gotToken,
     );
     return token;

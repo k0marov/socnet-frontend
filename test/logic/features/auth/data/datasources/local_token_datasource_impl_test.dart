@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
@@ -13,18 +12,20 @@ void main() {
     final sharedPrefs = RxSharedPreferences.getInstance();
     final sut = LocalTokenDataSourceImpl(sharedPrefs);
 
-    expect(() => sut.getToken(), throwsA(isA<NoTokenException>()));
+    Future<String?> getToken() async => forceRight(await sut.getTokenStream().first);
+
+    expect(await getToken(), null);
 
     final firstToken = randomString();
     await sut.storeToken(firstToken);
-    expect(await sut.getToken(), firstToken);
+    expect(await getToken(), firstToken);
 
     final secondToken = randomString();
     await sut.storeToken(secondToken);
-    expect(await sut.getToken(), secondToken);
+    expect(await getToken(), secondToken);
 
     await sut.deleteToken();
-    expect(() => sut.getToken(), throwsA(isA<NoTokenException>()));
+    expect(await getToken(), null);
 
     // stream test
     final initialToken = randomString();

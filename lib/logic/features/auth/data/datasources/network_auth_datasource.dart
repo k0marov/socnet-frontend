@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/core/debug.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
@@ -11,12 +11,12 @@ import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 abstract class NetworkAuthDataSource {
   /// Logins using the api
   /// Returns the auth token
-  /// Throws [NetworkException] if some error happened
+  /// Throws [NetworkFailure] if some error happened
   Future<Token> login(String username, String password);
 
   /// Registers a new user using the api
   /// Returns the auth token
-  /// Throws [NetworkException] if some error happened
+  /// Throws [NetworkFailure] if some error happened
   Future<Token> register(String username, String password);
 }
 
@@ -40,22 +40,20 @@ class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   }
 
   Future<Token> _loginOrRegister(String username, String password, EndpointQuery eq) async {
-    return exceptionConverterCall(() async {
-      final url = eq.toURL(_apiHost, useHTTPS);
-      final requestBody = {
-        'username': username,
-        'password': password,
-      };
-      printDebug("POST $url: $requestBody");
-      final apiResponse = await _httpClient.post(url,
-          headers: {
-            'Accept': 'application/json',
-          },
-          body: json.encode(requestBody));
-      printResponse(apiResponse);
-      checkStatusCode(apiResponse);
-      final jsonResponse = json.decode(apiResponse.body);
-      return _mapper.fromJson(jsonResponse);
-    });
+    final url = eq.toURL(_apiHost, useHTTPS);
+    final requestBody = {
+      'username': username,
+      'password': password,
+    };
+    printDebug("POST $url: $requestBody");
+    final apiResponse = await _httpClient.post(url,
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: json.encode(requestBody));
+    printResponse(apiResponse);
+    checkStatusCode(apiResponse);
+    final jsonResponse = json.decode(apiResponse.body);
+    return _mapper.fromJson(jsonResponse);
   }
 }

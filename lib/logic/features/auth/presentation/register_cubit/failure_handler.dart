@@ -6,7 +6,7 @@ import '../../../../core/error/failures.dart';
 typedef RegisterFailureHandler = RegisterState Function(RegisterState, Failure);
 
 RegisterState registerFailureHandlerImpl(RegisterState state, Failure failure) {
-  final clientError = failure is NetworkFailure ? failure.exception.clientError : null;
+  final clientError = failure is NetworkFailure ? failure.clientError : null;
   if (clientError?.detailCode == usernameTaken.code) {
     return state.withUsername(state.username.withFailure(usernameTaken));
   } else if (clientError?.detailCode == usernameInvalid.code) {

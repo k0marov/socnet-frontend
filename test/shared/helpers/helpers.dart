@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:dartz/dartz.dart';
 import 'package:english_words/english_words.dart' as english_words;
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/core/field_value.dart';
@@ -20,12 +19,12 @@ DateTime randomTime() =>
 int randomInt() => Random().nextInt(100);
 bool randomBool() => Random().nextDouble() > 0.5;
 
-NetworkException randomNetworkException() => NetworkException(
+NetworkFailure randomNetworkFailure() => NetworkFailure(
       400 + Random().nextInt(100),
       ClientError(randomString(), randomString()),
     );
 
-Failure randomFailure() => NetworkFailure(randomNetworkException());
+Failure randomFailure() => randomBool() ? randomNetworkFailure() : NoTokenFailure();
 
 SimpleFile createTestFile() => SimpleFile(randomString());
 

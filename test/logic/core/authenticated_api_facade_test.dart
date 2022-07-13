@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/usecase.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
@@ -54,7 +53,7 @@ void main() {
         // arrange
         when(() => mockGetAuthToken()).thenAnswer((_) async => Left(CacheFailure()));
         // assert
-        expect(act, throwsA(NoTokenException()));
+        expect(act, throwsA(NoTokenFailure()));
       },
     );
   }

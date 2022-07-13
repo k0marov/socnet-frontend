@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:socnet/logic/core/error/exceptions.dart';
+import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 import 'package:socnet/logic/features/profile/domain/entities/profile.dart';
@@ -48,7 +48,7 @@ void main() {
     );
     test("should throw MappingException otherwise", () async {
       // assert
-      expect(() => PostMapperImpl().fromJson({"x": "y"}), throwsA(MappingException()));
+      expect(() => PostMapperImpl().fromJson({"x": "y"}), throwsA(MappingFailure()));
     });
   });
 }
