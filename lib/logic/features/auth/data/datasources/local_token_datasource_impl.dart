@@ -39,4 +39,9 @@ class LocalTokenDataSourceImpl implements LocalTokenDataSource {
           ),
         );
   }
+
+  @override
+  Future<String?> getToken() {
+    return _sharedPrefs.getString(_tokenCacheKey);
+  }
 }

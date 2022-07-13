@@ -7,6 +7,7 @@ import 'package:socnet/logic/features/auth/domain/datasources/network_auth_datas
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 import 'package:socnet/logic/features/auth/domain/repositories/auth_repository.dart';
 
+import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';
 
 class MockLocalTokenDataSource extends Mock implements LocalTokenDataSource {}
@@ -25,6 +26,24 @@ void main() {
       mockLocalTokenDataSource,
       mockNetworkAuthDataSource,
     );
+  });
+
+  group("getToken()", () {
+    baseRepositoryTests(
+      () => sut.getToken(),
+      () => mockLocalTokenDataSource.getToken(),
+      "asdf",
+      (result) => result == Token(token: "asdf"),
+      () => mockLocalTokenDataSource,
+    );
+    test("should return NoTokenFailure if datasource returns null", () async {
+      // arrange
+      when(() => mockLocalTokenDataSource.getToken()).thenAnswer((_) async => null);
+      // act
+      final result = await sut.getToken();
+      // assert
+      expect(result, Left(NoTokenFailure()));
+    });
   });
 
   group("getTokenStream()", () {
@@ -51,44 +70,6 @@ void main() {
       ];
       expect(gotStream, emitsInOrder(wantTransformed));
     });
-  });
-
-  group('getToken', () {
-    test(
-      "should call local datasource and return the result if stream returns a token",
-      () async {
-        // arrange
-        final tToken = randomString();
-        when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => Stream.fromIterable([Right(tToken)]));
-        // act
-        final result = await sut.getToken();
-        // assert
-        expect(result, Right(Token(token: tToken)));
-      },
-    );
-    test(
-      "should return CacheFailure if call first event of a stream was a failure",
-      () async {
-        // arrange
-        when(() => mockLocalTokenDataSource.getTokenStream())
-            .thenAnswer((_) => Stream.fromIterable([Left(CacheFailure())]));
-        // act
-        final result = await sut.getToken();
-        // assert
-        expect(result, Left(CacheFailure()));
-      },
-    );
-    test(
-      "should return NoTokenFailure if first event was null",
-      () async {
-        // arrange
-        when(() => mockLocalTokenDataSource.getTokenStream()).thenAnswer((_) => Stream.fromIterable([Right(null)]));
-        // act
-        final result = await sut.getToken();
-        // assert
-        expect(result, Left(NoTokenFailure()));
-      },
-    );
   });
 
   void sharedLoginAndRegister({required bool isLogin}) {

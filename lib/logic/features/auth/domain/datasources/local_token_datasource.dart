@@ -3,6 +3,10 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
 
 abstract class LocalTokenDataSource {
+  /// Gets the current token from cache
+  /// Throws [CacheFailure] if there was some error
+  Future<String?> getToken();
+
   /// Stores the token in the cache, replacing the previous one if it existed
   /// Throws [CacheFailure] if there was some error
   Future<void> storeToken(String token);

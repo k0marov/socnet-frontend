@@ -15,8 +15,8 @@ class AuthGateCubit extends Cubit<AuthState> {
   StreamSubscription? _subscription;
   AuthGateCubit(this._getTokenStream) : super(AuthState.loading);
 
-  void renewStream() {
-    _subscription?.cancel();
+  void renewStream() async {
+    await _subscription?.cancel();
     _subscription = _getTokenStream().listen(
       (event) => event.fold(
         (failure) => emit(AuthState.failure),

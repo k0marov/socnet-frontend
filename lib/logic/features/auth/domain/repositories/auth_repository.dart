@@ -30,11 +30,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Token>> getToken() async {
-    final firstEvent = await _localDataSource.getTokenStream().first;
-    return firstEvent.fold(
-      (failure) => Left(failure),
-      (token) => token != null ? Right(Token(token: token)) : Left(NoTokenFailure()),
-    );
+    return failureToLeft(() async {
+      final token = await _localDataSource.getToken();
+      if (token == null) throw NoTokenFailure();
+      return Token(token: token);
+    });
   }
 
   @override

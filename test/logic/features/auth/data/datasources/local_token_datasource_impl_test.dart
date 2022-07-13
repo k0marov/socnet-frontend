@@ -12,20 +12,18 @@ void main() {
     final sharedPrefs = RxSharedPreferences.getInstance();
     final sut = LocalTokenDataSourceImpl(sharedPrefs);
 
-    Future<String?> getToken() async => forceRight(await sut.getTokenStream().first);
-
-    expect(await getToken(), null);
+    expect(await sut.getToken(), null);
 
     final firstToken = randomString();
     await sut.storeToken(firstToken);
-    expect(await getToken(), firstToken);
+    expect(await sut.getToken(), firstToken);
 
     final secondToken = randomString();
     await sut.storeToken(secondToken);
-    expect(await getToken(), secondToken);
+    expect(await sut.getToken(), secondToken);
 
     await sut.deleteToken();
-    expect(await getToken(), null);
+    expect(await sut.getToken(), null);
 
     // stream test
     final initialToken = randomString();
