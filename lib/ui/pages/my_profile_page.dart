@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
+import 'package:socnet/ui/helpers.dart';
+import 'package:socnet/ui/pages/post_creation_page.dart';
 import 'package:socnet/ui/widgets/z_future_builder.dart';
 
 import '../../logic/di.dart';
@@ -52,9 +54,6 @@ class _Internal extends StatelessWidget {
                     ),
                   ),
                 ),
-                TextFormField(
-                  initialValue: state.profile.about,
-                ),
                 SizedBox(height: 15),
                 Text(
                   "@${state.profile.username}",
@@ -71,6 +70,10 @@ class _Internal extends StatelessWidget {
                 ]),
                 SizedBox(height: 15),
                 Text(state.profile.about),
+                TextButton(
+                  onPressed: () => pushPage(context, PostCreationPage()),
+                  child: Text("Create new post"),
+                ),
                 TextButton(
                   onPressed: () => sl<LogoutUseCase>()(),
                   child: Text("Logout"),

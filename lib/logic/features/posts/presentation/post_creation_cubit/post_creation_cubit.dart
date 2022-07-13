@@ -16,8 +16,15 @@ class PostCreationCubit extends Cubit<PostCreationState> {
   PostCreationCubit(this._createPost, this._failureHandler) : super(PostCreationState());
 
   void imageAdded(SimpleFile newImg) => emit(state.withImages(state.images + [newImg]));
-
   void imageDeleted(SimpleFile target) => emit(state.withImages(state.images.where((i) => i != target)));
+  void imageReordered(int curIndex, int newIndex) {
+    final images = state.images.toList();
+    if (curIndex < 0 || curIndex >= images.length || newIndex < 0 || newIndex >= images.length) return;
+    final targetImg = images[curIndex];
+    images.removeAt(curIndex);
+    images.insert(newIndex, targetImg);
+    emit(state.withImages(images));
+  }
 
   void textChanged(String text) => emit(state.withText(state.text.withValue(text)));
 

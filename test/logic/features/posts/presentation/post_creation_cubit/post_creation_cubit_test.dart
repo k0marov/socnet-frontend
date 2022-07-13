@@ -81,6 +81,47 @@ void main() {
     );
   });
 
+  group("imageReordered", () {
+    final tInitial = emptyState.withImages([createTestFile(), createTestFile(), createTestFile()]);
+    test("should move the image forwards properly", () async {
+      // arrange
+      sut.emit(tInitial);
+      const oldIndex = 0;
+      const newIndex = 2;
+      // act
+      sut.imageReordered(oldIndex, newIndex);
+      // assert
+      expect(sut.state, tInitial.withImages([tInitial.images[1], tInitial.images[2], tInitial.images[0]]));
+    });
+    test("should move the image backwards properly", () async {
+      // arrange
+      sut.emit(tInitial);
+      const oldIndex = 2;
+      const newIndex = 1;
+      // act
+      sut.imageReordered(oldIndex, newIndex);
+      // assert
+      expect(sut.state, tInitial.withImages([tInitial.images[0], tInitial.images[2], tInitial.images[1]]));
+    });
+    test("should do nothing if any of the input indexes are not in the sane range", () async {
+      // arrange
+      sut.emit(tInitial);
+      const inputs = [
+        [-1, 0],
+        [4, 0],
+        [3, 0],
+        [0, -1],
+        [0, 3],
+        [0, 4]
+      ];
+      // act and assert
+      for (final inp in inputs) {
+        sut.imageReordered(inp[0], inp[1]);
+        expect(sut.state, tInitial);
+      }
+    });
+  });
+
   group('PostButtonPressed', () {
     final tText = tFilledState.text.value;
     final tImages = tFilledState.images;

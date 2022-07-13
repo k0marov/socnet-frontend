@@ -6,6 +6,7 @@ import '../logic/core/simple_file.dart';
 
 Route _routeFromWidget(Widget widget) => MaterialPageRoute(builder: (_) => widget);
 
+void popPage(BuildContext ctx) => Navigator.of(ctx).pop();
 void pushPage(BuildContext ctx, Widget page) => Navigator.of(ctx).push(_routeFromWidget(page));
 void replacePage(BuildContext ctx, Widget page) => Navigator.of(ctx).pushReplacement(_routeFromWidget(page));
 
