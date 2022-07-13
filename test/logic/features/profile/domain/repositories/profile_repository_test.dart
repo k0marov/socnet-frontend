@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
-import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:socnet/logic/features/profile/domain/datasources/profile_network_datasource.dart';
+import 'package:socnet/logic/features/profile/domain/repositories/profile_repository.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';

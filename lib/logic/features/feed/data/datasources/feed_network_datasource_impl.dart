@@ -2,15 +2,11 @@ import 'dart:convert';
 
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/entities/post.dart';
 
-abstract class FeedNetworkDataSource {
-  /// Throws [NoTokenFailure] and [NetworkFailure]
-  Future<List<Post>> getNextPosts(int amount);
-}
+import '../../domain/datasources/feed_network_datasource.dart';
 
 class FeedNetworkDataSourceImpl implements FeedNetworkDataSource {
   final PostMapper _mapper;

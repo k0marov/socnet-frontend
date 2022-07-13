@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:socnet/logic/features/feed/data/datasources/feed_network_datasource.dart';
-import 'package:socnet/logic/features/feed/data/repositories/feed_repository_impl.dart';
+import 'package:socnet/logic/features/feed/domain/datasources/feed_network_datasource.dart';
+import 'package:socnet/logic/features/feed/domain/repositories/feed_repository.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../../../shared/helpers/helpers.dart';

@@ -2,10 +2,10 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/error/failures.dart';
-import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
-import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
-import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:socnet/logic/features/auth/domain/datasources/local_token_datasource.dart';
+import 'package:socnet/logic/features/auth/domain/datasources/network_auth_datasource.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
+import 'package:socnet/logic/features/auth/domain/repositories/auth_repository.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 

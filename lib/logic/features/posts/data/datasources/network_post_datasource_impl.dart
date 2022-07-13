@@ -8,21 +8,8 @@ import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
 import 'package:socnet/logic/features/posts/domain/values/new_post_value.dart';
 
 import '../../../profile/domain/entities/profile.dart';
+import '../../domain/datasources/network_post_datasource.dart';
 import '../../domain/entities/post.dart';
-
-abstract class NetworkPostDataSource {
-  /// Throws [NetworkFailure] and [NoTokenFailure]
-  Future<void> createPost(NewPostValue newPost);
-
-  /// Throws [NetworkFailure] and [NoTokenFailure]
-  Future<void> deletePost(Post postModel);
-
-  /// Throws [NetworkFailure] and [NoTokenFailure]
-  Future<List<Post>> getProfilePosts(Profile profileModel);
-
-  /// Throws [NetworkFailure] and [NoTokenFailure]
-  Future<void> toggleLike(Post postModel);
-}
 
 class NetworkPostDataSourceImpl implements NetworkPostDataSource {
   final PostMapper _mapper;

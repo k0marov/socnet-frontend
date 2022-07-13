@@ -4,18 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:socnet/logic/core/error/failures.dart';
 
-abstract class LocalTokenDataSource {
-  /// Stores the token in the cache, replacing the previous one if it existed
-  /// Throws [CacheFailure] if there was some error
-  Future<void> storeToken(String token);
-
-  /// Deletes the currently stored token in the local cache
-  /// Throws [CacheFailure] if there was some error
-  Future<void> deleteToken();
-
-  /// A stream of tokens that are stored in the local cache
-  Stream<Either<CacheFailure, String?>> getTokenStream();
-}
+import '../../domain/datasources/local_token_datasource.dart';
 
 class LocalTokenDataSourceImpl implements LocalTokenDataSource {
   static const _tokenCacheKey = "AUTH_TOKEN";

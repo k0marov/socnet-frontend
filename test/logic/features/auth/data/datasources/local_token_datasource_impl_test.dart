@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
+import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource_impl.dart';
 
 import '../../../../../shared/helpers/helpers.dart';
 

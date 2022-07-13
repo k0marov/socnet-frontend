@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/const/endpoints.dart' as endpoints;
-import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
+import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource_impl.dart';
 import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 

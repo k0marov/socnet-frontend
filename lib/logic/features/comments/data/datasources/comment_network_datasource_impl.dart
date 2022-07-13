@@ -2,27 +2,13 @@ import 'dart:convert';
 
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
 import 'package:socnet/logic/features/comments/domain/values/new_comment_value.dart';
 
 import '../../../posts/domain/entities/post.dart';
+import '../../domain/datasources/comment_network_datasource.dart';
 import '../../domain/entities/comment.dart';
-
-abstract class CommentNetworkDataSource {
-  /// Throws: [NoTokenFailure] and [NetworkFailure]
-  Future<Comment> addPostComment(Post post, NewCommentValue newComment);
-
-  /// Throws: [NoTokenFailure] and [NetworkFailure]
-  Future<void> deleteComment(Comment comment);
-
-  /// Throws: [NoTokenFailure] and [NetworkFailure]
-  Future<void> toggleLikeOnComment(Comment comment);
-
-  /// Throws: [NoTokenFailure] and [NetworkFailure]
-  Future<List<Comment>> getPostComments(Post post);
-}
 
 class CommentNetworkDataSourceImpl implements CommentNetworkDataSource {
   final CommentMapper _mapper;

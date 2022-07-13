@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
+import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource_impl.dart';
 import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';

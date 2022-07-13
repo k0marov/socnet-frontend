@@ -3,22 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:socnet/logic/core/const/endpoints.dart';
 import 'package:socnet/logic/core/debug.dart';
-import 'package:socnet/logic/core/error/failures.dart';
 import 'package:socnet/logic/core/error/helpers.dart';
 import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
 import 'package:socnet/logic/features/auth/domain/entities/token_entity.dart';
 
-abstract class NetworkAuthDataSource {
-  /// Logins using the api
-  /// Returns the auth token
-  /// Throws [NetworkFailure] if some error happened
-  Future<Token> login(String username, String password);
-
-  /// Registers a new user using the api
-  /// Returns the auth token
-  /// Throws [NetworkFailure] if some error happened
-  Future<Token> register(String username, String password);
-}
+import '../../domain/datasources/network_auth_datasource.dart';
 
 class NetworkAuthDataSourceImpl implements NetworkAuthDataSource {
   final TokenMapper _mapper;

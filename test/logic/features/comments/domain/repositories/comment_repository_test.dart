@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
-import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
+import 'package:socnet/logic/features/comments/domain/datasources/comment_network_datasource.dart';
+import 'package:socnet/logic/features/comments/domain/repositories/comment_repository.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';
 import '../../../posts/post_helpers.dart';

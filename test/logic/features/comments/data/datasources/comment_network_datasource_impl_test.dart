@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
+import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource_impl.dart';
 import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
 
 import '../../../../../shared/helpers/base_tests.dart';

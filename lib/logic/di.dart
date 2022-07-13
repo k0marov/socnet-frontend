@@ -3,10 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:socnet/logic/core/authenticated_api_facade.dart';
 import 'package:socnet/logic/core/const/endpoints.dart';
-import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource.dart';
-import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource.dart';
+import 'package:socnet/logic/features/auth/data/datasources/local_token_datasource_impl.dart';
+import 'package:socnet/logic/features/auth/data/datasources/network_auth_datasource_impl.dart';
 import 'package:socnet/logic/features/auth/data/mappers/token_mapper.dart';
-import 'package:socnet/logic/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_auth_token_usecase.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/get_token_stream_usecase.dart';
@@ -17,14 +16,12 @@ import 'package:socnet/logic/features/auth/presentation/login_cubit/failure_hand
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
-import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource.dart';
+import 'package:socnet/logic/features/comments/data/datasources/comment_network_datasource_impl.dart';
 import 'package:socnet/logic/features/comments/data/mappers/comment_mapper.dart';
-import 'package:socnet/logic/features/comments/data/repositories/comment_repository_impl.dart';
 import 'package:socnet/logic/features/comments/domain/usecases/add_comment_usecase.dart';
 import 'package:socnet/logic/features/comments/presentation/comments_cubit/comments_cubit.dart';
-import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource.dart';
+import 'package:socnet/logic/features/posts/data/datasources/network_post_datasource_impl.dart';
 import 'package:socnet/logic/features/posts/data/mappers/post_mapper.dart';
-import 'package:socnet/logic/features/posts/data/repositories/post_repository_impl.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/create_post_usecase.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/delete_post_usecase.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts_usecase.dart';
@@ -32,9 +29,8 @@ import 'package:socnet/logic/features/posts/domain/usecases/toggle_like_on_post_
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/failure_handler.dart';
 import 'package:socnet/logic/features/posts/presentation/post_creation_cubit/post_creation_cubit.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
-import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource.dart';
+import 'package:socnet/logic/features/profile/data/datasources/profile_network_datasource_impl.dart';
 import 'package:socnet/logic/features/profile/data/mappers/profile_mapper.dart';
-import 'package:socnet/logic/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_follows_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_profile_usecase.dart';
@@ -47,7 +43,11 @@ import 'package:socnet/logic/features/profile/presentation/profile_cubit/profile
 import './features/comments/domain/usecases/delete_comment_usecase.dart';
 import './features/comments/domain/usecases/get_post_comments_usecase.dart';
 import './features/comments/domain/usecases/toggle_like_on_comment_usecase.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/presentation/auth_gate_cubit/auth_gate_cubit.dart';
+import 'features/comments/domain/repositories/comment_repository.dart';
+import 'features/posts/domain/repositories/post_repository.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
 
 class UseCases {
   late final GetAuthTokenUseCase getAuthToken;
