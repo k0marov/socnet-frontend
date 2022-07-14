@@ -125,6 +125,7 @@ Future initialize() async {
     apiHost: realApiHost,
   );
 
+  sl.registerLazySingleton(() => usecases.getProfilePosts);
   sl.registerLazySingleton(() => usecases.getMyProfile);
   sl.registerLazySingleton(() => usecases.logout);
 

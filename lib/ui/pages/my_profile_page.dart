@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:socnet/logic/core/simple_state_cubit.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
@@ -40,58 +41,72 @@ class _Internal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-        child: FailureListener<MyProfileCubit, MyProfileState>(
-          getFailure: (state) => state.failure,
-          child: BlocBuilder<MyProfileCubit, MyProfileState>(
-            builder: (context, state) {
-              return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                state.profile.avatarUrl.fold(
-                  () => Text("avatar placeholder"),
-                  (avatarUrl) => SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: CircleAvatar(
-                      foregroundImage: NetworkImage("https://" + avatarUrl),
+      child: FailureListener<MyProfileCubit, MyProfileState>(
+        getFailure: (state) => state.failure,
+        child: BlocBuilder<MyProfileCubit, MyProfileState>(
+          builder: (context, state) {
+            return BlocProvider<SimpleStateCubit<UniqueKey>>(
+                create: (_) => SimpleStateCubit<UniqueKey>(UniqueKey()),
+                child: ListView(children: [
+                  Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                      child: Column(children: [
+                        state.profile.avatarUrl.fold(
+                          () => Text("avatar placeholder"),
+                          (avatarUrl) => SizedBox(
+                            width: 200,
+                            height: 200,
+                            child: CircleAvatar(
+                              foregroundImage: NetworkImage("https://" + avatarUrl),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          "@${state.profile.username}",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        SizedBox(height: 15),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                          Column(
+                            children: [
+                              Text("Followers"),
+                              SizedBox(height: 5),
+                              Text(state.profile.followers.toString())
+                            ],
+                          ),
+                          Column(
+                            children: [Text("Follows"), SizedBox(height: 5), Text(state.profile.follows.toString())],
+                          ),
+                        ]),
+                        SizedBox(height: 15),
+                        Text(state.profile.about),
+                        TextButton(
+                          onPressed: () => pushPage(context, PostCreationPage(), true),
+                          child: Text("Create new post"),
+                        ),
+                        TextButton(
+                          onPressed: () => sl<LogoutUseCase>()(),
+                          child: Text("Logout"),
+                        ),
+                      ])),
+                  BlocBuilder<SimpleStateCubit<UniqueKey>, UniqueKey>(
+                    builder: (context, key) => SimpleFutureBuilder<List<Post>>(
+                      key: key,
+                      future: sl<GetProfilePostsUseCase>()(state.profile),
+                      loading: Container(),
+                      loadedBuilder: (posts) => Column(children: [
+                        TextButton(
+                          onPressed: () async => context.read<SimpleStateCubit<UniqueKey>>().setState(UniqueKey()),
+                          child: Text("Refresh posts"),
+                        ),
+                        ...posts.map((post) => PostWidget(post: post)).toList(),
+                      ]),
+                      failureBuilder: (failure) => Text(failure.toString()),
                     ),
                   ),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "@${state.profile.username}",
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                SizedBox(height: 15),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  Column(
-                    children: [Text("Followers"), SizedBox(height: 5), Text(state.profile.followers.toString())],
-                  ),
-                  Column(
-                    children: [Text("Follows"), SizedBox(height: 5), Text(state.profile.follows.toString())],
-                  ),
-                ]),
-                SizedBox(height: 15),
-                Text(state.profile.about),
-                TextButton(
-                  onPressed: () => pushPage(context, PostCreationPage(), true),
-                  child: Text("Create new post"),
-                ),
-                TextButton(
-                  onPressed: () => sl<LogoutUseCase>()(),
-                  child: Text("Logout"),
-                ),
-                SimpleFutureBuilder<List<Post>>(
-                  future: sl<GetProfilePostsUseCase>()(state.profile),
-                  loading: Container(),
-                  loadedBuilder: (posts) => ListView(
-                    children: posts.map((post) => PostWidget(post: post)).toList(),
-                  ),
-                  failureBuilder: (failure) => Text(failure.toString()),
-                ),
-              ]);
-            },
-          ),
+                ]));
+          },
         ),
       ),
     );
