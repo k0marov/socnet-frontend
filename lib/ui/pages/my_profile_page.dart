@@ -75,8 +75,11 @@ class _Internal extends StatelessWidget {
                               Text(state.profile.followers.toString())
                             ],
                           ),
-                          Column(
-                            children: [Text("Follows"), SizedBox(height: 5), Text(state.profile.follows.toString())],
+                          InkWell(
+                            onTap: () => null,
+                            child: Column(
+                              children: [Text("Follows"), SizedBox(height: 5), Text(state.profile.follows.toString())],
+                            ),
                           ),
                         ]),
                         SizedBox(height: 15),

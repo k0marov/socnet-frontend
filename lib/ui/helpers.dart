@@ -15,6 +15,22 @@ void pushPage(BuildContext ctx, Widget page, [bool isDialog = false]) => Navigat
     );
 void replacePage(BuildContext ctx, Widget page) => Navigator.of(ctx).pushReplacement(_routeFromWidget(page));
 
+void openFullscreen(BuildContext context, Widget widget) {
+  // final size = MediaQuery.of(context).size.width;
+  // showDialog(
+  //   context: context,
+  //   builder: (context) => Dialog(
+  //     child: InteractiveViewer(
+  //       child: SizedBox(
+  //         width: size,
+  //         height: size,
+  //         child: widget,
+  //       ),
+  //     ),
+  //   ),
+  // );
+}
+
 Future<SimpleFile?> chooseSquareImage() async {
   final imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
   if (imageFile == null) return null;

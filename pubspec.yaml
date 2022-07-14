@@ -29,6 +29,7 @@ dependencies:
   rx_shared_preferences: ^3.0.0
   reorderables: ^0.5.0
   card_swiper: ^2.0.4
+  expandable_text: ^2.3.0
 
 flutter_icons:
   image_path: "assets/logo.png"

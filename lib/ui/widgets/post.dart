@@ -1,7 +1,12 @@
 import 'package:card_swiper/card_swiper.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/features/posts/presentation/post_cubit/post_cubit.dart';
+import 'package:socnet/ui/helpers.dart';
+import 'package:socnet/ui/pages/comments_page.dart';
+import 'package:socnet/ui/widgets/author_widget.dart';
+import 'package:socnet/ui/widgets/date_text_widget.dart';
 
 import '../../logic/di.dart';
 import '../../logic/features/posts/domain/entities/post.dart';
@@ -13,6 +18,12 @@ class PostWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageSize = MediaQuery.of(context).size.width;
+    Widget getImage(PostState state, int index) => Image.network(
+          fit: BoxFit.fill,
+          width: imageSize,
+          height: imageSize,
+          "https://" + state.post.images[index].url,
+        );
     return BlocProvider<PostCubit>(
       create: (_) => sl<PostCubitFactory>()(post),
       child: BlocBuilder<PostCubit, PostState>(
@@ -25,22 +36,19 @@ class PostWidget extends StatelessWidget {
                   children: [
                     Container(
                       color: Colors.grey.shade200,
-                      child: Row(children: [
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: state.post.author.avatarUrl.fold(
-                            () => Icon(Icons.person),
-                            (avatar) => CircleAvatar(foregroundImage: NetworkImage("https://" + avatar)),
-                          ),
-                        ),
-                        Text("@" + state.post.author.username),
-                        if (state.post.isMine)
-                          TextButton(
-                              onPressed: () => context.read<PostCubit>().deletePressed(), child: Text("Delete!")),
-                        Spacer(),
-                        Text("On " + state.post.createdAt.toLocal().toString()),
-                      ]),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(children: [
+                          AuthorWidget(author: state.post.author),
+                          if (state.post.isMine)
+                            TextButton(
+                              onPressed: () => context.read<PostCubit>().deletePressed(),
+                              child: Text("Delete!"),
+                            ),
+                          Spacer(),
+                          DateTextWidget(date: state.post.createdAt.toLocal()),
+                        ]),
+                      ),
                     ),
                     if (state.post.images.isNotEmpty)
                       SizedBox(
@@ -51,34 +59,33 @@ class PostWidget extends StatelessWidget {
                                 itemCount: state.post.images.length,
                                 pagination: SwiperPagination(),
                                 control: SwiperControl(),
-                                itemBuilder: (context, index) => Image.network(
-                                  fit: BoxFit.fill,
-                                  width: imageSize,
-                                  height: imageSize,
-                                  "https://" + state.post.images[index].url,
+                                itemBuilder: (context, index) => GestureDetector(
+                                  onTap: () => openFullscreen(context, getImage(state, index)),
+                                  child: getImage(state, index),
                                 ),
                               )
-                            : Image.network(
-                                fit: BoxFit.fill,
-                                width: imageSize,
-                                height: imageSize,
-                                "https://" + state.post.images.first.url,
-                              ),
+                            : getImage(state, 0),
                       ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-                      child: Text(
-                        state.post.text,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
+                    if (state.post.text.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+                        child: ExpandableText(
+                          state.post.text,
+                          maxLines: 3,
+                          expandText: "more",
+                          collapseText: "less",
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
+                        ),
                       ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(children: [
                         Column(children: [
-                          Icon(Icons.favorite, color: Colors.red, size: 50),
+                          IconButton(
+                            icon: Icon(Icons.favorite, color: Colors.red),
+                            iconSize: 50,
+                            onPressed: state.post.isMine ? null : () => context.read<PostCubit>().likePressed(),
+                          ),
                           Text((state.post.likes + 1).toString(), style: TextStyle(fontSize: 20)),
                         ]),
                         SizedBox(width: 20),
@@ -94,7 +101,7 @@ class PostWidget extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () => pushPage(context, CommentsPage(post: state.post), true),
                               child: Center(child: Text("Comments")),
                             ),
                           ),
