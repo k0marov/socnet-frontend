@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../../logic/core/error/failures.dart';
 
-class ZFutureBuilder<T> extends StatelessWidget {
+class SimpleFutureBuilder<T> extends StatelessWidget {
   final Future<Either<Failure, T>> future;
   final Widget loading;
   final Widget Function(T) loadedBuilder;
   final Widget Function(Failure) failureBuilder;
-  const ZFutureBuilder({
+  const SimpleFutureBuilder({
     Key? key,
     required this.future,
     required this.loading,

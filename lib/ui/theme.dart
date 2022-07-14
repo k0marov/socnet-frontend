@@ -9,3 +9,10 @@ const customCyan = Color(0xFF33FFF3);
 final theme = ThemeData(
   primarySwatch: Colors.blue,
 );
+
+const inputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+  floatingLabelBehavior: FloatingLabelBehavior.never,
+  border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(10))),
+  filled: true,
+);

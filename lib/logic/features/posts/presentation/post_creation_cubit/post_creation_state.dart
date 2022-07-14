@@ -7,7 +7,7 @@ class PostCreationState extends Equatable {
 
   final Failure? failure;
 
-  bool get canSubmit => images.isNotEmpty && text.value.isNotEmpty;
+  bool get canSubmit => images.isNotEmpty || text.value.isNotEmpty;
 
   @override
   List get props => [images, text, failure, isCreated];

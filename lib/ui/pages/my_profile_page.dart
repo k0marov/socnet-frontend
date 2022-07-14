@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:socnet/logic/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts_usecase.dart';
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 import 'package:socnet/ui/helpers.dart';
 import 'package:socnet/ui/pages/post_creation_page.dart';
-import 'package:socnet/ui/widgets/z_future_builder.dart';
+import 'package:socnet/ui/widgets/post.dart';
+import 'package:socnet/ui/widgets/simple_future_builder.dart';
 
 import '../../logic/di.dart';
+import '../../logic/features/posts/domain/entities/post.dart';
 import '../../logic/features/profile/domain/entities/profile.dart';
 import '../widgets/failure_listener.dart';
 
@@ -18,7 +21,7 @@ class MyProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: ZFutureBuilder<Profile>(
+      body: SimpleFutureBuilder<Profile>(
         future: sl<GetMyProfileUseCase>()(),
         loading: Center(child: CircularProgressIndicator()),
         loadedBuilder: (profile) => BlocProvider(
@@ -71,13 +74,21 @@ class _Internal extends StatelessWidget {
                 SizedBox(height: 15),
                 Text(state.profile.about),
                 TextButton(
-                  onPressed: () => pushPage(context, PostCreationPage()),
+                  onPressed: () => pushPage(context, PostCreationPage(), true),
                   child: Text("Create new post"),
                 ),
                 TextButton(
                   onPressed: () => sl<LogoutUseCase>()(),
                   child: Text("Logout"),
-                )
+                ),
+                SimpleFutureBuilder<List<Post>>(
+                  future: sl<GetProfilePostsUseCase>()(state.profile),
+                  loading: Container(),
+                  loadedBuilder: (posts) => ListView(
+                    children: posts.map((post) => PostWidget(post: post)).toList(),
+                  ),
+                  failureBuilder: (failure) => Text(failure.toString()),
+                ),
               ]);
             },
           ),

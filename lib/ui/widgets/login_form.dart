@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/features/auth/presentation/login_cubit/login_cubit.dart';
 import 'package:socnet/ui/widgets/bloc_field.dart';
 import 'package:socnet/ui/widgets/failure_listener.dart';
 import 'package:socnet/ui/widgets/submit_button.dart';
-import 'package:socnet/ui/widgets/z_text_field.dart';
 
-import '../../logic/core/field_value.dart';
+import '../theme.dart';
 
 class LoginForm extends StatelessWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -18,21 +18,22 @@ class LoginForm extends StatelessWidget {
     return FailureListener<LoginCubit, LoginState>(
       getFailure: (state) => state.failure,
       child: Column(children: [
-        BlocField<LoginCubit, LoginState, FieldValue>(
-          getValue: (state) => state.username,
-          buildField: (value, b) => ZTextField(
+        BlocField<LoginCubit, LoginState, FormFailure?>(
+          getValue: (state) => state.username.failure,
+          buildField: (value, b) => TextField(
             onChanged: b.usernameChanged,
-            value: value,
-            label: "Username",
+            decoration: inputDecoration.copyWith(label: Text("Username"), errorText: value?.code),
           ),
         ),
         SizedBox(height: 15),
-        BlocField<LoginCubit, LoginState, FieldValue>(
-          getValue: (state) => state.password,
-          buildField: (value, b) => ZTextField(
+        BlocField<LoginCubit, LoginState, FormFailure?>(
+          getValue: (state) => state.password.failure,
+          buildField: (value, b) => TextField(
             onChanged: b.passwordChanged,
-            value: value,
-            label: "Password",
+            decoration: inputDecoration.copyWith(
+              errorText: value?.code,
+              label: Text("Password"),
+            ),
             obscureText: true,
           ),
         ),

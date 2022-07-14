@@ -4,10 +4,15 @@ import 'package:image_picker/image_picker.dart';
 
 import '../logic/core/simple_file.dart';
 
-Route _routeFromWidget(Widget widget) => MaterialPageRoute(builder: (_) => widget);
+Route _routeFromWidget(Widget widget, [bool isDialog = false]) => MaterialPageRoute(
+      builder: (_) => widget,
+      fullscreenDialog: isDialog,
+    );
 
 void popPage(BuildContext ctx) => Navigator.of(ctx).pop();
-void pushPage(BuildContext ctx, Widget page) => Navigator.of(ctx).push(_routeFromWidget(page));
+void pushPage(BuildContext ctx, Widget page, [bool isDialog = false]) => Navigator.of(ctx).push(
+      _routeFromWidget(page, isDialog),
+    );
 void replacePage(BuildContext ctx, Widget page) => Navigator.of(ctx).pushReplacement(_routeFromWidget(page));
 
 Future<SimpleFile?> chooseSquareImage() async {

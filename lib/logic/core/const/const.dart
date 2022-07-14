@@ -1,0 +1,1 @@
+const maxPostTextLength = 255;

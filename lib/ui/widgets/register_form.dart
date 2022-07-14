@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:socnet/logic/core/error/form_failures.dart';
 import 'package:socnet/logic/features/auth/domain/pass_strength_getter.dart';
 import 'package:socnet/logic/features/auth/presentation/register_cubit/register_cubit.dart';
+import 'package:socnet/ui/theme.dart';
 import 'package:socnet/ui/widgets/failure_listener.dart';
 import 'package:socnet/ui/widgets/submit_button.dart';
-import 'package:socnet/ui/widgets/z_text_field.dart';
 
-import '../../logic/core/field_value.dart';
 import 'bloc_field.dart';
 
 double getPasswordProgress(PassStrength strength) {
@@ -61,22 +61,26 @@ class RegisterForm extends StatelessWidget {
     return FailureListener<RegisterCubit, RegisterState>(
       getFailure: (state) => state.failure,
       child: Column(children: [
-        BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.username,
-          buildField: (value, b) => ZTextField(
+        BlocField<RegisterCubit, RegisterState, FormFailure?>(
+          getValue: (state) => state.username.failure,
+          buildField: (value, b) => TextField(
             onChanged: b.usernameChanged,
-            value: value,
-            label: "Username",
+            decoration: inputDecoration.copyWith(
+              errorText: value?.code,
+              label: Text("Username"),
+            ),
           ),
         ),
         SizedBox(height: 15),
-        BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.pass,
-          buildField: (value, b) => ZTextField(
+        BlocField<RegisterCubit, RegisterState, FormFailure?>(
+          getValue: (state) => state.pass.failure,
+          buildField: (value, b) => TextField(
             onChanged: b.passChanged,
             obscureText: true,
-            value: value,
-            label: "Password",
+            decoration: inputDecoration.copyWith(
+              errorText: value?.code,
+              label: Text("Password"),
+            ),
           ),
         ),
         SizedBox(height: 5),
@@ -98,14 +102,15 @@ class RegisterForm extends StatelessWidget {
           ),
         ),
         SizedBox(height: 15),
-        BlocField<RegisterCubit, RegisterState, FieldValue>(
-          getValue: (state) => state.passRepeat,
-          buildField: (value, b) => ZTextField(
-            onChanged: b.passRepeatChanged,
-            obscureText: true,
-            value: value,
-            label: "Repeat Password",
-          ),
+        BlocField<RegisterCubit, RegisterState, FormFailure?>(
+          getValue: (state) => state.passRepeat.failure,
+          buildField: (value, b) => TextField(
+              onChanged: b.passRepeatChanged,
+              obscureText: true,
+              decoration: inputDecoration.copyWith(
+                errorText: value?.code,
+                label: Text("Repeat password"),
+              )),
         ),
         SizedBox(height: 20),
         BlocField<RegisterCubit, RegisterState, bool>(
