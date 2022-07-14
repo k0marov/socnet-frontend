@@ -6,6 +6,7 @@ import 'package:socnet/logic/features/posts/domain/usecases/get_profile_posts_us
 import 'package:socnet/logic/features/profile/domain/usecases/get_my_profile_usecase.dart';
 import 'package:socnet/logic/features/profile/presentation/my_profile_cubit/my_profile_cubit.dart';
 import 'package:socnet/ui/helpers.dart';
+import 'package:socnet/ui/pages/edit_profile_page.dart';
 import 'package:socnet/ui/pages/post_creation_page.dart';
 import 'package:socnet/ui/widgets/post.dart';
 import 'package:socnet/ui/widgets/simple_future_builder.dart';
@@ -87,6 +88,10 @@ class _Internal extends StatelessWidget {
                         TextButton(
                           onPressed: () => pushPage(context, PostCreationPage(), true),
                           child: Text("Create new post"),
+                        ),
+                        TextButton(
+                          onPressed: () => pushPage(context, EditProfilePage()),
+                          child: Text("Edit profile"),
                         ),
                         TextButton(
                           onPressed: () => sl<LogoutUseCase>()(),
