@@ -1,4 +1,4 @@
-# socnet
+# socnet-frontend
 
 My pet project from 2022: Mobile frontend for a Social Network written in Flutter.
 
