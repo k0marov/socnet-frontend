@@ -1,17 +1,10 @@
 # socnet
 
-A Mobile Frontend for the Socio App
+My pet project from 2022: Mobile frontend for a Social Network written in Flutter.
 
-## Getting Started
+[Backend](https://github.com/k0marov/go-socnet)
 
-This project is a starting point for a Flutter application.
+### Highlights
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# socnet-frontend
+- Implements features from [Backend](https://github.com/k0marov/go-socnet)
+- 100% test coverage, [e2e tests](./test/e2e)
